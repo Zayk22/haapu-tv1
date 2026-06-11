@@ -1,7 +1,7 @@
 import AuthGate from "@/components/home/AuthGate";
 import ContinueWatchingRow from "@/components/home/ContinueWatchingRow";
 import Hero from "@/components/home/Hero";
-import MovieCard from "@/components/movie/MovieCard";
+import MovieRow from "@/components/home/MovieRow";  // ← Add this import
 import { getContent } from "@/lib/contentData";
 import type { ContentItem } from "@/types/content";
 
@@ -17,15 +17,15 @@ function toMovie(item: ContentItem) {
     genres: item.genres,
     description: item.description,
     quality: "HD" as const,
-    type: "movie" as const,  // ← CHANGE THIS LINE
+    type: "movie" as const,
     slug: item.slug,
   };
 }
 
 export default async function Home() {
   const movies = await getContent("movie");
+  const movieList = movies.map(toMovie);
 
-  // Take the first 3 movies for the hero carousel
   const featuredMovies = movies.slice(0, 3);
 
   return (
@@ -35,34 +35,12 @@ export default async function Home() {
 
       <div className="relative z-20 -mt-16">
         <ContinueWatchingRow />
-
-        {/* All Movies Section */}
-        {movies.length > 0 && (
-          <section className="py-6 sm:py-8">
-            <div className="mx-auto max-w-screen-2xl px-4 sm:px-6 lg:px-12">
-              <h2 className="font-display text-heading-3 sm:text-heading-2 lg:text-heading-3 font-semibold text-white mb-4">
-                Movies
-              </h2>
-              <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 xl:grid-cols-6 gap-4">
-                {movies.map((item, index) => (
-                  <MovieCard
-                    key={item.id}
-                    movie={toMovie(item)}
-                    index={index}
-                    slug={item.slug}
-                  />
-                ))}
-              </div>
-            </div>
-          </section>
-        )}
+        
+        {/* Use MovieRow for horizontal scroll instead of grid */}
+        <MovieRow title="Trending Now" movies={movieList} />
+        <MovieRow title="Popular on Haapu" movies={[...movieList].reverse()} />
+        <MovieRow title="Recommended for You" movies={movieList} />
       </div>
-
-      <section className="flex min-h-[30vh] items-center justify-center px-6">
-        <p className="text-body-lg text-matte-600">
-          More content coming soon.
-        </p>
-      </section>
     </main>
   );
 }

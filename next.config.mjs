@@ -10,6 +10,14 @@ const nextConfig = {
         protocol: "https",
         hostname: "cdn.myanimelist.net",
       },
+      {
+        protocol: "https",
+        hostname: "watch.haaputv.com",  // ← ADD THIS for your posters
+      },
+      {
+        protocol: "http",
+        hostname: "localhost",  // Keep for local development
+      },
     ],
   },
 };
