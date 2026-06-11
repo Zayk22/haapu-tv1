@@ -1,8 +1,8 @@
 import AuthGate from "@/components/home/AuthGate";
 import ContinueWatchingRow from "@/components/home/ContinueWatchingRow";
 import Hero from "@/components/home/Hero";
-import MovieRow from "@/components/home/MovieRow";  // ← Add this import
-import { getContent } from "@/lib/contentData";
+import MovieRow from "@/components/home/MovieRow";
+import { getContent } from "@/lib/contentData";  // ← Make sure this is correct
 import type { ContentItem } from "@/types/content";
 
 function toMovie(item: ContentItem) {
@@ -25,7 +25,6 @@ function toMovie(item: ContentItem) {
 export default async function Home() {
   const movies = await getContent("movie");
   const movieList = movies.map(toMovie);
-
   const featuredMovies = movies.slice(0, 3);
 
   return (
@@ -36,7 +35,6 @@ export default async function Home() {
       <div className="relative z-20 -mt-16">
         <ContinueWatchingRow />
         
-        {/* Use MovieRow for horizontal scroll instead of grid */}
         <MovieRow title="Trending Now" movies={movieList} />
         <MovieRow title="Popular on Haapu" movies={[...movieList].reverse()} />
         <MovieRow title="Recommended for You" movies={movieList} />
