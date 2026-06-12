@@ -2,6 +2,7 @@
 
 import { useState, useEffect, useCallback } from "react";
 import Link from "next/link";
+import { usePathname } from "next/navigation"; // ✅ ADD THIS
 import { Search, Bell, Menu, X, Bookmark, User } from "lucide-react";
 import { SignedIn, SignedOut, UserButton } from "@clerk/nextjs";
 import SearchOverlay from "@/components/layout/SearchOverlay";
@@ -10,15 +11,20 @@ const navLinks = [
   { label: "Home", href: "/" },
   { label: "Movies", href: "/movies" },
   { label: "TV Shows", href: "/tv-shows" },
-  //{ label: "Anime", href: "/anime" }, // removed for Happu TV
   { label: "Kids", href: "/kids" },
   { label: "Account", href: "/account" },
 ];
 
 export default function Header() {
+  const pathname = usePathname(); // ✅ ADD THIS
   const [isScrolled, setIsScrolled] = useState(false);
   const [isSearchOpen, setIsSearchOpen] = useState(false);
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
+
+  // ✅ ADD THIS: Hide header on admin routes
+  if (pathname?.startsWith('/admin')) {
+    return null;
+  }
 
   useEffect(() => {
     const handleScroll = () => setIsScrolled(window.scrollY > 50);

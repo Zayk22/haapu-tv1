@@ -1,0 +1,157 @@
+"use client";
+
+import { useState, useEffect } from "react";
+import Link from "next/link";
+import { Edit, Trash2, Eye, Search, Plus } from "lucide-react";
+import type { ContentItem } from "@/types/content";
+
+interface MovieTableClientProps {
+  movies: ContentItem[];
+}
+
+export default function MovieTableClient({ movies }: MovieTableClientProps) {
+  const [searchTerm, setSearchTerm] = useState("");
+  const [isMobile, setIsMobile] = useState(false);
+  
+  useEffect(() => {
+    const checkMobile = () => setIsMobile(window.innerWidth < 640);
+    checkMobile();
+    window.addEventListener('resize', checkMobile);
+    return () => window.removeEventListener('resize', checkMobile);
+  }, []);
+  
+  const filteredMovies = movies.filter((movie) =>
+    movie.title.toLowerCase().includes(searchTerm.toLowerCase())
+  );
+
+  const handleDelete = async (id: string, title: string) => {
+    if (!confirm(`Delete "${title}"? This cannot be undone.`)) return;
+    
+    try {
+      const response = await fetch(`/api/admin/movies/${id}`, {
+        method: 'DELETE',
+      });
+      
+      if (!response.ok) {
+        const data = await response.json();
+        throw new Error(data.error || 'Failed to delete');
+      }
+      
+      window.location.reload();
+    } catch (err) {
+      alert(err instanceof Error ? err.message : 'Something went wrong');
+    }
+  };
+
+  return (
+    <div>
+      <div className="mb-6 flex flex-col gap-4 sm:mb-8 sm:flex-row sm:items-center sm:justify-between">
+        <div>
+          <h1 className="font-display text-2xl font-bold text-white sm:text-3xl">Movies</h1>
+          <p className="mt-1 text-sm text-matte-400 sm:text-base">Manage your movie catalog</p>
+        </div>
+        <Link
+          href="/admin/movies/add"
+          className="inline-flex items-center justify-center gap-2 rounded-lg bg-crimson-DEFAULT px-4 py-2 text-sm font-medium text-white transition-colors hover:bg-crimson-dark sm:text-base"
+        >
+          <Plus size={18} />
+          Add Movie
+        </Link>
+      </div>
+
+      <div className="mb-6">
+        <div className="relative max-w-md">
+          <Search className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-matte-500" />
+          <input
+            type="text"
+            placeholder="Search movies..."
+            value={searchTerm}
+            onChange={(e) => setSearchTerm(e.target.value)}
+            className="w-full rounded-lg border border-matte-800 bg-matte-900 py-2 pl-10 pr-4 text-sm text-white placeholder:text-matte-500 focus:border-crimson-DEFAULT focus:outline-none sm:text-base"
+          />
+        </div>
+      </div>
+
+      {/* Mobile Card View */}
+      {isMobile ? (
+        <div className="space-y-3">
+          {filteredMovies.map((movie) => (
+            <div key={movie.id} className="rounded-lg border border-matte-800 bg-matte-900 p-4">
+              <div className="flex gap-3">
+                <img src={movie.posterUrl} alt={movie.title} className="h-16 w-12 rounded object-cover" />
+                <div className="flex-1">
+                  <h3 className="font-medium text-white">{movie.title}</h3>
+                  <p className="mt-0.5 text-xs text-matte-400">{movie.genres?.slice(0, 2).join(", ")}</p>
+                  <div className="mt-2 flex gap-3">
+                    {/* ✅ FIXED: Using movie.id (numeric) instead of movie.slug */}
+                    <Link href={`/admin/movies/${movie.id}/edit`} className="text-xs text-blue-400">Edit</Link>
+                    <Link href={`/movie/${movie.slug}`} target="_blank" className="text-xs text-green-400">View</Link>
+                    <button 
+                      onClick={() => handleDelete(movie.id, movie.title)}
+                      className="text-xs text-red-400"
+                    >
+                      Delete
+                    </button>
+                  </div>
+                </div>
+              </div>
+            </div>
+          ))}
+        </div>
+      ) : (
+        <div className="overflow-x-auto rounded-lg border border-matte-800 bg-matte-900">
+          <table className="w-full min-w-[500px]">
+            <thead>
+              <tr className="border-b border-matte-800 bg-matte-800/50">
+                <th className="px-4 py-3 text-left text-xs font-medium text-matte-400 sm:text-sm">Poster</th>
+                <th className="px-4 py-3 text-left text-xs font-medium text-matte-400 sm:text-sm">Title</th>
+                <th className="hidden px-4 py-3 text-left text-xs font-medium text-matte-400 sm:table-cell sm:text-sm">Genres</th>
+                <th className="hidden px-4 py-3 text-left text-xs font-medium text-matte-400 md:table-cell sm:text-sm">Duration</th>
+                <th className="px-4 py-3 text-left text-xs font-medium text-matte-400 sm:text-sm">Actions</th>
+              </tr>
+            </thead>
+            <tbody>
+              {filteredMovies.map((movie) => (
+                <tr key={movie.id} className="border-b border-matte-800 hover:bg-matte-800/30">
+                  <td className="px-4 py-3">
+                    <img src={movie.posterUrl} alt={movie.title} className="h-12 w-8 rounded object-cover" />
+                  </td>
+                  <td className="px-4 py-3 text-sm font-medium text-white sm:text-base">{movie.title}</td>
+                  <td className="hidden px-4 py-3 text-xs text-matte-400 sm:table-cell sm:text-sm">
+                    {movie.genres?.slice(0, 2).join(", ")}
+                  </td>
+                  <td className="hidden px-4 py-3 text-xs text-matte-400 md:table-cell sm:text-sm">{movie.duration}</td>
+                  <td className="px-4 py-3">
+                    <div className="flex items-center gap-2">
+                      {/* ✅ FIXED: Using movie.id (numeric) instead of movie.slug */}
+                      <Link href={`/admin/movies/${movie.id}/edit`} className="rounded p-1 text-matte-400 hover:text-blue-400">
+                        <Edit size={16} />
+                      </Link>
+                      <Link href={`/movie/${movie.slug}`} target="_blank" className="rounded p-1 text-matte-400 hover:text-green-400">
+                        <Eye size={16} />
+                      </Link>
+                      <button 
+                        onClick={() => handleDelete(movie.id, movie.title)}
+                        className="rounded p-1 text-matte-400 hover:text-red-400"
+                      >
+                        <Trash2 size={16} />
+                      </button>
+                    </div>
+                  </td>
+                </tr>
+              ))}
+            </tbody>
+          </table>
+        </div>
+      )}
+
+      {filteredMovies.length === 0 && (
+        <div className="rounded-lg border border-matte-800 bg-matte-900 p-8 text-center sm:p-12">
+          <p className="text-sm text-matte-400 sm:text-base">
+            {searchTerm ? "No movies match your search." : "No movies found. Click 'Add Movie' to get started."}
+          </p>
+        </div>
+      )}
+    </div>
+  );
+}

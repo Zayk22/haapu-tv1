@@ -10,7 +10,7 @@ import { useContinueWatching } from "@/hooks/useContinueWatching";
 interface MovieCardProps {
   movie: Movie;
   index?: number;
-  slug?: string; // NEW: optional slug for content items
+  slug?: string; // optional slug for content items
 }
 
 export default function MovieCard({ movie, index = 0, slug }: MovieCardProps) {
@@ -37,8 +37,10 @@ export default function MovieCard({ movie, index = 0, slug }: MovieCardProps) {
           type: movie.type,
         });
         if (slug) {
-          // New content types use slug-based routing
-          router.push(`/title/${slug}`);
+          // Use slug with /movie/ route
+          router.push(`/movie/${slug}`);
+        } else if (movie.slug) {
+          router.push(`/movie/${movie.slug}`);
         } else if (movie.type === "anime") {
           router.push(`/anime/${movie.id}`);
         } else {
@@ -60,7 +62,9 @@ export default function MovieCard({ movie, index = 0, slug }: MovieCardProps) {
         />
         <motion.div
           className="absolute inset-0 flex flex-col justify-end bg-gradient-to-t from-matte-black/95 via-matte-black/40 to-transparent p-3 sm:p-4"
-          initial={{ opacity: 0 }} animate={{ opacity: isHovered ? 1 : 0 }} transition={{ duration: 0.3 }}
+          initial={{ opacity: 0 }} 
+          animate={{ opacity: isHovered ? 1 : 0 }} 
+          transition={{ duration: 0.3 }}
         >
           <div className="mb-2 sm:mb-3 flex justify-center">
             <div className="flex h-10 w-10 sm:h-12 sm:w-12 items-center justify-center rounded-full border-2 border-white bg-white/10 backdrop-blur-sm transition-transform duration-300 hover:scale-110">
@@ -70,17 +74,28 @@ export default function MovieCard({ movie, index = 0, slug }: MovieCardProps) {
           <div className="space-y-1 sm:space-y-1.5">
             <h3 className="text-small sm:text-body font-semibold text-white line-clamp-1">{movie.title}</h3>
             <div className="flex items-center gap-2 sm:gap-3 text-[10px] sm:text-small text-matte-300">
-              <span className="flex items-center gap-1"><Star size={10} className="text-gold-DEFAULT" fill="currentColor" />{movie.rating}</span>
+              <span className="flex items-center gap-1">
+                <Star size={10} className="text-gold-DEFAULT" fill="currentColor" />
+                {movie.rating}
+              </span>
               <span>{movie.year}</span>
             </div>
           </div>
         </motion.div>
       </div>
-      <motion.div className="mt-1.5 sm:mt-2 px-0.5 sm:px-1" animate={{ opacity: isHovered ? 0 : 1 }} transition={{ duration: 0.2 }}>
+      <motion.div 
+        className="mt-1.5 sm:mt-2 px-0.5 sm:px-1" 
+        animate={{ opacity: isHovered ? 0 : 1 }} 
+        transition={{ duration: 0.2 }}
+      >
         <h3 className="text-small sm:text-caption font-medium text-matte-300 line-clamp-1">{movie.title}</h3>
         <div className="mt-0.5 flex items-center gap-1.5 sm:gap-2 text-[10px] sm:text-small text-matte-600">
-          <span>{movie.year}</span><span>•</span>
-          <span className="flex items-center gap-1"><Star size={8} className="text-gold-DEFAULT" fill="currentColor" />{movie.rating}</span>
+          <span>{movie.year}</span>
+          <span>•</span>
+          <span className="flex items-center gap-1">
+            <Star size={8} className="text-gold-DEFAULT" fill="currentColor" />
+            {movie.rating}
+          </span>
         </div>
       </motion.div>
       {/* Hover glow effect */}
