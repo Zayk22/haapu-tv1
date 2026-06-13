@@ -137,3 +137,59 @@ export async function DELETE(
     return NextResponse.json({ error: 'Internal server error' }, { status: 500 });
   }
 }
+export async function PATCH(
+  request: NextRequest,
+  { params }: { params: { id: string } }
+) {
+  const { userId, sessionClaims } = await auth();
+  
+  if (!userId) {
+    return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
+  }
+  
+  const role = (sessionClaims as any)?.role;
+  if (role !== 'admin') {
+    return NextResponse.json({ error: 'Forbidden' }, { status: 403 });
+  }
+  
+  try {
+    const id = parseInt(params.id);
+    const body = await request.json();
+    
+    // Build dynamic update query based on what fields are provided
+    const updates = [];
+    const values = [];
+    let paramIndex = 1;
+    
+    if (body.is_featured !== undefined) {
+      updates.push(`is_featured = $${paramIndex++}`);
+      values.push(body.is_featured);
+    }
+    if (body.is_trending !== undefined) {
+      updates.push(`is_trending = $${paramIndex++}`);
+      values.push(body.is_trending);
+    }
+    if (body.is_recommended !== undefined) {
+      updates.push(`is_recommended = $${paramIndex++}`);
+      values.push(body.is_recommended);
+    }
+    if (body.hero_order !== undefined) {
+      updates.push(`hero_order = $${paramIndex++}`);
+      values.push(body.hero_order);
+    }
+    
+    if (updates.length === 0) {
+      return NextResponse.json({ error: 'No fields to update' }, { status: 400 });
+    }
+    
+    values.push(id);
+    const query = `UPDATE movies SET ${updates.join(', ')} WHERE id = $${paramIndex} RETURNING *`;
+    
+    const result = await sql.query(query, values);
+    
+    return NextResponse.json({ success: true, movie: result[0] });
+  } catch (error) {
+    console.error('Error updating movie:', error);
+    return NextResponse.json({ error: 'Internal server error' }, { status: 500 });
+  }
+}

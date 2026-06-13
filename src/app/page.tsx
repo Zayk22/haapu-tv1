@@ -1,43 +1,67 @@
+import { supabase } from '@/lib/supabase';
 import AuthGate from "@/components/home/AuthGate";
 import ContinueWatchingRow from "@/components/home/ContinueWatchingRow";
 import Hero from "@/components/home/Hero";
 import MovieRow from "@/components/home/MovieRow";
-import { getContent } from "@/lib/contentData";  // ← Make sure this is correct
-import type { ContentItem } from "@/types/content";
 
-function toMovie(item: ContentItem) {
+// Helper to convert database movie to frontend format
+function toMovie(movie: any) {
   return {
-    id: Number(item.id),
-    title: item.title,
-    posterUrl: item.posterUrl,
-    backdropUrl: item.backdropUrl,
-    rating: item.rating ?? 0,
-    year: 2026,
-    duration: item.duration,
-    genres: item.genres,
-    description: item.description,
-    quality: "HD" as const,
-    type: "movie" as const,
-    slug: item.slug,
+    id: movie.id,
+    slug: movie.slug,
+    title: movie.title,
+    posterUrl: movie.poster_url,
+    backdropUrl: movie.backdrop_url,
+    rating: movie.rating,
+    year: new Date().getFullYear(),
+    duration: movie.duration,
+    genres: movie.genres,
+    description: movie.description,
+    type: 'movie' as const,
   };
 }
 
 export default async function Home() {
-  const movies = await getContent("movie");
-  const movieList = movies.map(toMovie);
-  const featuredMovies = movies.slice(0, 3);
+  // Fetch featured movies for hero (ordered by hero_order)
+  const { data: featuredMovies } = await supabase
+    .from('movies')
+    .select('*')
+    .eq('is_featured', true)
+    .order('hero_order', { ascending: true })
+    .limit(5);
+  
+  // Fetch trending movies
+  const { data: trendingMovies } = await supabase
+    .from('movies')
+    .select('*')
+    .eq('is_trending', true)
+    .limit(10);
+  
+  // Fetch recommended movies
+  const { data: recommendedMovies } = await supabase
+    .from('movies')
+    .select('*')
+    .eq('is_recommended', true)
+    .limit(10);
+  
+  // Fallback to all movies if no featured/trending/recommended are set
+  const { data: allMovies } = await supabase
+    .from('movies')
+    .select('*')
+    .limit(10);
+  
+  const heroList = featuredMovies?.length ? featuredMovies : allMovies?.slice(0, 3) || [];
+  const trendingList = trendingMovies?.length ? trendingMovies : allMovies?.slice(0, 10) || [];
+  const recommendedList = recommendedMovies?.length ? recommendedMovies : allMovies?.slice(0, 10) || [];
 
   return (
     <main>
       <AuthGate />
-      <Hero movies={featuredMovies.map(m => m ? toMovie(m) : null)} />
-
+      <Hero movies={heroList.map(toMovie)} />
       <div className="relative z-20 -mt-16">
         <ContinueWatchingRow />
-        
-        <MovieRow title="Trending Now" movies={movieList} />
-        <MovieRow title="Popular on Haapu" movies={[...movieList].reverse()} />
-        <MovieRow title="Recommended for You" movies={movieList} />
+        <MovieRow title="Trending Now" movies={trendingList.map(toMovie)} viewAllLink="/movies" />
+        <MovieRow title="Recommended for You" movies={recommendedList.map(toMovie)} viewAllLink="/movies" />
       </div>
     </main>
   );

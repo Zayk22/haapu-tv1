@@ -43,6 +43,45 @@ export default function MovieTableClient({ movies }: MovieTableClientProps) {
     }
   };
 
+  const toggleFeatured = async (id: string, value: boolean) => {
+    try {
+      await fetch(`/api/admin/movies/${id}`, {
+        method: 'PATCH',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ is_featured: value }),
+      });
+      window.location.reload();
+    } catch (err) {
+      alert('Failed to update');
+    }
+  };
+
+  const toggleTrending = async (id: string, value: boolean) => {
+    try {
+      await fetch(`/api/admin/movies/${id}`, {
+        method: 'PATCH',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ is_trending: value }),
+      });
+      window.location.reload();
+    } catch (err) {
+      alert('Failed to update');
+    }
+  };
+
+  const toggleRecommended = async (id: string, value: boolean) => {
+    try {
+      await fetch(`/api/admin/movies/${id}`, {
+        method: 'PATCH',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ is_recommended: value }),
+      });
+      window.location.reload();
+    } catch (err) {
+      alert('Failed to update');
+    }
+  };
+
   return (
     <div>
       <div className="mb-6 flex flex-col gap-4 sm:mb-8 sm:flex-row sm:items-center sm:justify-between">
@@ -82,15 +121,12 @@ export default function MovieTableClient({ movies }: MovieTableClientProps) {
                 <div className="flex-1">
                   <h3 className="font-medium text-white">{movie.title}</h3>
                   <p className="mt-0.5 text-xs text-matte-400">{movie.genres?.slice(0, 2).join(", ")}</p>
-                  <div className="mt-2 flex gap-3">
-                    {/* ✅ FIXED: Using movie.id (numeric) instead of movie.slug */}
+                  <div className="mt-2 flex flex-wrap gap-3">
                     <Link href={`/admin/movies/${movie.id}/edit`} className="text-xs text-blue-400">Edit</Link>
                     <Link href={`/movie/${movie.slug}`} target="_blank" className="text-xs text-green-400">View</Link>
-                    <button 
-                      onClick={() => handleDelete(movie.id, movie.title)}
-                      className="text-xs text-red-400"
-                    >
-                      Delete
+                    <button onClick={() => handleDelete(movie.id, movie.title)} className="text-xs text-red-400">Delete</button>
+                    <button onClick={() => toggleFeatured(movie.id, !(movie as any).is_featured)} className="text-xs text-purple-400">
+                      {(movie as any).is_featured ? '★ Featured' : '☆ Set Featured'}
                     </button>
                   </div>
                 </div>
@@ -100,13 +136,16 @@ export default function MovieTableClient({ movies }: MovieTableClientProps) {
         </div>
       ) : (
         <div className="overflow-x-auto rounded-lg border border-matte-800 bg-matte-900">
-          <table className="w-full min-w-[500px]">
+          <table className="w-full min-w-[800px]">
             <thead>
               <tr className="border-b border-matte-800 bg-matte-800/50">
                 <th className="px-4 py-3 text-left text-xs font-medium text-matte-400 sm:text-sm">Poster</th>
                 <th className="px-4 py-3 text-left text-xs font-medium text-matte-400 sm:text-sm">Title</th>
                 <th className="hidden px-4 py-3 text-left text-xs font-medium text-matte-400 sm:table-cell sm:text-sm">Genres</th>
                 <th className="hidden px-4 py-3 text-left text-xs font-medium text-matte-400 md:table-cell sm:text-sm">Duration</th>
+                <th className="px-4 py-3 text-left text-xs font-medium text-matte-400">Featured</th>
+                <th className="px-4 py-3 text-left text-xs font-medium text-matte-400">Trending</th>
+                <th className="px-4 py-3 text-left text-xs font-medium text-matte-400">Recommended</th>
                 <th className="px-4 py-3 text-left text-xs font-medium text-matte-400 sm:text-sm">Actions</th>
               </tr>
             </thead>
@@ -122,18 +161,38 @@ export default function MovieTableClient({ movies }: MovieTableClientProps) {
                   </td>
                   <td className="hidden px-4 py-3 text-xs text-matte-400 md:table-cell sm:text-sm">{movie.duration}</td>
                   <td className="px-4 py-3">
+                    <button
+                      onClick={() => toggleFeatured(movie.id, !(movie as any).is_featured)}
+                      className={`px-2 py-1 rounded text-xs ${(movie as any).is_featured ? 'bg-crimson-DEFAULT text-white' : 'bg-matte-800 text-matte-400'}`}
+                    >
+                      {(movie as any).is_featured ? 'Yes' : 'No'}
+                    </button>
+                  </td>
+                  <td className="px-4 py-3">
+                    <button
+                      onClick={() => toggleTrending(movie.id, !(movie as any).is_trending)}
+                      className={`px-2 py-1 rounded text-xs ${(movie as any).is_trending ? 'bg-crimson-DEFAULT text-white' : 'bg-matte-800 text-matte-400'}`}
+                    >
+                      {(movie as any).is_trending ? 'Yes' : 'No'}
+                    </button>
+                  </td>
+                  <td className="px-4 py-3">
+                    <button
+                      onClick={() => toggleRecommended(movie.id, !(movie as any).is_recommended)}
+                      className={`px-2 py-1 rounded text-xs ${(movie as any).is_recommended ? 'bg-crimson-DEFAULT text-white' : 'bg-matte-800 text-matte-400'}`}
+                    >
+                      {(movie as any).is_recommended ? 'Yes' : 'No'}
+                    </button>
+                  </td>
+                  <td className="px-4 py-3">
                     <div className="flex items-center gap-2">
-                      {/* ✅ FIXED: Using movie.id (numeric) instead of movie.slug */}
                       <Link href={`/admin/movies/${movie.id}/edit`} className="rounded p-1 text-matte-400 hover:text-blue-400">
                         <Edit size={16} />
                       </Link>
                       <Link href={`/movie/${movie.slug}`} target="_blank" className="rounded p-1 text-matte-400 hover:text-green-400">
                         <Eye size={16} />
                       </Link>
-                      <button 
-                        onClick={() => handleDelete(movie.id, movie.title)}
-                        className="rounded p-1 text-matte-400 hover:text-red-400"
-                      >
+                      <button onClick={() => handleDelete(movie.id, movie.title)} className="rounded p-1 text-matte-400 hover:text-red-400">
                         <Trash2 size={16} />
                       </button>
                     </div>
