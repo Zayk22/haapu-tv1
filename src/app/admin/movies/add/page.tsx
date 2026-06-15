@@ -4,6 +4,7 @@ import { useState } from "react";
 import { useRouter } from "next/navigation";
 import Link from "next/link";
 import { ArrowLeft } from "lucide-react";
+import ImageUpload from "@/components/admin/ImageUpload";
 
 export default function AddMoviePage() {
   const router = useRouter();
@@ -56,7 +57,10 @@ export default function AddMoviePage() {
   return (
     <div>
       <div className="mb-8 flex items-center gap-4">
-        <Link href="/admin/movies" className="rounded-lg p-2 text-matte-400 hover:bg-matte-800 hover:text-white">
+        <Link
+          href="/admin/movies"
+          className="rounded-lg p-2 text-matte-400 transition-colors hover:bg-matte-800 hover:text-white"
+        >
           <ArrowLeft size={20} />
         </Link>
         <div>
@@ -94,7 +98,11 @@ export default function AddMoviePage() {
               onChange={(e) => setFormData({ ...formData, slug: e.target.value })}
               className="flex-1 rounded-lg border border-matte-800 bg-matte-900 px-4 py-2 text-white focus:border-crimson-DEFAULT focus:outline-none"
             />
-            <button type="button" onClick={generateSlug} className="rounded-lg bg-matte-800 px-4 py-2 text-sm text-matte-300 hover:bg-matte-700">
+            <button
+              type="button"
+              onClick={generateSlug}
+              className="rounded-lg bg-matte-800 px-4 py-2 text-sm text-matte-300 hover:bg-matte-700"
+            >
               Generate
             </button>
           </div>
@@ -111,16 +119,19 @@ export default function AddMoviePage() {
           />
         </div>
 
-        <div>
-          <label className="mb-1 block text-sm font-medium text-matte-300">Poster URL</label>
-          <input
-            type="url"
-            value={formData.posterUrl}
-            onChange={(e) => setFormData({ ...formData, posterUrl: e.target.value })}
-            placeholder="/images/movie-name.jpg"
-            className="w-full rounded-lg border border-matte-800 bg-matte-900 px-4 py-2 text-white focus:border-crimson-DEFAULT focus:outline-none"
-          />
-        </div>
+        {/* Image Upload Component */}
+        <ImageUpload
+          label="Movie Poster"
+          onImageUploaded={(url) => setFormData(prev => ({ ...prev, posterUrl: url }))}
+          currentImage={formData.posterUrl}
+        />
+
+        {/* Backdrop Upload (Optional) */}
+        <ImageUpload
+          label="Backdrop Image (Optional)"
+          onImageUploaded={(url) => setFormData(prev => ({ ...prev, backdropUrl: url }))}
+          currentImage={formData.backdropUrl}
+        />
 
         <div>
           <label className="mb-1 block text-sm font-medium text-matte-300">Video Embed URL *</label>
@@ -178,7 +189,10 @@ export default function AddMoviePage() {
           >
             {isSubmitting ? "Saving..." : "Save Movie"}
           </button>
-          <Link href="/admin/movies" className="rounded-lg border border-matte-700 px-6 py-2 text-matte-300 hover:bg-matte-800">
+          <Link
+            href="/admin/movies"
+            className="rounded-lg border border-matte-700 px-6 py-2 text-matte-300 transition-colors hover:bg-matte-800"
+          >
             Cancel
           </Link>
         </div>
