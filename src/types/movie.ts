@@ -16,6 +16,7 @@ export interface Movie {
   quality?: "4K UHD" | "HD" | "SD";
   type: "movie" | "tv" | "anime";
   slug?: string;          // URL slug for navigation
+  hero_order?: number;    // Order in hero carousel
 }
 
 // Represents a collection/row of movies
@@ -30,4 +31,5 @@ export interface MovieRowProps {
   title: string;
   movies: Movie[];
   isLoading?: boolean;
+  viewAllLink?: string;   // ← ADD THIS
 }

@@ -55,7 +55,10 @@ export default function MovieCard({ movie, index = 0, slug }: MovieCardProps) {
           alt={movie.title}
           className="h-full w-full object-cover transition-opacity duration-500"
           onLoad={() => setImageLoaded(true)}
-          onError={() => setImageLoaded(true)}
+          onError={(e) => {
+            e.currentTarget.src = 'https://placehold.co/300x450/1a1a1a/808080?text=No+Image';
+            setImageLoaded(true);
+          }}
           style={{ opacity: imageLoaded ? 1 : 0 }}
           loading="lazy"
           decoding="async"

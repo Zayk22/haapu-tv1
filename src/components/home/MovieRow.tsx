@@ -1,11 +1,12 @@
 "use client";
 
 import { useRef, useState, useEffect, useCallback } from "react";
+import Link from "next/link";
 import { ChevronLeft, ChevronRight } from "lucide-react";
 import MovieCard from "@/components/movie/MovieCard";
 import type { MovieRowProps } from "@/types/movie";
 
-export default function MovieRow({ title, movies, isLoading = false }: MovieRowProps) {
+export default function MovieRow({ title, movies, isLoading = false, viewAllLink }: MovieRowProps) {
   const scrollContainerRef = useRef<HTMLDivElement>(null);
   const [canScrollLeft, setCanScrollLeft] = useState(false);
   const [canScrollRight, setCanScrollRight] = useState(true);
@@ -70,9 +71,14 @@ export default function MovieRow({ title, movies, isLoading = false }: MovieRowP
           <h2 className="font-display text-heading-3 sm:text-heading-2 lg:text-heading-3 font-semibold text-white">
             {title}
           </h2>
-          <button className="text-caption font-medium text-matte-500 transition-colors duration-300 hover:text-crimson-DEFAULT">
-            View All
-          </button>
+          {viewAllLink && (
+            <Link 
+              href={viewAllLink}
+              className="text-caption font-medium text-matte-500 transition-colors duration-300 hover:text-crimson-DEFAULT"
+            >
+              View All
+            </Link>
+          )}
         </div>
 
         <div className="relative group/row">
