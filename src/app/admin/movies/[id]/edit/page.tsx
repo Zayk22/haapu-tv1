@@ -4,6 +4,7 @@ import { useState, useEffect } from "react";
 import { useRouter, useParams } from "next/navigation";
 import Link from "next/link";
 import { ArrowLeft } from "lucide-react";
+import ImageUpload from "@/components/admin/ImageUpload";
 
 export default function EditMoviePage() {
   const router = useRouter();
@@ -25,6 +26,7 @@ export default function EditMoviePage() {
     rating: "0",
   });
 
+  // Fetch movie data on load
   useEffect(() => {
     async function fetchMovie() {
       try {
@@ -162,16 +164,19 @@ export default function EditMoviePage() {
           />
         </div>
 
-        <div>
-          <label className="mb-1 block text-sm font-medium text-matte-300">Poster URL</label>
-          <input
-            type="url"
-            value={formData.posterUrl}
-            onChange={(e) => setFormData({ ...formData, posterUrl: e.target.value })}
-            placeholder="/images/movie-name.jpg"
-            className="w-full rounded-lg border border-matte-800 bg-matte-900 px-4 py-2 text-white focus:border-crimson-DEFAULT focus:outline-none"
-          />
-        </div>
+        {/* Image Upload for Poster */}
+        <ImageUpload
+          label="Movie Poster"
+          onImageUploaded={(url) => setFormData(prev => ({ ...prev, posterUrl: url }))}
+          currentImage={formData.posterUrl}
+        />
+
+        {/* Image Upload for Backdrop */}
+        <ImageUpload
+          label="Backdrop Image (Optional)"
+          onImageUploaded={(url) => setFormData(prev => ({ ...prev, backdropUrl: url }))}
+          currentImage={formData.backdropUrl}
+        />
 
         <div>
           <label className="mb-1 block text-sm font-medium text-matte-300">Video Embed URL *</label>
