@@ -1,10 +1,12 @@
-import { supabase } from '@/lib/supabase';
+import { sql } from "@/lib/db";
 import AuthGate from "@/components/home/AuthGate";
 import ContinueWatchingRow from "@/components/home/ContinueWatchingRow";
 import Hero from "@/components/home/Hero";
 import MovieRow from "@/components/home/MovieRow";
 
-// Helper to convert database movie to frontend format
+export const dynamic = 'force-dynamic';
+export const revalidate = 0;
+
 function toMovie(movie: any) {
   return {
     id: movie.id,
@@ -17,51 +19,50 @@ function toMovie(movie: any) {
     duration: movie.duration,
     genres: movie.genres,
     description: movie.description,
-    type: 'movie' as const,
+    quality: "HD" as const,
+    type: "movie" as const,
   };
 }
 
 export default async function Home() {
-  // Fetch featured movies for hero (ordered by hero_order)
-  const { data: featuredMovies } = await supabase
-    .from('movies')
-    .select('*')
-    .eq('is_featured', true)
-    .order('hero_order', { ascending: true })
-    .limit(5);
+  // Get ALL movies
+  const allMovies = await sql`SELECT * FROM movies ORDER BY id`;
   
-  // Fetch trending movies
-  const { data: trendingMovies } = await supabase
-    .from('movies')
-    .select('*')
-    .eq('is_trending', true)
-    .limit(10);
+  // Get ALL featured movies (NO LIMIT!)
+  const featuredMovies = await sql`
+    SELECT * FROM movies 
+    WHERE is_featured = true 
+    ORDER BY hero_order ASC
+  `;
   
-  // Fetch recommended movies
-  const { data: recommendedMovies } = await supabase
-    .from('movies')
-    .select('*')
-    .eq('is_recommended', true)
-    .limit(10);
+  // Get trending movies
+  const trendingMovies = await sql`
+    SELECT * FROM movies 
+    WHERE is_trending = true
+  `;
   
-  // Fallback to all movies if no featured/trending/recommended are set
-  const { data: allMovies } = await supabase
-    .from('movies')
-    .select('*')
-    .limit(10);
-  
-  const heroList = featuredMovies?.length ? featuredMovies : allMovies?.slice(0, 3) || [];
-  const trendingList = trendingMovies?.length ? trendingMovies : allMovies?.slice(0, 10) || [];
-  const recommendedList = recommendedMovies?.length ? recommendedMovies : allMovies?.slice(0, 10) || [];
+  // Get recommended movies
+  const recommendedMovies = await sql`
+    SELECT * FROM movies 
+    WHERE is_recommended = true
+  `;
+
+  // DEBUG LOGS - NOW INSIDE THE COMPONENT
+  console.log("=== HOMEPAGE DEBUG ===");
+  console.log("Featured movies count:", featuredMovies.length);
+  console.log("Featured movies:", featuredMovies.map(m => ({ id: m.id, title: m.title, is_featured: m.is_featured })));
 
   return (
     <main>
       <AuthGate />
-      <Hero movies={heroList.map(toMovie)} />
+      <Hero movies={featuredMovies.map(toMovie)} />
+
       <div className="relative z-20 -mt-16">
         <ContinueWatchingRow />
-        <MovieRow title="Trending Now" movies={trendingList.map(toMovie)} viewAllLink="/movies" />
-        <MovieRow title="Recommended for You" movies={recommendedList.map(toMovie)} viewAllLink="/movies" />
+        
+        <MovieRow title="Trending Now" movies={trendingMovies.map(toMovie)} viewAllLink="/movies" />
+        <MovieRow title="Popular on Haapu" movies={allMovies.map(toMovie)} viewAllLink="/movies" />
+        <MovieRow title="Recommended for You" movies={recommendedMovies.map(toMovie)} viewAllLink="/movies" />
       </div>
     </main>
   );

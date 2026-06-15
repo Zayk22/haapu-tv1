@@ -19,6 +19,7 @@ export default function AdminLayout({
 }: {
   children: React.ReactNode;
 }) {
+  // ALL hooks must be called BEFORE any conditional returns
   const { userId, isLoaded } = useAuth();
   const router = useRouter();
   const pathname = usePathname();
@@ -42,11 +43,13 @@ export default function AdminLayout({
     return () => window.removeEventListener('resize', checkScreenSize);
   }, []);
 
-  if (isLoaded && !userId) {
-    router.push('/sign-in?redirect_url=/admin');
-    return null;
-  }
+  useEffect(() => {
+    if (isLoaded && !userId) {
+      router.push('/sign-in?redirect_url=/admin');
+    }
+  }, [isLoaded, userId, router]);
 
+  // NOW we can do conditional returns AFTER all hooks
   if (!isLoaded) {
     return (
       <div className="flex h-screen items-center justify-center bg-matte-950">
@@ -55,9 +58,13 @@ export default function AdminLayout({
     );
   }
 
+  if (!userId) {
+    return null;
+  }
+
   const isActive = (href: string) => {
     if (href === "/admin" && pathname === "/admin") return true;
-    if (href !== "/admin" && pathname.startsWith(href)) return true;
+    if (href !== "/admin" && pathname?.startsWith(href)) return true;
     return false;
   };
 

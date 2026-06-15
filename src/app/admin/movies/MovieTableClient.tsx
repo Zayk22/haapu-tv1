@@ -3,15 +3,12 @@
 import { useState, useEffect } from "react";
 import Link from "next/link";
 import { Edit, Trash2, Eye, Search, Plus } from "lucide-react";
-import type { ContentItem } from "@/types/content";
 
-interface MovieTableClientProps {
-  movies: ContentItem[];
-}
-
-export default function MovieTableClient({ movies }: MovieTableClientProps) {
+export default function MovieTableClient({ movies }: { movies: any[] }) {
   const [searchTerm, setSearchTerm] = useState("");
   const [isMobile, setIsMobile] = useState(false);
+  const [movieList, setMovieList] = useState(movies);
+  const [updating, setUpdating] = useState<Record<string, boolean>>({});
   
   useEffect(() => {
     const checkMobile = () => setIsMobile(window.innerWidth < 640);
@@ -20,7 +17,7 @@ export default function MovieTableClient({ movies }: MovieTableClientProps) {
     return () => window.removeEventListener('resize', checkMobile);
   }, []);
   
-  const filteredMovies = movies.filter((movie) =>
+  const filteredMovies = movieList.filter((movie) =>
     movie.title.toLowerCase().includes(searchTerm.toLowerCase())
   );
 
@@ -32,55 +29,74 @@ export default function MovieTableClient({ movies }: MovieTableClientProps) {
         method: 'DELETE',
       });
       
-      if (!response.ok) {
-        const data = await response.json();
-        throw new Error(data.error || 'Failed to delete');
+      if (response.ok) {
+        setMovieList(movieList.filter(m => m.id !== id));
+      } else {
+        alert('Failed to delete');
       }
+    } catch (err) {
+      alert('Failed to delete');
+    }
+  };
+
+  const updateFlag = async (id: string, field: string, currentValue: boolean) => {
+    const newValue = !currentValue;
+    const key = `${id}-${field}`;
+    
+    console.log(`🔄 Updating ${field} for movie ${id} from ${currentValue} to ${newValue}`);
+    
+    setUpdating(prev => ({ ...prev, [key]: true }));
+    
+    try {
+      const response = await fetch(`/api/admin/movies/${id}`, {
+        method: 'PATCH',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ [field]: newValue }),
+      });
       
-      window.location.reload();
+      const data = await response.json();
+      
+      console.log(`📡 Response status: ${response.status}`);
+      console.log(`📡 Response data:`, data);
+      
+      if (response.ok) {
+        setMovieList(prev => prev.map(movie => 
+          movie.id === id ? { ...movie, [field]: newValue } : movie
+        ));
+        console.log(`✅ Successfully updated ${field} to ${newValue} for movie ${id}`);
+      } else {
+        console.error(`❌ Update failed:`, data.error);
+        alert(data.error || 'Failed to update');
+      }
     } catch (err) {
-      alert(err instanceof Error ? err.message : 'Something went wrong');
+      console.error(`❌ Network error:`, err);
+      alert('Network error - check console');
+    } finally {
+      setUpdating(prev => ({ ...prev, [key]: false }));
     }
   };
 
-  const toggleFeatured = async (id: string, value: boolean) => {
+  const updateHeroOrder = async (id: string, order: number) => {
+    if (isNaN(order)) return;
+    
     try {
-      await fetch(`/api/admin/movies/${id}`, {
+      const response = await fetch(`/api/admin/movies/${id}`, {
         method: 'PATCH',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ is_featured: value }),
+        body: JSON.stringify({ hero_order: order }),
       });
-      window.location.reload();
+      
+      if (response.ok) {
+        setMovieList(prev => prev.map(movie => 
+          movie.id === id ? { ...movie, hero_order: order } : movie
+        ));
+      }
     } catch (err) {
-      alert('Failed to update');
+      console.error('Failed to update hero order');
     }
   };
 
-  const toggleTrending = async (id: string, value: boolean) => {
-    try {
-      await fetch(`/api/admin/movies/${id}`, {
-        method: 'PATCH',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ is_trending: value }),
-      });
-      window.location.reload();
-    } catch (err) {
-      alert('Failed to update');
-    }
-  };
-
-  const toggleRecommended = async (id: string, value: boolean) => {
-    try {
-      await fetch(`/api/admin/movies/${id}`, {
-        method: 'PATCH',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ is_recommended: value }),
-      });
-      window.location.reload();
-    } catch (err) {
-      alert('Failed to update');
-    }
-  };
+  const featuredCount = movieList.filter(m => m.is_featured).length;
 
   return (
     <div>
@@ -98,6 +114,11 @@ export default function MovieTableClient({ movies }: MovieTableClientProps) {
         </Link>
       </div>
 
+      {/* Featured count info - MOVED INSIDE THE RETURN */}
+      <div className="mb-4 text-sm text-matte-400">
+        Featured movies: {featuredCount} total (all will show in hero carousel)
+      </div>
+
       <div className="mb-6">
         <div className="relative max-w-md">
           <Search className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-matte-500" />
@@ -111,7 +132,6 @@ export default function MovieTableClient({ movies }: MovieTableClientProps) {
         </div>
       </div>
 
-      {/* Mobile Card View */}
       {isMobile ? (
         <div className="space-y-3">
           {filteredMovies.map((movie) => (
@@ -121,13 +141,16 @@ export default function MovieTableClient({ movies }: MovieTableClientProps) {
                 <div className="flex-1">
                   <h3 className="font-medium text-white">{movie.title}</h3>
                   <p className="mt-0.5 text-xs text-matte-400">{movie.genres?.slice(0, 2).join(", ")}</p>
-                  <div className="mt-2 flex flex-wrap gap-3">
-                    <Link href={`/admin/movies/${movie.id}/edit`} className="text-xs text-blue-400">Edit</Link>
-                    <Link href={`/movie/${movie.slug}`} target="_blank" className="text-xs text-green-400">View</Link>
-                    <button onClick={() => handleDelete(movie.id, movie.title)} className="text-xs text-red-400">Delete</button>
-                    <button onClick={() => toggleFeatured(movie.id, !(movie as any).is_featured)} className="text-xs text-purple-400">
-                      {(movie as any).is_featured ? '★ Featured' : '☆ Set Featured'}
+                  <div className="mt-2 flex flex-wrap gap-2">
+                    <button 
+                      onClick={() => updateFlag(movie.id, 'is_featured', movie.is_featured || false)}
+                      disabled={updating[`${movie.id}-is_featured`]}
+                      className={`px-2 py-1 rounded text-xs ${movie.is_featured ? 'bg-crimson-DEFAULT text-white' : 'bg-matte-800 text-matte-400'}`}
+                    >
+                      {updating[`${movie.id}-is_featured`] ? '...' : (movie.is_featured ? '★ Featured' : '☆ Set Featured')}
                     </button>
+                    <Link href={`/admin/movies/${movie.id}/edit`} className="text-xs text-blue-400">Edit</Link>
+                    <button onClick={() => handleDelete(movie.id, movie.title)} className="text-xs text-red-400">Delete</button>
                   </div>
                 </div>
               </div>
@@ -136,17 +159,18 @@ export default function MovieTableClient({ movies }: MovieTableClientProps) {
         </div>
       ) : (
         <div className="overflow-x-auto rounded-lg border border-matte-800 bg-matte-900">
-          <table className="w-full min-w-[800px]">
+          <table className="w-full min-w-[900px]">
             <thead>
               <tr className="border-b border-matte-800 bg-matte-800/50">
-                <th className="px-4 py-3 text-left text-xs font-medium text-matte-400 sm:text-sm">Poster</th>
-                <th className="px-4 py-3 text-left text-xs font-medium text-matte-400 sm:text-sm">Title</th>
-                <th className="hidden px-4 py-3 text-left text-xs font-medium text-matte-400 sm:table-cell sm:text-sm">Genres</th>
-                <th className="hidden px-4 py-3 text-left text-xs font-medium text-matte-400 md:table-cell sm:text-sm">Duration</th>
+                <th className="px-4 py-3 text-left text-xs font-medium text-matte-400">Poster</th>
+                <th className="px-4 py-3 text-left text-xs font-medium text-matte-400">Title</th>
+                <th className="hidden px-4 py-3 text-left text-xs font-medium text-matte-400 sm:table-cell">Genres</th>
+                <th className="hidden px-4 py-3 text-left text-xs font-medium text-matte-400 md:table-cell">Duration</th>
                 <th className="px-4 py-3 text-left text-xs font-medium text-matte-400">Featured</th>
                 <th className="px-4 py-3 text-left text-xs font-medium text-matte-400">Trending</th>
                 <th className="px-4 py-3 text-left text-xs font-medium text-matte-400">Recommended</th>
-                <th className="px-4 py-3 text-left text-xs font-medium text-matte-400 sm:text-sm">Actions</th>
+                <th className="px-4 py-3 text-left text-xs font-medium text-matte-400">Hero Order</th>
+                <th className="px-4 py-3 text-left text-xs font-medium text-matte-400">Actions</th>
               </tr>
             </thead>
             <tbody>
@@ -155,34 +179,48 @@ export default function MovieTableClient({ movies }: MovieTableClientProps) {
                   <td className="px-4 py-3">
                     <img src={movie.posterUrl} alt={movie.title} className="h-12 w-8 rounded object-cover" />
                   </td>
-                  <td className="px-4 py-3 text-sm font-medium text-white sm:text-base">{movie.title}</td>
-                  <td className="hidden px-4 py-3 text-xs text-matte-400 sm:table-cell sm:text-sm">
+                  <td className="px-4 py-3 text-sm font-medium text-white">{movie.title}</td>
+                  <td className="hidden px-4 py-3 text-xs text-matte-400 sm:table-cell">
                     {movie.genres?.slice(0, 2).join(", ")}
                   </td>
-                  <td className="hidden px-4 py-3 text-xs text-matte-400 md:table-cell sm:text-sm">{movie.duration}</td>
+                  <td className="hidden px-4 py-3 text-xs text-matte-400 md:table-cell">{movie.duration}</td>
                   <td className="px-4 py-3">
                     <button
-                      onClick={() => toggleFeatured(movie.id, !(movie as any).is_featured)}
-                      className={`px-2 py-1 rounded text-xs ${(movie as any).is_featured ? 'bg-crimson-DEFAULT text-white' : 'bg-matte-800 text-matte-400'}`}
+                      onClick={() => updateFlag(movie.id, 'is_featured', movie.is_featured || false)}
+                      disabled={updating[`${movie.id}-is_featured`]}
+                      className={`px-2 py-1 rounded text-xs cursor-pointer transition-colors ${movie.is_featured ? 'bg-crimson-DEFAULT text-white' : 'bg-matte-800 text-matte-400 hover:bg-matte-700'}`}
                     >
-                      {(movie as any).is_featured ? 'Yes' : 'No'}
+                      {updating[`${movie.id}-is_featured`] ? '...' : (movie.is_featured ? 'Yes' : 'No')}
                     </button>
                   </td>
                   <td className="px-4 py-3">
                     <button
-                      onClick={() => toggleTrending(movie.id, !(movie as any).is_trending)}
-                      className={`px-2 py-1 rounded text-xs ${(movie as any).is_trending ? 'bg-crimson-DEFAULT text-white' : 'bg-matte-800 text-matte-400'}`}
+                      onClick={() => updateFlag(movie.id, 'is_trending', movie.is_trending || false)}
+                      disabled={updating[`${movie.id}-is_trending`]}
+                      className={`px-2 py-1 rounded text-xs cursor-pointer transition-colors ${movie.is_trending ? 'bg-crimson-DEFAULT text-white' : 'bg-matte-800 text-matte-400 hover:bg-matte-700'}`}
                     >
-                      {(movie as any).is_trending ? 'Yes' : 'No'}
+                      {updating[`${movie.id}-is_trending`] ? '...' : (movie.is_trending ? 'Yes' : 'No')}
                     </button>
                   </td>
                   <td className="px-4 py-3">
                     <button
-                      onClick={() => toggleRecommended(movie.id, !(movie as any).is_recommended)}
-                      className={`px-2 py-1 rounded text-xs ${(movie as any).is_recommended ? 'bg-crimson-DEFAULT text-white' : 'bg-matte-800 text-matte-400'}`}
+                      onClick={() => updateFlag(movie.id, 'is_recommended', movie.is_recommended || false)}
+                      disabled={updating[`${movie.id}-is_recommended`]}
+                      className={`px-2 py-1 rounded text-xs cursor-pointer transition-colors ${movie.is_recommended ? 'bg-crimson-DEFAULT text-white' : 'bg-matte-800 text-matte-400 hover:bg-matte-700'}`}
                     >
-                      {(movie as any).is_recommended ? 'Yes' : 'No'}
+                      {updating[`${movie.id}-is_recommended`] ? '...' : (movie.is_recommended ? 'Yes' : 'No')}
                     </button>
+                  </td>
+                  <td className="px-4 py-3">
+                    <input
+                      type="number"
+                      min="1"
+                      max="10"
+                      value={movie.hero_order || ''}
+                      onChange={(e) => updateHeroOrder(movie.id, parseInt(e.target.value))}
+                      className="w-16 rounded border border-matte-800 bg-matte-900 px-2 py-1 text-sm text-white"
+                      placeholder="—"
+                    />
                   </td>
                   <td className="px-4 py-3">
                     <div className="flex items-center gap-2">

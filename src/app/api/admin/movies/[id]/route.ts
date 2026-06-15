@@ -4,7 +4,6 @@ import { auth } from '@clerk/nextjs/server';
 
 // Helper to find movie by either ID or slug
 async function findMovie(identifier: string) {
-  // Check if identifier is numeric (ID)
   const isNumeric = /^\d+$/.test(identifier);
   
   if (isNumeric) {
@@ -74,7 +73,6 @@ export async function PUT(
     
     const genresArray = genres ? genres.split(',').map((g: string) => g.trim()) : [];
     
-    // First find the movie to get its ID
     const existingMovie = await findMovie(params.id);
     if (existingMovie.length === 0) {
       return NextResponse.json({ error: 'Movie not found' }, { status: 404 });
@@ -137,6 +135,7 @@ export async function DELETE(
     return NextResponse.json({ error: 'Internal server error' }, { status: 500 });
   }
 }
+
 export async function PATCH(
   request: NextRequest,
   { params }: { params: { id: string } }
@@ -156,38 +155,31 @@ export async function PATCH(
     const id = parseInt(params.id);
     const body = await request.json();
     
-    // Build dynamic update query based on what fields are provided
-    const updates = [];
-    const values = [];
-    let paramIndex = 1;
+    console.log("Received PATCH request for movie:", id);
+    console.log("Request body:", body);
     
     if (body.is_featured !== undefined) {
-      updates.push(`is_featured = $${paramIndex++}`);
-      values.push(body.is_featured);
+      await sql`UPDATE movies SET is_featured = ${body.is_featured} WHERE id = ${id}`;
+      console.log(`Updated is_featured to ${body.is_featured} for movie ${id}`);
     }
+    
     if (body.is_trending !== undefined) {
-      updates.push(`is_trending = $${paramIndex++}`);
-      values.push(body.is_trending);
+      await sql`UPDATE movies SET is_trending = ${body.is_trending} WHERE id = ${id}`;
+      console.log(`Updated is_trending to ${body.is_trending} for movie ${id}`);
     }
+    
     if (body.is_recommended !== undefined) {
-      updates.push(`is_recommended = $${paramIndex++}`);
-      values.push(body.is_recommended);
+      await sql`UPDATE movies SET is_recommended = ${body.is_recommended} WHERE id = ${id}`;
+      console.log(`Updated is_recommended to ${body.is_recommended} for movie ${id}`);
     }
+    
     if (body.hero_order !== undefined) {
-      updates.push(`hero_order = $${paramIndex++}`);
-      values.push(body.hero_order);
+      await sql`UPDATE movies SET hero_order = ${body.hero_order} WHERE id = ${id}`;
     }
     
-    if (updates.length === 0) {
-      return NextResponse.json({ error: 'No fields to update' }, { status: 400 });
-    }
+    const updatedMovie = await sql`SELECT * FROM movies WHERE id = ${id}`;
     
-    values.push(id);
-    const query = `UPDATE movies SET ${updates.join(', ')} WHERE id = $${paramIndex} RETURNING *`;
-    
-    const result = await sql.query(query, values);
-    
-    return NextResponse.json({ success: true, movie: result[0] });
+    return NextResponse.json({ success: true, movie: updatedMovie[0] });
   } catch (error) {
     console.error('Error updating movie:', error);
     return NextResponse.json({ error: 'Internal server error' }, { status: 500 });
