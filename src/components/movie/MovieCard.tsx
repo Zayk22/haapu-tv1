@@ -5,19 +5,29 @@ import { useRouter } from "next/navigation";
 import { motion } from "framer-motion";
 import { Star, Play } from "lucide-react";
 import type { Movie } from "@/types/movie";
-import { useContinueWatching } from "@/hooks/useContinueWatching";
 
 interface MovieCardProps {
   movie: Movie;
   index?: number;
-  slug?: string; // optional slug for content items
+  slug?: string;
 }
 
 export default function MovieCard({ movie, index = 0, slug }: MovieCardProps) {
   const [isHovered, setIsHovered] = useState(false);
   const [imageLoaded, setImageLoaded] = useState(false);
   const router = useRouter();
-  const { addItem } = useContinueWatching();
+
+  const handleClick = () => {
+    if (slug) {
+      router.push(`/movie/${slug}`);
+    } else if (movie.slug) {
+      router.push(`/movie/${movie.slug}`);
+    } else if (movie.type === "anime") {
+      router.push(`/anime/${movie.id}`);
+    } else {
+      router.push(`/movie/${movie.id}`);
+    }
+  };
 
   return (
     <motion.div
@@ -27,26 +37,7 @@ export default function MovieCard({ movie, index = 0, slug }: MovieCardProps) {
       transition={{ duration: 0.5, delay: index * 0.05, ease: "easeOut" }}
       onMouseEnter={() => setIsHovered(true)}
       onMouseLeave={() => setIsHovered(false)}
-      onClick={() => {
-        addItem({
-          movieId: movie.id,
-          title: movie.title,
-          posterUrl: movie.posterUrl,
-          year: movie.year,
-          rating: movie.rating,
-          type: movie.type,
-        });
-        if (slug) {
-          // Use slug with /movie/ route
-          router.push(`/movie/${slug}`);
-        } else if (movie.slug) {
-          router.push(`/movie/${movie.slug}`);
-        } else if (movie.type === "anime") {
-          router.push(`/anime/${movie.id}`);
-        } else {
-          router.push(`/movie/${movie.id}`);
-        }
-      }}
+      onClick={handleClick}
     >
       <div className="relative aspect-[2/3] overflow-hidden rounded-lg bg-matte-800">
         {!imageLoaded && <div className="absolute inset-0 z-10 animate-pulse bg-matte-800" />}
@@ -101,7 +92,6 @@ export default function MovieCard({ movie, index = 0, slug }: MovieCardProps) {
           </span>
         </div>
       </motion.div>
-      {/* Hover glow effect */}
       <motion.div
         className="pointer-events-none absolute inset-0 rounded-lg ring-1 ring-white/0 transition-all duration-300 group-hover:ring-white/10 group-hover:shadow-glow-md"
         animate={{ scale: isHovered ? 1.05 : 1, zIndex: isHovered ? 10 : 0 }}

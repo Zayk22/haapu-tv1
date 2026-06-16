@@ -4,26 +4,39 @@ import { useEffect, useState } from "react";
 import { useParams, useSearchParams } from "next/navigation";
 import { useRouter } from "next/navigation";
 import { ArrowLeft } from "lucide-react";
+import { useContinueWatching } from "@/hooks/useContinueWatching";
 import type { ContentItem } from "@/types/content";
 
 export default function WatchTitlePage() {
   const { slug } = useParams<{ slug: string }>();
   const searchParams = useSearchParams();
   const router = useRouter();
+  const { addItem } = useContinueWatching();
   const [content, setContent] = useState<ContentItem | null>(null);
   const [loading, setLoading] = useState(true);
 
+  // Fetch content by slug
   useEffect(() => {
-    // Fetch content by slug (this would normally be a server component,
-    // but for the watch page we need client-side due to dynamic embed)
     fetch(`/api/content?slug=${slug}`)
       .then((res) => res.json())
       .then((data) => {
         setContent(data);
         setLoading(false);
+        // Add to continue watching when content loads
+        if (data && data.id) {
+          addItem({
+            movieId: data.id.toString(),
+            title: data.title,
+            posterUrl: data.posterUrl,
+            year: new Date().getFullYear(),
+            rating: data.rating || 0,
+            type: data.type || "movie",
+            slug: data.slug,
+          });
+        }
       })
       .catch(() => setLoading(false));
-  }, [slug]);
+  }, [slug, addItem]);
 
   const episodeSlug = searchParams.get("episode");
   let embedUrl = content?.videoEmbedUrl;
