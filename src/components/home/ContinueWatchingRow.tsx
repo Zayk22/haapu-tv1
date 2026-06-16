@@ -1,70 +1,162 @@
 "use client";
 
-import { useContinueWatching } from "@/hooks/useContinueWatching";
-import MovieCard from "@/components/movie/MovieCard";
-import { Play } from "lucide-react";
+import { useState, useEffect, useCallback } from "react";
 
-export default function ContinueWatchingRow() {
-  const { items, loading } = useContinueWatching();
+interface WatchItem {
+  movieId: string;
+  movieSlug: string;
+  movieTitle: string;
+  posterUrl: string;
+  progress: number;
+  duration?: string;
+  lastWatched: string;
+}
 
-  // Only show movies that have progress > 0
-  const watchedMovies = items.filter(item => item.progress > 0);
+export function useContinueWatching() {
+  const [items, setItems] = useState<WatchItem[]>([]);
+  const [loading, setLoading] = useState(true);
 
-  if (loading) {
-    return (
-      <section className="py-6">
-        <div className="mx-auto max-w-screen-2xl px-4 sm:px-6 lg:px-12">
-          <div className="mb-4 h-8 w-48 animate-pulse rounded bg-matte-800" />
-          <div className="flex gap-4">
-            {[1, 2, 3, 4].map((i) => (
-              <div key={i} className="w-[160px] flex-shrink-0 animate-pulse rounded-lg bg-matte-800 aspect-[2/3]" />
-            ))}
-          </div>
-        </div>
-      </section>
-    );
-  }
+  // Load watch history from database
+  const loadHistory = useCallback(async () => {
+    setLoading(true);
+    
+    try {
+      const response = await fetch('/api/watch-history');
+      if (response.ok) {
+        const data = await response.json();
+        setItems(data.history || []);
+        setLoading(false);
+        return;
+      }
+    } catch (error) {
+      console.error('Failed to fetch watch history:', error);
+    }
+    
+    // Fallback to localStorage
+    const stored = localStorage.getItem('continueWatching');
+    if (stored) {
+      try {
+        setItems(JSON.parse(stored));
+      } catch {
+        setItems([]);
+      }
+    } else {
+      setItems([]);
+    }
+    setLoading(false);
+  }, []);
 
-  if (watchedMovies.length === 0) {
-    return null;
-  }
+  // Save item to watch history
+  const addItem = useCallback(async (movie: {
+    movieId: string;
+    title: string;
+    posterUrl: string;
+    year: number;
+    rating: number;
+    type: string;
+    slug?: string;
+  }) => {
+    const newItem: WatchItem = {
+      movieId: movie.movieId,
+      movieSlug: movie.slug || movie.movieId,
+      movieTitle: movie.title,
+      posterUrl: movie.posterUrl,
+      progress: 0,
+      lastWatched: new Date().toISOString(),
+    };
 
-  // Convert to Movie format for MovieCard
-  const movies = watchedMovies.map(item => ({
-    id: parseInt(item.movieId) || 0,
-    title: item.movieTitle,
-    posterUrl: item.posterUrl,
-    slug: item.movieSlug,
-    rating: 0,
-    year: new Date().getFullYear(),
-    duration: item.duration || "",
-    genres: [],
-    type: "movie" as const,
-  }));
+    // Update local state
+    setItems(prev => {
+      const existing = prev.find(i => i.movieId === movie.movieId);
+      if (existing) return prev;
+      return [newItem, ...prev];
+    });
 
-  return (
-    <section className="py-6 sm:py-8">
-      <div className="mx-auto max-w-screen-2xl px-4 sm:px-6 lg:px-12">
-        <h2 className="font-display text-heading-3 sm:text-heading-2 font-semibold text-white mb-4">
-          Continue Watching
-        </h2>
-        <div className="flex gap-4 overflow-x-auto pb-4 scrollbar-hide">
-          {movies.map((movie, index) => (
-            <div key={movie.id} className="relative w-[160px] flex-shrink-0 sm:w-[200px]">
-              <MovieCard movie={movie} index={index} slug={movie.slug} />
-              {/* Progress bar */}
-              {watchedMovies[index] && (
-                <div className="absolute bottom-0 left-0 right-0 h-1 bg-matte-800 rounded-b-lg overflow-hidden">
-                  <div 
-                    className="h-full bg-crimson-DEFAULT transition-all duration-300"
-                    style={{ width: `${Math.min((watchedMovies[index].progress / 100) * 100, 100)}%` }}
-                  />
-                </div>
-              )}
-            </div>
-          ))}
-        </div>
-      </div>
-    </section>
-  );
+    try {
+      await fetch('/api/watch-history', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          movieId: movie.movieId,
+          movieSlug: movie.slug || movie.movieId,
+          movieTitle: movie.title,
+          posterUrl: movie.posterUrl,
+          progress: 0,
+        }),
+      });
+      return;
+    } catch (error) {
+      console.error('Failed to save watch progress:', error);
+    }
+
+    // Fallback to localStorage
+    localStorage.setItem('continueWatching', JSON.stringify(
+      [newItem, ...items.filter(i => i.movieId !== movie.movieId)]
+    ));
+  }, [items]);
+
+  // Update progress for a movie
+  const updateProgress = useCallback(async (movieId: string, progress: number, duration?: string) => {
+    // Update local state
+    setItems(prev => prev.map(item =>
+      item.movieId === movieId
+        ? { ...item, progress, duration, lastWatched: new Date().toISOString() }
+        : item
+    ));
+
+    try {
+      const item = items.find(i => i.movieId === movieId);
+      if (!item) return;
+      
+      await fetch('/api/watch-history', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          movieId: movieId,
+          movieSlug: item.movieSlug,
+          movieTitle: item.movieTitle,
+          posterUrl: item.posterUrl,
+          progress,
+          duration,
+        }),
+      });
+      return;
+    } catch (error) {
+      console.error('Failed to update progress:', error);
+    }
+
+    // Fallback to localStorage
+    localStorage.setItem('continueWatching', JSON.stringify(
+      items.map(item =>
+        item.movieId === movieId
+          ? { ...item, progress, duration, lastWatched: new Date().toISOString() }
+          : item
+      )
+    ));
+  }, [items]);
+
+  // Remove an item from watch history
+  const removeItem = useCallback(async (movieId: string) => {
+    setItems(prev => prev.filter(i => i.movieId !== movieId));
+
+    try {
+      await fetch(`/api/watch-history?movieId=${movieId}`, {
+        method: 'DELETE',
+      });
+      return;
+    } catch (error) {
+      console.error('Failed to remove watch history:', error);
+    }
+
+    localStorage.setItem('continueWatching', JSON.stringify(
+      items.filter(i => i.movieId !== movieId)
+    ));
+  }, [items]);
+
+  // Load history on mount
+  useEffect(() => {
+    loadHistory();
+  }, [loadHistory]);
+
+  return { items, loading, addItem, updateProgress, removeItem };
 }
