@@ -17,6 +17,7 @@ export interface Movie {
   type: "movie" | "tv" | "anime";
   slug?: string;          // URL slug for navigation
   hero_order?: number;    // Order in hero carousel
+  videoEmbedUrl?: string; // ← ADD THIS LINE (for video playback)
 }
 
 // Represents a collection/row of movies
@@ -31,5 +32,5 @@ export interface MovieRowProps {
   title: string;
   movies: Movie[];
   isLoading?: boolean;
-  viewAllLink?: string;   // ← ADD THIS
+  viewAllLink?: string;
 }
