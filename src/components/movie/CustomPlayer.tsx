@@ -15,8 +15,7 @@ import {
   Settings,
 } from "lucide-react";
 import type { Movie } from "@/types/movie";
-import { getDemoVideo } from "@/lib/demoVideos";
-import { getContinueWatching, updateProgress, addToContinueWatching } from "@/lib/storage";
+import { useContinueWatching } from "@/hooks/useContinueWatching";
 
 interface CustomPlayerProps {
   movie: Movie;
@@ -44,26 +43,29 @@ export default function CustomPlayer({ movie }: CustomPlayerProps) {
   const [hoverTime, setHoverTime] = useState<number | null>(null);
   const [hoverPosition, setHoverPosition] = useState(0);
 
-  const videoUrl = getDemoVideo(movie.id, movie.genres);
+  // NEW: Use the continue watching hook
+  const { items, updateProgress, addItem } = useContinueWatching();
 
-  // Restore saved progress
+  const videoUrl = movie.videoEmbedUrl || `/api/video/${movie.id}`;
+
+  // Restore saved progress from database
   useEffect(() => {
-    const saved = getContinueWatching().find((item) => item.movieId === movie.id);
+    const saved = items.find((item) => item.movieId === movie.id.toString());
     if (saved && saved.progress > 0 && videoRef.current) {
       videoRef.current.currentTime = saved.progress;
     }
-  }, [movie.id]);
+  }, [items, movie.id]);
 
-  // Save progress every 5 seconds
+  // Save progress every 5 seconds to database
   useEffect(() => {
     if (isPlaying) {
       progressInterval.current = setInterval(() => {
         if (videoRef.current) {
           const current = videoRef.current.currentTime;
-          const total = videoRef.current.duration || 0;
-          updateProgress(movie.id, current, total);
-          addToContinueWatching({
-            movieId: movie.id,
+          updateProgress(movie.id.toString(), Math.floor(current));
+          addItem({
+            movieId: movie.id.toString(),
+            slug: movie.slug || movie.id.toString(),
             title: movie.title,
             posterUrl: movie.posterUrl,
             year: movie.year,
@@ -76,22 +78,22 @@ export default function CustomPlayer({ movie }: CustomPlayerProps) {
     return () => {
       if (progressInterval.current) clearInterval(progressInterval.current);
     };
-  }, [isPlaying, movie]);
+  }, [isPlaying, movie, updateProgress, addItem]);
 
   // Save on unmount
   useEffect(() => {
     return () => {
       if (videoRef.current) {
-        updateProgress(movie.id, videoRef.current.currentTime, videoRef.current.duration || 0);
+        updateProgress(movie.id.toString(), Math.floor(videoRef.current.currentTime));
       }
     };
-  }, [movie.id]);
+  }, [movie.id, updateProgress]);
 
   const handleLoadedMetadata = () => {
     if (videoRef.current) {
       setDuration(videoRef.current.duration);
       setIsLoading(false);
-      const saved = getContinueWatching().find((item) => item.movieId === movie.id);
+      const saved = items.find((item) => item.movieId === movie.id.toString());
       if (saved && saved.progress > 5 && saved.progress < videoRef.current.duration - 10) {
         videoRef.current.currentTime = saved.progress;
       }
@@ -126,14 +128,39 @@ export default function CustomPlayer({ movie }: CustomPlayerProps) {
     const handleKeyDown = (e: KeyboardEvent) => {
       if (e.target instanceof HTMLInputElement) return;
       switch (e.key) {
-        case " ": case "k": e.preventDefault(); togglePlay(); break;
-        case "ArrowLeft": e.preventDefault(); skip(-10); break;
-        case "ArrowRight": e.preventDefault(); skip(10); break;
-        case "ArrowUp": e.preventDefault(); setVolume(v => Math.min(1, v + 0.1)); break;
-        case "ArrowDown": e.preventDefault(); setVolume(v => Math.max(0, v - 0.1)); break;
-        case "m": e.preventDefault(); setIsMuted(m => !m); break;
-        case "f": e.preventDefault(); toggleFullscreen(); break;
-        case "Escape": if (isFullscreen) toggleFullscreen(); else goBack(); break;
+        case " ":
+        case "k":
+          e.preventDefault();
+          togglePlay();
+          break;
+        case "ArrowLeft":
+          e.preventDefault();
+          skip(-10);
+          break;
+        case "ArrowRight":
+          e.preventDefault();
+          skip(10);
+          break;
+        case "ArrowUp":
+          e.preventDefault();
+          setVolume((v) => Math.min(1, v + 0.1));
+          break;
+        case "ArrowDown":
+          e.preventDefault();
+          setVolume((v) => Math.max(0, v - 0.1));
+          break;
+        case "m":
+          e.preventDefault();
+          setIsMuted((m) => !m);
+          break;
+        case "f":
+          e.preventDefault();
+          toggleFullscreen();
+          break;
+        case "Escape":
+          if (isFullscreen) toggleFullscreen();
+          else goBack();
+          break;
       }
     };
     window.addEventListener("keydown", handleKeyDown);
@@ -169,7 +196,6 @@ export default function CustomPlayer({ movie }: CustomPlayerProps) {
     }
   };
 
-  // Seek bar hover — shows time tooltip
   const handleProgressHover = (e: React.MouseEvent<HTMLDivElement>) => {
     if (!progressRef.current || duration === 0) return;
     const rect = progressRef.current.getBoundingClientRect();
@@ -182,7 +208,6 @@ export default function CustomPlayer({ movie }: CustomPlayerProps) {
     setHoverTime(null);
   };
 
-  // Seek bar click
   const handleProgressClick = (e: React.MouseEvent<HTMLDivElement>) => {
     if (!progressRef.current || !videoRef.current || duration === 0) return;
     e.stopPropagation();
@@ -219,10 +244,8 @@ export default function CustomPlayer({ movie }: CustomPlayerProps) {
   const progress = duration > 0 ? (currentTime / duration) * 100 : 0;
   const speeds = [0.5, 0.75, 1, 1.25, 1.5, 2];
 
-  // Saved progress
-  const savedItem = typeof window !== "undefined"
-    ? getContinueWatching().find((item) => item.movieId === movie.id)
-    : null;
+  // Get saved progress from database
+  const savedItem = items.find((item) => item.movieId === movie.id.toString());
   const hasSavedProgress = savedItem && savedItem.progress > 30;
 
   return (
@@ -238,7 +261,10 @@ export default function CustomPlayer({ movie }: CustomPlayerProps) {
           <div className="text-center px-6">
             <p className="font-display text-heading-1 text-white mb-4">{movie.title}</p>
             <p className="text-body text-matte-400 mb-8">Video failed to load. Please try again.</p>
-            <button onClick={goBack} className="flex items-center gap-2 mx-auto rounded-lg bg-crimson-DEFAULT px-6 py-3 text-body font-semibold text-white hover:bg-crimson-dark">
+            <button
+              onClick={goBack}
+              className="flex items-center gap-2 mx-auto rounded-lg bg-crimson-DEFAULT px-6 py-3 text-body font-semibold text-white hover:bg-crimson-dark"
+            >
               <ArrowLeft size={18} /> Go Back
             </button>
           </div>
@@ -257,7 +283,10 @@ export default function CustomPlayer({ movie }: CustomPlayerProps) {
           onWaiting={() => setIsLoading(true)}
           onPlaying={() => setIsLoading(false)}
           onError={handleError}
-          onClick={(e) => { e.stopPropagation(); togglePlay(); }}
+          onClick={(e) => {
+            e.stopPropagation();
+            togglePlay();
+          }}
           playsInline
           preload="auto"
         />
@@ -273,7 +302,9 @@ export default function CustomPlayer({ movie }: CustomPlayerProps) {
       {/* Resume button */}
       {hasSavedProgress && !isPlaying && !isLoading && (
         <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 z-25 text-center">
-          <p className="text-caption text-matte-400 mb-3">Resume from {formatTime(savedItem!.progress)}?</p>
+          <p className="text-caption text-matte-400 mb-3">
+            Resume from {formatTime(savedItem!.progress)}?
+          </p>
           <button
             onClick={() => {
               if (videoRef.current && savedItem) {
@@ -300,9 +331,15 @@ export default function CustomPlayer({ movie }: CustomPlayerProps) {
             className="absolute top-0 left-0 right-0 z-20 bg-gradient-to-b from-black/80 to-transparent px-4 sm:px-8 pt-4 pb-12"
           >
             <div className="flex items-center justify-between">
-              <button onClick={(e) => { e.stopPropagation(); goBack(); }}
-                className="flex items-center gap-2 text-white hover:text-crimson-DEFAULT transition-colors">
-                <ArrowLeft size={20} /> <span className="text-caption font-medium">Back</span>
+              <button
+                onClick={(e) => {
+                  e.stopPropagation();
+                  goBack();
+                }}
+                className="flex items-center gap-2 text-white hover:text-crimson-DEFAULT transition-colors"
+              >
+                <ArrowLeft size={20} />{" "}
+                <span className="text-caption font-medium">Back</span>
               </button>
               <div className="text-right">
                 <p className="text-caption text-matte-400">Now Playing</p>
@@ -322,7 +359,10 @@ export default function CustomPlayer({ movie }: CustomPlayerProps) {
             initial={{ opacity: 0, scale: 0.5 }}
             animate={{ opacity: 1, scale: 1 }}
             exit={{ opacity: 0, scale: 0.5 }}
-            onClick={(e) => { e.stopPropagation(); togglePlay(); }}
+            onClick={(e) => {
+              e.stopPropagation();
+              togglePlay();
+            }}
             className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 z-20 flex h-16 w-16 sm:h-20 sm:w-20 items-center justify-center rounded-full bg-crimson-DEFAULT/90 text-white shadow-glow-lg hover:scale-110 transition-transform"
           >
             <Play size={32} fill="white" className="ml-1" />
@@ -339,7 +379,7 @@ export default function CustomPlayer({ movie }: CustomPlayerProps) {
             exit={{ opacity: 0, y: 20 }}
             className="absolute bottom-0 left-0 right-0 z-20 bg-gradient-to-t from-black/95 via-black/50 to-transparent px-4 sm:px-8 pb-4 sm:pb-6 pt-16"
           >
-            {/* ===== PROGRESS BAR WITH TIME TOOLTIP ===== */}
+            {/* Progress Bar */}
             <div
               ref={progressRef}
               onClick={handleProgressClick}
@@ -347,15 +387,15 @@ export default function CustomPlayer({ movie }: CustomPlayerProps) {
               onMouseLeave={handleProgressLeave}
               className="group relative mb-3 sm:mb-4 h-1.5 w-full cursor-pointer rounded-full bg-white/20 hover:h-2.5 transition-all"
             >
-              {/* Loaded/buffered */}
               <div className="absolute top-0 left-0 h-full rounded-full bg-white/30" style={{ width: "100%" }} />
-              {/* Played */}
-              <div className="absolute top-0 left-0 h-full rounded-full bg-crimson-DEFAULT" style={{ width: `${progress}%` }} />
-              {/* Handle */}
-              <div className="absolute top-1/2 -translate-y-1/2 h-4 w-4 rounded-full bg-white opacity-0 group-hover:opacity-100 transition-opacity shadow-lg"
-                style={{ left: `${progress}%`, marginLeft: "-8px" }} />
-
-              {/* Time tooltip on hover */}
+              <div
+                className="absolute top-0 left-0 h-full rounded-full bg-crimson-DEFAULT"
+                style={{ width: `${progress}%` }}
+              />
+              <div
+                className="absolute top-1/2 -translate-y-1/2 h-4 w-4 rounded-full bg-white opacity-0 group-hover:opacity-100 transition-opacity shadow-lg"
+                style={{ left: `${progress}%`, marginLeft: "-8px" }}
+              />
               {hoverTime !== null && (
                 <div
                   className="absolute bottom-full mb-2 -translate-x-1/2 rounded bg-black/90 px-2 py-1 text-caption text-white whitespace-nowrap pointer-events-none"
@@ -366,30 +406,62 @@ export default function CustomPlayer({ movie }: CustomPlayerProps) {
               )}
             </div>
 
-            {/* ===== CONTROLS ROW ===== */}
+            {/* Controls Row */}
             <div className="flex items-center justify-between gap-4">
-              {/* Left side */}
               <div className="flex items-center gap-2 sm:gap-3">
-                <button onClick={(e) => { e.stopPropagation(); togglePlay(); }} className="text-white hover:scale-110 transition-transform">
+                <button
+                  onClick={(e) => {
+                    e.stopPropagation();
+                    togglePlay();
+                  }}
+                  className="text-white hover:scale-110 transition-transform"
+                >
                   {isPlaying ? <Pause size={22} fill="white" /> : <Play size={22} fill="white" />}
                 </button>
-                <button onClick={(e) => { e.stopPropagation(); skip(-10); }} className="hidden sm:flex items-center text-white/70 hover:text-white">
-                  <SkipForward size={16} className="rotate-180" /><span className="text-caption ml-0.5">10</span>
+                <button
+                  onClick={(e) => {
+                    e.stopPropagation();
+                    skip(-10);
+                  }}
+                  className="hidden sm:flex items-center text-white/70 hover:text-white"
+                >
+                  <SkipForward size={16} className="rotate-180" />
+                  <span className="text-caption ml-0.5">10</span>
                 </button>
-                <button onClick={(e) => { e.stopPropagation(); skip(10); }} className="hidden sm:flex items-center text-white/70 hover:text-white">
-                  <SkipForward size={16} /><span className="text-caption ml-0.5">10</span>
+                <button
+                  onClick={(e) => {
+                    e.stopPropagation();
+                    skip(10);
+                  }}
+                  className="hidden sm:flex items-center text-white/70 hover:text-white"
+                >
+                  <SkipForward size={16} />
+                  <span className="text-caption ml-0.5">10</span>
                 </button>
                 <div className="hidden sm:flex items-center gap-2">
-                  <button onClick={(e) => { e.stopPropagation(); setIsMuted(!isMuted); }} className="text-white/70 hover:text-white">
+                  <button
+                    onClick={(e) => {
+                      e.stopPropagation();
+                      setIsMuted(!isMuted);
+                    }}
+                    className="text-white/70 hover:text-white"
+                  >
                     {isMuted || volume === 0 ? <VolumeX size={18} /> : <Volume2 size={18} />}
                   </button>
-                  <input type="range" min="0" max="1" step="0.05" value={isMuted ? 0 : volume}
-                    onChange={(e) => { setVolume(Number(e.target.value)); setIsMuted(false); }}
+                  <input
+                    type="range"
+                    min="0"
+                    max="1"
+                    step="0.05"
+                    value={isMuted ? 0 : volume}
+                    onChange={(e) => {
+                      setVolume(Number(e.target.value));
+                      setIsMuted(false);
+                    }}
                     onClick={(e) => e.stopPropagation()}
-                    className="w-16 sm:w-20 h-1 appearance-none bg-white/30 rounded-full cursor-pointer [&::-webkit-slider-thumb]:appearance-none [&::-webkit-slider-thumb]:h-3 [&::-webkit-slider-thumb]:w-3 [&::-webkit-slider-thumb]:rounded-full [&::-webkit-slider-thumb]:bg-white" />
+                    className="w-16 sm:w-20 h-1 appearance-none bg-white/30 rounded-full cursor-pointer [&::-webkit-slider-thumb]:appearance-none [&::-webkit-slider-thumb]:h-3 [&::-webkit-slider-thumb]:w-3 [&::-webkit-slider-thumb]:rounded-full [&::-webkit-slider-thumb]:bg-white"
+                  />
                 </div>
-
-                {/* ===== TIME DISPLAY ===== */}
                 <span className="text-caption text-white/80 tabular-nums ml-1 font-medium">
                   <span className="text-white">{formatTime(currentTime)}</span>
                   <span className="text-white/40 mx-1">/</span>
@@ -397,25 +469,45 @@ export default function CustomPlayer({ movie }: CustomPlayerProps) {
                 </span>
               </div>
 
-              {/* Right side */}
               <div className="flex items-center gap-2 sm:gap-3">
                 <div className="relative">
-                  <button onClick={(e) => { e.stopPropagation(); setShowSpeedMenu(!showSpeedMenu); }}
-                    className="flex items-center gap-1 text-white/70 hover:text-white">
-                    <Settings size={16} /><span className="text-caption hidden sm:inline">{playbackSpeed}x</span>
+                  <button
+                    onClick={(e) => {
+                      e.stopPropagation();
+                      setShowSpeedMenu(!showSpeedMenu);
+                    }}
+                    className="flex items-center gap-1 text-white/70 hover:text-white"
+                  >
+                    <Settings size={16} />
+                    <span className="text-caption hidden sm:inline">{playbackSpeed}x</span>
                   </button>
                   {showSpeedMenu && (
                     <div className="absolute bottom-full right-0 mb-2 rounded-lg border border-white/10 bg-black/90 backdrop-blur-md py-1 shadow-elevated">
-                      {speeds.map(s => (
-                        <button key={s} onClick={(e) => { e.stopPropagation(); setPlaybackSpeed(s); setShowSpeedMenu(false); }}
-                          className={`block w-full px-4 py-2 text-left text-caption hover:bg-white/10 ${playbackSpeed === s ? "text-crimson-DEFAULT" : "text-white"}`}>
+                      {speeds.map((s) => (
+                        <button
+                          key={s}
+                          onClick={(e) => {
+                            e.stopPropagation();
+                            setPlaybackSpeed(s);
+                            setShowSpeedMenu(false);
+                          }}
+                          className={`block w-full px-4 py-2 text-left text-caption hover:bg-white/10 ${
+                            playbackSpeed === s ? "text-crimson-DEFAULT" : "text-white"
+                          }`}
+                        >
                           {s}x
                         </button>
                       ))}
                     </div>
                   )}
                 </div>
-                <button onClick={(e) => { e.stopPropagation(); toggleFullscreen(); }} className="text-white/70 hover:text-white">
+                <button
+                  onClick={(e) => {
+                    e.stopPropagation();
+                    toggleFullscreen();
+                  }}
+                  className="text-white/70 hover:text-white"
+                >
                   {isFullscreen ? <Minimize size={18} /> : <Maximize size={18} />}
                 </button>
               </div>
