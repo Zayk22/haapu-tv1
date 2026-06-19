@@ -2,6 +2,8 @@ import { NextRequest, NextResponse } from 'next/server';
 import { sql } from '@/lib/db';
 import { auth } from '@clerk/nextjs/server';
 
+export const dynamic = 'force-dynamic'; // ← ADD THIS LINE
+
 // GET - Fetch user's watch history
 export async function GET(request: NextRequest) {
   const { userId } = await auth();
@@ -11,6 +13,9 @@ export async function GET(request: NextRequest) {
   }
   
   try {
+    // Debug: log the connection
+    console.log('DATABASE_URL exists:', !!process.env.DATABASE_URL);
+    
     const history = await sql`
       SELECT 
         id,
@@ -30,7 +35,10 @@ export async function GET(request: NextRequest) {
     return NextResponse.json({ history });
   } catch (error) {
     console.error('Error fetching watch history:', error);
-    return NextResponse.json({ error: 'Failed to fetch watch history' }, { status: 500 });
+    return NextResponse.json({ 
+      error: 'Failed to fetch watch history',
+      details: error instanceof Error ? error.message : 'Unknown error'
+    }, { status: 500 });
   }
 }
 
