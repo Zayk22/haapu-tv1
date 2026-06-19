@@ -1,17 +1,20 @@
 import { neon } from '@neondatabase/serverless';
 
-// Get the database URL from environment variables
-const databaseUrl = process.env.DATABASE_URL;
+// Get database URL from environment
+const databaseUrl = process.env.DATABASE_URL || process.env.POSTGRES_URL;
 
-// If the URL is missing, log a clear error message
 if (!databaseUrl) {
-  console.error('❌ DATABASE_URL is not set in environment variables');
-  throw new Error('DATABASE_URL is not set');
+  console.error('❌ No database URL found');
+  console.error('Available URL env vars:', Object.keys(process.env).filter(k => k.includes('URL') || k.includes('POSTGRES')));
+  throw new Error('Database URL not set');
 }
 
-console.log('✅ Database URL found, connecting...');
+// Remove any quotes if present
+const cleanUrl = databaseUrl.replace(/^"|"$/g, '');
+
+console.log('✅ Database URL found (length:', cleanUrl.length, 'characters)');
 
 // Create the SQL client
-const sql = neon(databaseUrl);
+const sql = neon(cleanUrl);
 
 export { sql };
