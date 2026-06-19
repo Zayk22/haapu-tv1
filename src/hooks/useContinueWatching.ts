@@ -83,15 +83,17 @@ export function useContinueWatching() {
       });
     } catch (error) {
       console.error('Failed to save watch progress:', error);
-      // Fallback to localStorage
-      const stored = localStorage.getItem('continueWatching');
-      const current = stored ? JSON.parse(stored) : [];
-      localStorage.setItem('continueWatching', JSON.stringify([newItem, ...current]));
     }
   }, []);
 
-  // Update progress
+  // ✅ FIXED: Update progress - simplified and more reliable
   const updateProgress = useCallback(async (movieId: string, progress: number, duration?: string) => {
+    console.log(`📝 updateProgress called: movieId=${movieId}, progress=${progress}, duration=${duration}`);
+    
+    // Find the movie in current items
+    const existingItem = items.find(i => i.movieId === movieId);
+    
+    // Update local state immediately
     setItems(prev => prev.map(item =>
       item.movieId === movieId
         ? { ...item, progress, duration, lastWatched: new Date().toISOString() }
@@ -99,34 +101,32 @@ export function useContinueWatching() {
     ));
 
     try {
-      const item = items.find(i => i.movieId === movieId);
-      if (!item) return;
-      
-      await fetch('/api/watch-history', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({
-          movieId: movieId,
-          movieSlug: item.movieSlug,
-          movieTitle: item.movieTitle,
-          posterUrl: item.posterUrl,
-          progress,
-          duration,
-        }),
-      });
-    } catch (error) {
-      console.error('Failed to update progress:', error);
-      // Fallback to localStorage
-      const stored = localStorage.getItem('continueWatching');
-      if (stored) {
-        const parsed = JSON.parse(stored);
-        const updated = parsed.map((item: any) =>
-          item.movieId === movieId
-            ? { ...item, progress, duration, lastWatched: new Date().toISOString() }
-            : item
-        );
-        localStorage.setItem('continueWatching', JSON.stringify(updated));
+      // If the movie exists in the list, use its data
+      if (existingItem) {
+        const response = await fetch('/api/watch-history', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({
+            movieId: movieId,
+            movieSlug: existingItem.movieSlug,
+            movieTitle: existingItem.movieTitle,
+            posterUrl: existingItem.posterUrl,
+            progress: progress,
+            duration: duration || existingItem.duration,
+          }),
+        });
+        
+        const data = await response.json();
+        console.log(`📡 POST response:`, data);
+        
+        if (!response.ok) {
+          console.error('Failed to update progress:', data);
+        }
+      } else {
+        console.warn(`Movie ${movieId} not found in watch history, cannot update progress`);
       }
+    } catch (error) {
+      console.error('Error updating progress:', error);
     }
   }, [items]);
 
@@ -140,14 +140,6 @@ export function useContinueWatching() {
       });
     } catch (error) {
       console.error('Failed to remove watch history:', error);
-      // Fallback to localStorage
-      const stored = localStorage.getItem('continueWatching');
-      if (stored) {
-        const parsed = JSON.parse(stored);
-        localStorage.setItem('continueWatching', JSON.stringify(
-          parsed.filter((item: any) => item.movieId !== movieId)
-        ));
-      }
     }
   }, []);
 
