@@ -28,6 +28,7 @@ export default function CustomPlayer({ movie }: CustomPlayerProps) {
   const progressRef = useRef<HTMLDivElement>(null);
   const hideTimer = useRef<NodeJS.Timeout | null>(null);
   const progressInterval = useRef<NodeJS.Timeout | null>(null);
+  const hasAddedRef = useRef(false); // ✅ NEW: Track if movie has been added to watch history
 
   const [isPlaying, setIsPlaying] = useState(false);
   const [isMuted, setIsMuted] = useState(false);
@@ -43,7 +44,6 @@ export default function CustomPlayer({ movie }: CustomPlayerProps) {
   const [hoverTime, setHoverTime] = useState<number | null>(null);
   const [hoverPosition, setHoverPosition] = useState(0);
 
-  // NEW: Use the continue watching hook
   const { items, updateProgress, addItem } = useContinueWatching();
 
   const videoUrl = movie.videoEmbedUrl || `/api/video/${movie.id}`;
@@ -56,21 +56,34 @@ export default function CustomPlayer({ movie }: CustomPlayerProps) {
     }
   }, [items, movie.id]);
 
-  // Save progress every 5 seconds to database
+  // ✅ NEW: Call addItem ONCE when video first plays
+  useEffect(() => {
+    if (isPlaying && !hasAddedRef.current) {
+      hasAddedRef.current = true;
+      addItem({
+        movieId: movie.id.toString(),
+        slug: movie.slug || movie.id.toString(),
+        title: movie.title,
+        posterUrl: movie.posterUrl,
+        year: movie.year,
+        rating: movie.rating,
+        type: movie.type,
+      });
+    }
+  }, [isPlaying, movie, addItem]);
+
+  // ✅ FIXED: Save progress every 5 seconds — NO addItem here
   useEffect(() => {
     if (isPlaying) {
       progressInterval.current = setInterval(() => {
         if (videoRef.current) {
-          const current = videoRef.current.currentTime;
-          updateProgress(movie.id.toString(), Math.floor(current));
-          addItem({
-            movieId: movie.id.toString(),
-            slug: movie.slug || movie.id.toString(),
-            title: movie.title,
+          const current = Math.floor(videoRef.current.currentTime);
+          const dur = Math.floor(videoRef.current.duration || 0);
+          updateProgress(movie.id.toString(), current, {
+            movieSlug: movie.slug || movie.id.toString(),
+            movieTitle: movie.title,
             posterUrl: movie.posterUrl,
-            year: movie.year,
-            rating: movie.rating,
-            type: movie.type,
+            duration: dur,
           });
         }
       }, 5000);
@@ -78,16 +91,21 @@ export default function CustomPlayer({ movie }: CustomPlayerProps) {
     return () => {
       if (progressInterval.current) clearInterval(progressInterval.current);
     };
-  }, [isPlaying, movie, updateProgress, addItem]);
+  }, [isPlaying, movie, updateProgress]);
 
-  // Save on unmount
+  // ✅ FIXED: Save on unmount with proper metadata
   useEffect(() => {
     return () => {
-      if (videoRef.current) {
-        updateProgress(movie.id.toString(), Math.floor(videoRef.current.currentTime));
+      if (videoRef.current && videoRef.current.currentTime > 0) {
+        updateProgress(movie.id.toString(), Math.floor(videoRef.current.currentTime), {
+          movieSlug: movie.slug || movie.id.toString(),
+          movieTitle: movie.title,
+          posterUrl: movie.posterUrl,
+          duration: Math.floor(videoRef.current.duration || 0),
+        });
       }
     };
-  }, [movie.id, updateProgress]);
+  }, [movie, updateProgress]);
 
   const handleLoadedMetadata = () => {
     if (videoRef.current) {
@@ -244,7 +262,6 @@ export default function CustomPlayer({ movie }: CustomPlayerProps) {
   const progress = duration > 0 ? (currentTime / duration) * 100 : 0;
   const speeds = [0.5, 0.75, 1, 1.25, 1.5, 2];
 
-  // Get saved progress from database
   const savedItem = items.find((item) => item.movieId === movie.id.toString());
   const hasSavedProgress = savedItem && savedItem.progress > 30;
 
@@ -255,7 +272,6 @@ export default function CustomPlayer({ movie }: CustomPlayerProps) {
       onMouseMove={resetHideTimer}
       onMouseLeave={() => isPlaying && setShowControls(false)}
     >
-      {/* Error state */}
       {hasError && (
         <div className="absolute inset-0 z-50 flex items-center justify-center bg-black">
           <div className="text-center px-6">
@@ -271,7 +287,6 @@ export default function CustomPlayer({ movie }: CustomPlayerProps) {
         </div>
       )}
 
-      {/* Video element */}
       {!hasError && (
         <video
           ref={videoRef}
@@ -292,14 +307,12 @@ export default function CustomPlayer({ movie }: CustomPlayerProps) {
         />
       )}
 
-      {/* Loading spinner */}
       {isLoading && !hasError && (
         <div className="absolute inset-0 z-30 flex items-center justify-center bg-black/50 pointer-events-none">
           <div className="h-14 w-14 animate-spin rounded-full border-4 border-white/20 border-t-crimson-DEFAULT" />
         </div>
       )}
 
-      {/* Resume button */}
       {hasSavedProgress && !isPlaying && !isLoading && (
         <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 z-25 text-center">
           <p className="text-caption text-matte-400 mb-3">
@@ -321,7 +334,6 @@ export default function CustomPlayer({ movie }: CustomPlayerProps) {
         </div>
       )}
 
-      {/* Top overlay */}
       <AnimatePresence>
         {showControls && !hasError && (
           <motion.div
@@ -352,7 +364,6 @@ export default function CustomPlayer({ movie }: CustomPlayerProps) {
         )}
       </AnimatePresence>
 
-      {/* Center play button */}
       <AnimatePresence>
         {!isPlaying && showControls && !isLoading && !hasError && !hasSavedProgress && (
           <motion.button
@@ -370,7 +381,6 @@ export default function CustomPlayer({ movie }: CustomPlayerProps) {
         )}
       </AnimatePresence>
 
-      {/* Bottom controls */}
       <AnimatePresence>
         {showControls && !hasError && (
           <motion.div
@@ -379,7 +389,6 @@ export default function CustomPlayer({ movie }: CustomPlayerProps) {
             exit={{ opacity: 0, y: 20 }}
             className="absolute bottom-0 left-0 right-0 z-20 bg-gradient-to-t from-black/95 via-black/50 to-transparent px-4 sm:px-8 pb-4 sm:pb-6 pt-16"
           >
-            {/* Progress Bar */}
             <div
               ref={progressRef}
               onClick={handleProgressClick}
@@ -406,7 +415,6 @@ export default function CustomPlayer({ movie }: CustomPlayerProps) {
               )}
             </div>
 
-            {/* Controls Row */}
             <div className="flex items-center justify-between gap-4">
               <div className="flex items-center gap-2 sm:gap-3">
                 <button
