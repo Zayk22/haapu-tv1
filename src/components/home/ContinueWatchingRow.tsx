@@ -2,7 +2,6 @@
 
 import { useContinueWatching } from "@/hooks/useContinueWatching";
 import MovieCard from "@/components/movie/MovieCard";
-import { Play } from "lucide-react";
 
 export default function ContinueWatchingRow() {
   const { items, loading } = useContinueWatching();
@@ -29,7 +28,7 @@ export default function ContinueWatchingRow() {
     return null;
   }
 
-  // Convert to Movie format for MovieCard
+  // Convert to Movie format for MovieCard - FIXED duration type
   const movies = watchedMovies.map(item => ({
     id: parseInt(item.movieId) || 0,
     title: item.movieTitle,
@@ -37,7 +36,7 @@ export default function ContinueWatchingRow() {
     slug: item.movieSlug,
     rating: 0,
     year: new Date().getFullYear(),
-    duration: item.duration || "",
+    duration: typeof item.duration === 'number' ? `${item.duration}s` : (item.duration || ""),
     genres: [],
     type: "movie" as const,
   }));
