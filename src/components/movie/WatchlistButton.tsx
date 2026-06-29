@@ -23,7 +23,11 @@ export default function WatchlistButton({ movie }: WatchlistButtonProps) {
   return (
     <button
       onClick={handleClick}
-      className="flex items-center gap-2 rounded-lg border border-matte-700 px-4 py-2 text-sm font-medium text-matte-300 transition-all hover:border-matte-500 hover:text-white"
+      className={`flex items-center gap-2 rounded-lg border px-4 py-2 text-sm font-medium transition-all ${
+        isAdded
+          ? "border-crimson-DEFAULT bg-crimson-DEFAULT/10 text-crimson-DEFAULT hover:bg-crimson-DEFAULT/20"
+          : "border-matte-700 text-matte-300 hover:border-matte-500 hover:text-white"
+      }`}
       aria-label={isAdded ? "Remove from watchlist" : "Add to watchlist"}
     >
       <Bookmark size={18} fill={isAdded ? "currentColor" : "none"} />
