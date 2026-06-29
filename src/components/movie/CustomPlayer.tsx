@@ -46,21 +46,60 @@ export default function CustomPlayer({ movie }: CustomPlayerProps) {
 
   const { items, updateProgress, addItem } = useContinueWatching();
 
+  // ✅ Check if this is an iframe embed (Wistia, YouTube, Vimeo)
   const videoUrl = movie.videoEmbedUrl || "";
   const isIframeEmbed = videoUrl.includes('wistia.net') || 
                          videoUrl.includes('youtube.com') || 
                          videoUrl.includes('youtu.be') || 
                          videoUrl.includes('vimeo.com');
 
+  // 🔧 FIX (React Rules of Hooks violation): the old code put a useEffect
+  // INSIDE this `if (isIframeEmbed)` block and returned JSX from inside it.
+  // That means the number/order of hooks React saw on render #1 (e.g.
+  // while `movie` is still loading and isIframeEmbed is false) could
+  // differ from render #2 (once movie data arrives and isIframeEmbed
+  // flips to true). React requires the exact same hooks, in the exact
+  // same order, on every render of a component instance — when that's
+  // violated React throws "Rendered more hooks than during the previous
+  // render" and the player crashes/blanks out. That's almost certainly
+  // your "Wistia embeds sometimes fail to load" bug: it only happens on
+  // the renders where the hook count changes, not every time.
+  //
+  // The fix: every hook below always runs, every render. We branch on
+  // isIframeEmbed *inside* the effect bodies instead of around the hooks
+  // themselves. The actual iframe-vs-video JSX branch happens later,
+  // after all hooks — branching on JSX is fine, only branching on hooks
+  // is not.
+  useEffect(() => {
+    if (hasAddedRef.current) return;
+    if (isIframeEmbed) {
+      hasAddedRef.current = true;
+      addItem({
+        movieId: movie.id.toString(),
+        slug: movie.slug || movie.id.toString(),
+        title: movie.title,
+        posterUrl: movie.posterUrl,
+        year: movie.year,
+        rating: movie.rating,
+        type: movie.type,
+      });
+    }
+  }, [isIframeEmbed, movie, addItem]);
+
+  // For direct video files (MP4, etc.) - fallback
   // Restore saved progress from database
   useEffect(() => {
+    if (isIframeEmbed) return;
     const saved = items.find((item) => item.movieId === movie.id.toString());
     if (saved && saved.progress > 0 && videoRef.current) {
       videoRef.current.currentTime = saved.progress;
     }
-  }, [items, movie.id]);
+  }, [items, movie.id, isIframeEmbed]);
 
+  // Call addItem ONCE when video first plays (direct video files only —
+  // iframe embeds are handled by the effect above instead)
   useEffect(() => {
+    if (isIframeEmbed) return;
     if (isPlaying && !hasAddedRef.current) {
       hasAddedRef.current = true;
       addItem({
@@ -73,8 +112,9 @@ export default function CustomPlayer({ movie }: CustomPlayerProps) {
         type: movie.type,
       });
     }
-  }, [isPlaying, movie, addItem]);
+  }, [isPlaying, movie, addItem, isIframeEmbed]);
 
+  // Save progress every 5 seconds
   useEffect(() => {
     if (isPlaying) {
       progressInterval.current = setInterval(() => {
@@ -95,6 +135,7 @@ export default function CustomPlayer({ movie }: CustomPlayerProps) {
     };
   }, [isPlaying, movie, updateProgress]);
 
+  // Save on unmount
   useEffect(() => {
     return () => {
       if (videoRef.current && videoRef.current.currentTime > 0) {
@@ -142,6 +183,7 @@ export default function CustomPlayer({ movie }: CustomPlayerProps) {
     return () => { if (hideTimer.current) clearTimeout(hideTimer.current); };
   }, []);
 
+  // Keyboard shortcuts
   useEffect(() => {
     const handleKeyDown = (e: KeyboardEvent) => {
       if (e.target instanceof HTMLInputElement) return;
@@ -265,7 +307,9 @@ export default function CustomPlayer({ movie }: CustomPlayerProps) {
   const savedItem = items.find((item) => item.movieId === movie.id.toString());
   const hasSavedProgress = savedItem && savedItem.progress > 30;
 
-  // For iframe embeds (Wistia, YouTube, Vimeo)
+  // ✅ For iframe embeds (Wistia, YouTube, Vimeo) — this is a JSX branch,
+  // not a hooks branch (every hook above this line already ran
+  // unconditionally), so it's safe and won't desync React's hook order.
   if (isIframeEmbed && videoUrl) {
     return (
       <div className="relative h-screen w-screen bg-black" ref={containerRef}>
@@ -278,6 +322,8 @@ export default function CustomPlayer({ movie }: CustomPlayerProps) {
             onLoad={() => setIsLoading(false)}
           />
         </div>
+
+        {/* Back button */}
         <button
           onClick={() => router.back()}
           className="absolute top-4 left-4 z-50 flex items-center gap-2 rounded-lg bg-black/80 px-4 py-2.5 text-white backdrop-blur-md transition-colors hover:bg-black"
@@ -285,10 +331,16 @@ export default function CustomPlayer({ movie }: CustomPlayerProps) {
           <ArrowLeft size={18} />
           <span className="text-sm font-medium">Back</span>
         </button>
+
+        {/* Title overlay */}
         <div className="absolute top-4 right-4 z-50 text-right">
           <p className="text-sm text-matte-400">Now Playing</p>
-          <h2 className="font-display text-2xl text-white drop-shadow-lg">{movie.title}</h2>
+          <h2 className="font-display text-2xl text-white drop-shadow-lg">
+            {movie.title}
+          </h2>
         </div>
+
+        {/* Loading spinner */}
         {isLoading && (
           <div className="absolute inset-0 z-30 flex items-center justify-center bg-black/50 pointer-events-none">
             <div className="h-14 w-14 animate-spin rounded-full border-4 border-white/20 border-t-crimson-DEFAULT" />
@@ -298,7 +350,6 @@ export default function CustomPlayer({ movie }: CustomPlayerProps) {
     );
   }
 
-  // Direct video file fallback
   return (
     <div
       ref={containerRef}
@@ -368,6 +419,7 @@ export default function CustomPlayer({ movie }: CustomPlayerProps) {
         </div>
       )}
 
+      {/* Rest of the video player UI */}
       <AnimatePresence>
         {showControls && !hasError && (
           <motion.div

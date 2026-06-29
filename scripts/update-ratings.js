@@ -1,27 +1,34 @@
- const { neon } = require('@neondatabase/serverless');
+const { neon } = require('@neondatabase/serverless');
 require('dotenv').config({ path: '.env.local' });
 
 const sql = neon(process.env.DATABASE_URL);
 
-// Replace with your real ratings
-const ratings = [
-  { slug: 'african-rhapsody', rating: 4.5 },
-  { slug: 'turn-it-up-with-big-b', rating: 4.0 },
-  { slug: 'cbn-faith-nation', rating: 4.8 },
-  { slug: 'sinach', rating: 5.0 },
-  { slug: 'body-praise', rating: 4.2 },
-  { slug: 'don-moen', rating: 4.9 },
-  { slug: 'muyiwa-riversongz-live-o2', rating: 4.7 },
-  { slug: 'tpi-show', rating: 3.8 },
-  { slug: 'ccp', rating: 5.0 },
-];
+// 👉 Replace these with the real ratings you want to show.
+const ratings = {
+  'african-rhapsody': 7.5,
+  'turn-it-up-with-big-b': 7.0,
+  'cbn-faith-nation': 8.0,
+  'sinach': 8.5,
+  'body-praise': 7.8,
+  'don-moen': 8.2,
+  'muyiwa-riversongz-live-o2': 8.0,
+  'tpi-show': 7.0,
+  'ccp': 5.0, // already set correctly
+};
 
-async function updateRatings() {
-  for (const { slug, rating } of ratings) {
-    await sql`UPDATE movies SET rating = ${rating} WHERE slug = ${slug}`;
-    console.log(`✅ ${slug}: ${rating}`);
+async function main() {
+  for (const [slug, rating] of Object.entries(ratings)) {
+    const result = await sql`
+      UPDATE movies SET rating = ${rating} WHERE slug = ${slug}
+      RETURNING title, rating
+    `;
+    if (result[0]) {
+      console.log(`✅ ${result[0].title}: ${result[0].rating}`);
+    } else {
+      console.log(`⚠️  No movie found with slug "${slug}"`);
+    }
   }
-  console.log('🎉 All ratings updated!');
+  console.log('\n🎉 Done.');
 }
 
-updateRatings().catch(console.error);
+main().catch(console.error);
