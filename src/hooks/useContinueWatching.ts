@@ -24,10 +24,11 @@ export function useContinueWatching() {
   const loadHistory = useCallback(async () => {
     setLoading(true);
     try {
-      const response = await fetch('/api/watch-history');
+      const response = await fetch('/api/watch-history', {
+        credentials: 'include', // ✅ ADDED
+      });
       if (response.ok) {
         const data = await response.json();
-        // ✅ FIX: Map snake_case DB fields → camelCase
         const mapped: WatchItem[] = (data.history || []).map((row: Record<string, unknown>) => ({
           movieId: row.movie_id as string,
           movieSlug: row.movie_slug as string,
@@ -80,6 +81,7 @@ export function useContinueWatching() {
       await fetch('/api/watch-history', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
+        credentials: 'include', // ✅ ADDED
         body: JSON.stringify({
           movieId: movie.movieId,
           movieSlug: movie.slug || movie.movieId,
@@ -127,6 +129,7 @@ export function useContinueWatching() {
       await fetch('/api/watch-history', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
+        credentials: 'include', // ✅ ADDED
         body: JSON.stringify({
           movieId,
           movieSlug: slug,
@@ -144,7 +147,10 @@ export function useContinueWatching() {
   const removeItem = useCallback(async (movieId: string) => {
     setItems(prev => prev.filter(i => i.movieId !== movieId));
     try {
-      await fetch(`/api/watch-history?movieId=${movieId}`, { method: 'DELETE' });
+      await fetch(`/api/watch-history?movieId=${movieId}`, {
+        method: 'DELETE',
+        credentials: 'include', // ✅ ADDED
+      });
     } catch (error) {
       console.error('Failed to remove watch history:', error);
     }
