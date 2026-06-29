@@ -2,7 +2,6 @@
 
 import { Bookmark } from "lucide-react";
 import { useWatchlist } from "@/hooks/useWatchlist";
-import { useToast } from "@/contexts/ToastContext";
 import type { Movie } from "@/types/movie";
 
 interface WatchlistButtonProps {
@@ -11,7 +10,6 @@ interface WatchlistButtonProps {
 
 export default function WatchlistButton({ movie }: WatchlistButtonProps) {
   const { isAdded, toggle } = useWatchlist(movie.id.toString());
-  const { showToast } = useToast();
 
   const handleClick = () => {
     toggle({
@@ -20,18 +18,6 @@ export default function WatchlistButton({ movie }: WatchlistButtonProps) {
       title: movie.title,
       posterUrl: movie.posterUrl,
     });
-    
-    if (!isAdded) {
-      showToast({
-        message: `Added "${movie.title}" to your watchlist`,
-        type: "success",
-      });
-    } else {
-      showToast({
-        message: `Removed "${movie.title}" from your watchlist`,
-        type: "info",
-      });
-    }
   };
 
   return (
