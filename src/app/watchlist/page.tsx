@@ -2,7 +2,7 @@
 
 import { useWatchlist } from "@/hooks/useWatchlist";
 import Link from "next/link";
-import { Trash2 } from "lucide-react";
+import { Bookmark, Trash2 } from "lucide-react";
 
 export default function WatchlistPage() {
   const { watchlist, loading, remove } = useWatchlist();
