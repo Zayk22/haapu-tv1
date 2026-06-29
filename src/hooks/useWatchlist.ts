@@ -16,7 +16,6 @@ export function useWatchlist(movieId?: string) {
   const [loading, setLoading] = useState(true);
   const [isAdded, setIsAdded] = useState(false);
 
-  // Load watchlist from database
   const loadWatchlist = useCallback(async () => {
     setLoading(true);
     try {
@@ -35,14 +34,12 @@ export function useWatchlist(movieId?: string) {
     setLoading(false);
   }, []);
 
-  // Check if current movie is in watchlist
   useEffect(() => {
     if (movieId) {
       setIsAdded(watchlist.some(item => item.movie_id === movieId));
     }
   }, [movieId, watchlist]);
 
-  // Add to watchlist
   const add = useCallback(async (movie: {
     movieId: string;
     slug: string;
@@ -66,14 +63,15 @@ export function useWatchlist(movieId?: string) {
         const data = await response.json();
         setWatchlist(prev => [...prev, data.item]);
         setIsAdded(true);
-        return;
+        return true;
       }
+      return false;
     } catch (error) {
       console.error('Failed to add to watchlist:', error);
+      return false;
     }
   }, []);
 
-  // Remove from watchlist
   const remove = useCallback(async (movieId: string) => {
     try {
       const response = await fetch(`/api/watchlist?movieId=${movieId}`, {
@@ -84,15 +82,16 @@ export function useWatchlist(movieId?: string) {
       if (response.ok) {
         setWatchlist(prev => prev.filter(item => item.movie_id !== movieId));
         setIsAdded(false);
-        return;
+        return true;
       }
+      return false;
     } catch (error) {
       console.error('Failed to remove from watchlist:', error);
+      return false;
     }
   }, []);
 
-  // Toggle watchlist
-  const toggle = useCallback((movie: {
+  const toggle = useCallback(async (movie: {
     movieId: string;
     slug: string;
     title: string;
@@ -100,13 +99,12 @@ export function useWatchlist(movieId?: string) {
   }) => {
     const existing = watchlist.find(item => item.movie_id === movie.movieId);
     if (existing) {
-      remove(movie.movieId);
+      await remove(movie.movieId);
     } else {
-      add(movie);
+      await add(movie);
     }
   }, [watchlist, add, remove]);
 
-  // Load watchlist on mount
   useEffect(() => {
     loadWatchlist();
   }, [loadWatchlist]);
