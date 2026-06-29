@@ -1,9 +1,6 @@
 import { sql } from "@/lib/db";
 import MovieTableClient from "./MovieTableClient";
 
-export const dynamic = "force-dynamic";
-export const revalidate = 0;
-
 export default async function AdminMoviesPage() {
   const movies = await sql`
     SELECT 
@@ -18,7 +15,8 @@ export default async function AdminMoviesPage() {
       rating,
       is_featured,
       is_trending,
-      is_recommended
+      is_recommended,
+      hero_order
     FROM movies 
     ORDER BY id
   `;
@@ -36,6 +34,7 @@ export default async function AdminMoviesPage() {
     is_featured: movie.is_featured ?? false,
     is_trending: movie.is_trending ?? false,
     is_recommended: movie.is_recommended ?? false,
+    hero_order: movie.hero_order,
   }));
 
   return <MovieTableClient movies={formattedMovies} />;

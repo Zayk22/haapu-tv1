@@ -28,7 +28,7 @@ export default function CustomPlayer({ movie }: CustomPlayerProps) {
   const progressRef = useRef<HTMLDivElement>(null);
   const hideTimer = useRef<NodeJS.Timeout | null>(null);
   const progressInterval = useRef<NodeJS.Timeout | null>(null);
-  const hasAddedRef = useRef(false); // ✅ NEW: Track if movie has been added to watch history
+  const hasAddedRef = useRef(false);
 
   const [isPlaying, setIsPlaying] = useState(false);
   const [isMuted, setIsMuted] = useState(false);
@@ -46,8 +46,71 @@ export default function CustomPlayer({ movie }: CustomPlayerProps) {
 
   const { items, updateProgress, addItem } = useContinueWatching();
 
-  const videoUrl = movie.videoEmbedUrl || `/api/video/${movie.id}`;
+  // ✅ Check if this is an iframe embed (Wistia, YouTube, Vimeo)
+  const videoUrl = movie.videoEmbedUrl || "";
+  const isIframeEmbed = videoUrl.includes('wistia.net') || 
+                         videoUrl.includes('youtube.com') || 
+                         videoUrl.includes('youtu.be') || 
+                         videoUrl.includes('vimeo.com');
 
+  // ✅ For iframe embeds (Wistia, YouTube, Vimeo)
+  if (isIframeEmbed && videoUrl) {
+    // Save to watch history when iframe loads
+    useEffect(() => {
+      if (!hasAddedRef.current) {
+        hasAddedRef.current = true;
+        addItem({
+          movieId: movie.id.toString(),
+          slug: movie.slug || movie.id.toString(),
+          title: movie.title,
+          posterUrl: movie.posterUrl,
+          year: movie.year,
+          rating: movie.rating,
+          type: movie.type,
+        });
+      }
+    }, [movie, addItem]);
+
+    return (
+      <div className="relative h-screen w-screen bg-black" ref={containerRef}>
+        <div className="absolute inset-0">
+          <iframe
+            src={videoUrl}
+            className="h-full w-full"
+            allowFullScreen
+            allow="autoplay; picture-in-picture"
+            onLoad={() => setIsLoading(false)}
+          />
+        </div>
+        
+        {/* Back button */}
+        <button
+          onClick={() => router.back()}
+          className="absolute top-4 left-4 z-50 flex items-center gap-2 rounded-lg bg-black/80 px-4 py-2.5 text-white backdrop-blur-md transition-colors hover:bg-black"
+        >
+          <ArrowLeft size={18} />
+          <span className="text-sm font-medium">Back</span>
+        </button>
+        
+        {/* Title overlay */}
+        <div className="absolute top-4 right-4 z-50 text-right">
+          <p className="text-sm text-matte-400">Now Playing</p>
+          <h2 className="font-display text-2xl text-white drop-shadow-lg">
+            {movie.title}
+          </h2>
+        </div>
+
+        {/* Loading spinner */}
+        {isLoading && (
+          <div className="absolute inset-0 z-30 flex items-center justify-center bg-black/50 pointer-events-none">
+            <div className="h-14 w-14 animate-spin rounded-full border-4 border-white/20 border-t-crimson-DEFAULT" />
+          </div>
+        )}
+      </div>
+    );
+  }
+
+  // ✅ For direct video files (MP4, etc.) - fallback
   // Restore saved progress from database
   useEffect(() => {
     const saved = items.find((item) => item.movieId === movie.id.toString());
@@ -56,7 +119,7 @@ export default function CustomPlayer({ movie }: CustomPlayerProps) {
     }
   }, [items, movie.id]);
 
-  // ✅ NEW: Call addItem ONCE when video first plays
+  // Call addItem ONCE when video first plays
   useEffect(() => {
     if (isPlaying && !hasAddedRef.current) {
       hasAddedRef.current = true;
@@ -72,7 +135,7 @@ export default function CustomPlayer({ movie }: CustomPlayerProps) {
     }
   }, [isPlaying, movie, addItem]);
 
-  // ✅ FIXED: Save progress every 5 seconds — NO addItem here
+  // Save progress every 5 seconds
   useEffect(() => {
     if (isPlaying) {
       progressInterval.current = setInterval(() => {
@@ -93,7 +156,7 @@ export default function CustomPlayer({ movie }: CustomPlayerProps) {
     };
   }, [isPlaying, movie, updateProgress]);
 
-  // ✅ FIXED: Save on unmount with proper metadata
+  // Save on unmount
   useEffect(() => {
     return () => {
       if (videoRef.current && videoRef.current.currentTime > 0) {
@@ -287,7 +350,7 @@ export default function CustomPlayer({ movie }: CustomPlayerProps) {
         </div>
       )}
 
-      {!hasError && (
+      {!hasError && videoUrl && !isIframeEmbed && (
         <video
           ref={videoRef}
           src={videoUrl}
@@ -334,6 +397,7 @@ export default function CustomPlayer({ movie }: CustomPlayerProps) {
         </div>
       )}
 
+      {/* Rest of the video player UI */}
       <AnimatePresence>
         {showControls && !hasError && (
           <motion.div

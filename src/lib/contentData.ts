@@ -23,14 +23,11 @@ function toContentItem(movie: any): ContentItem {
 
 export async function getContent(type?: ContentType): Promise<ContentItem[]> {
   let movies;
-  
   if (type) {
-    // Use tagged template with parameter
     movies = await sql`SELECT * FROM movies WHERE type = ${type}`;
   } else {
     movies = await sql`SELECT * FROM movies`;
   }
-  
   return movies.map(toContentItem);
 }
 
@@ -38,11 +35,6 @@ export async function getContentBySlug(slug: string): Promise<ContentItem | null
   const movies = await sql`SELECT * FROM movies WHERE slug = ${slug}`;
   if (movies.length === 0) return null;
   return toContentItem(movies[0]);
-}
-
-export async function getContentByGenre(genre: string): Promise<ContentItem[]> {
-  const movies = await sql`SELECT * FROM movies WHERE ${genre} = ANY(genres)`;
-  return movies.map(toContentItem);
 }
 
 export async function searchContent(query: string): Promise<ContentItem[]> {

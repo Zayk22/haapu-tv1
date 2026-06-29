@@ -1,56 +1,31 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import { useParams, useSearchParams } from "next/navigation";
-import { useRouter } from "next/navigation";
-import { ArrowLeft } from "lucide-react";
-import { useContinueWatching } from "@/hooks/useContinueWatching";
+import { useParams } from "next/navigation";
+import CustomPlayer from "@/components/movie/CustomPlayer";
 import type { ContentItem } from "@/types/content";
 
 export default function WatchTitlePage() {
   const { slug } = useParams<{ slug: string }>();
-  const searchParams = useSearchParams();
-  const router = useRouter();
-  const { addItem } = useContinueWatching();
   const [content, setContent] = useState<ContentItem | null>(null);
   const [loading, setLoading] = useState(true);
+  const [error, setError] = useState(false);
 
-  // Fetch content by slug
   useEffect(() => {
     fetch(`/api/content?slug=${slug}`)
-      .then((res) => res.json())
+      .then((res) => {
+        if (!res.ok) throw new Error('Not found');
+        return res.json();
+      })
       .then((data) => {
         setContent(data);
         setLoading(false);
-        // Add to continue watching when content loads
-        if (data && data.id) {
-          addItem({
-            movieId: data.id.toString(),
-            title: data.title,
-            posterUrl: data.posterUrl,
-            year: new Date().getFullYear(),
-            rating: data.rating || 0,
-            type: data.type || "movie",
-            slug: data.slug,
-          });
-        }
       })
-      .catch(() => setLoading(false));
-  }, [slug, addItem]);
-
-  const episodeSlug = searchParams.get("episode");
-  let embedUrl = content?.videoEmbedUrl;
-
-  // If it's a TV show and an episode is selected, use that episode's embed URL
-  if (content?.type === "tv_show" && episodeSlug && content.seasons) {
-    for (const season of content.seasons) {
-      const episode = season.episodes.find((ep) => ep.slug === episodeSlug);
-      if (episode?.videoEmbedUrl) {
-        embedUrl = episode.videoEmbedUrl;
-        break;
-      }
-    }
-  }
+      .catch(() => {
+        setError(true);
+        setLoading(false);
+      });
+  }, [slug]);
 
   if (loading) {
     return (
@@ -60,7 +35,7 @@ export default function WatchTitlePage() {
     );
   }
 
-  if (!content) {
+  if (error || !content) {
     return (
       <div className="flex h-screen items-center justify-center bg-matte-black">
         <p className="text-white">Content not found.</p>
@@ -68,37 +43,20 @@ export default function WatchTitlePage() {
     );
   }
 
-  return (
-    <div className="relative h-screen w-screen bg-matte-black">
-      {embedUrl ? (
-        <iframe
-          src={embedUrl}
-          className="absolute inset-0 h-full w-full"
-          allowFullScreen
-          allow="autoplay"
-        />
-      ) : (
-        <div className="flex h-full items-center justify-center text-white">
-          <p>No video source available for this content.</p>
-        </div>
-      )}
+  const movie = {
+    id: parseInt(content.id) || 0,
+    slug: content.slug,
+    title: content.title,
+    posterUrl: content.posterUrl,
+    backdropUrl: content.backdropUrl,
+    rating: content.rating || 0,
+    year: content.releaseDate ? new Date(content.releaseDate).getFullYear() : new Date().getFullYear(),
+    duration: content.duration,
+    genres: content.genres || [],
+    description: content.description,
+    type: "movie" as const,
+    videoEmbedUrl: content.videoEmbedUrl,
+  };
 
-      {/* Back button */}
-      <button
-        onClick={() => router.back()}
-        className="absolute top-4 left-4 z-50 flex items-center gap-2 rounded-lg bg-matte-black/80 px-4 py-2.5 text-white backdrop-blur-md transition-colors hover:bg-matte-black"
-      >
-        <ArrowLeft size={18} />
-        <span className="text-caption font-medium">Back</span>
-      </button>
-
-      {/* Title overlay */}
-      <div className="absolute top-4 right-4 z-50 text-right">
-        <p className="text-caption text-matte-400">Now Playing</p>
-        <h2 className="font-display text-heading-2 text-white drop-shadow-lg">
-          {content.title}
-        </h2>
-      </div>
-    </div>
-  );
+  return <CustomPlayer movie={movie} />;
 }
