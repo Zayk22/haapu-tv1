@@ -1,8 +1,8 @@
 "use client";
 
+import { Bookmark } from "lucide-react";
 import { useWatchlist } from "@/hooks/useWatchlist";
-import { useToast } from "@/components/ui/Toast";
-import { Check, Plus } from "lucide-react";
+import { useToast } from "@/contexts/ToastContext";
 import type { Movie } from "@/types/movie";
 
 interface WatchlistButtonProps {
@@ -10,35 +10,38 @@ interface WatchlistButtonProps {
 }
 
 export default function WatchlistButton({ movie }: WatchlistButtonProps) {
-  const { isAdded, toggle } = useWatchlist(movie.id);
+  const { isAdded, toggle } = useWatchlist(movie.id.toString());
   const { showToast } = useToast();
 
   const handleClick = () => {
     toggle({
-      movieId: movie.id,
+      movieId: movie.id.toString(),
+      slug: movie.slug || movie.id.toString(),
       title: movie.title,
       posterUrl: movie.posterUrl,
-      year: movie.year,
-      rating: movie.rating,
-      type: movie.type,
     });
-    showToast(
-      isAdded ? "Removed from Watchlist" : "Added to Watchlist",
-      "success"
-    );
+    
+    if (!isAdded) {
+      showToast({
+        message: `Added "${movie.title}" to your watchlist`,
+        type: "success",
+      });
+    } else {
+      showToast({
+        message: `Removed "${movie.title}" from your watchlist`,
+        type: "info",
+      });
+    }
   };
 
   return (
     <button
       onClick={handleClick}
-      className={`flex items-center gap-2.5 rounded-lg border px-6 sm:px-8 py-3 sm:py-3.5 text-body font-medium backdrop-blur-sm transition-all duration-300 w-full sm:w-auto justify-center ${
-        isAdded
-          ? "border-crimson-DEFAULT bg-crimson-DEFAULT/20 text-crimson-DEFAULT"
-          : "border-matte-700 bg-matte-900/50 text-white hover:border-matte-600 hover:bg-matte-800/50"
-      }`}
+      className="flex items-center gap-2 rounded-lg border border-matte-700 px-4 py-2 text-sm font-medium text-matte-300 transition-all hover:border-matte-500 hover:text-white"
+      aria-label={isAdded ? "Remove from watchlist" : "Add to watchlist"}
     >
-      {isAdded ? <Check size={18} /> : <Plus size={18} />}
-      {isAdded ? "Saved" : "Add to Watchlist"}
+      <Bookmark size={18} fill={isAdded ? "currentColor" : "none"} />
+      <span>{isAdded ? "In Watchlist" : "Add to Watchlist"}</span>
     </button>
   );
 }
