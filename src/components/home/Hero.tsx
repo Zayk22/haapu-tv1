@@ -33,7 +33,9 @@ export default function Hero({ movies }: HeroProps) {
   }, [validMovies.length]);
 
   const goPrev = useCallback(() => {
-    setCurrentIndex((prev) => (prev - 1 + validMovies.length) % validMovies.length);
+    setCurrentIndex(
+      (prev) => (prev - 1 + validMovies.length) % validMovies.length
+    );
   }, [validMovies.length]);
 
   if (validMovies.length === 0) {
@@ -41,8 +43,12 @@ export default function Hero({ movies }: HeroProps) {
       <section className="relative flex min-h-screen items-center overflow-hidden">
         <div className="absolute inset-0 z-0 bg-gradient-to-br from-matte-black via-matte-950 to-matte-900" />
         <div className="relative z-10 mx-auto max-w-screen-2xl px-6 pt-20 text-center">
-          <h1 className="font-display text-display text-white">Welcome to Happu TV</h1>
-          <p className="mt-4 text-body-lg text-matte-400">No featured content available.</p>
+          <h1 className="font-display text-display text-white">
+            Welcome to Haapu TV
+          </h1>
+          <p className="mt-4 text-body-lg text-matte-400">
+            No featured content available.
+          </p>
         </div>
       </section>
     );
@@ -63,7 +69,11 @@ export default function Hero({ movies }: HeroProps) {
         >
           {movie?.backdropUrl ? (
             <>
-              <img src={movie.backdropUrl} alt="" className="h-full w-full object-cover" />
+              <img
+                src={movie.backdropUrl}
+                alt=""
+                className="h-full w-full object-cover"
+              />
               <div className="absolute inset-0 bg-gradient-to-t from-matte-black via-matte-black/60 to-matte-950/30" />
               <div className="absolute inset-0 bg-gradient-to-r from-matte-black/90 via-matte-black/40 to-transparent" />
             </>
@@ -93,7 +103,7 @@ export default function Hero({ movies }: HeroProps) {
         >
           <div className="max-w-2xl">
             <span className="inline-block rounded-full border border-gold-DEFAULT/30 bg-gold-DEFAULT/10 px-3 py-1 sm:px-4 sm:py-1.5 text-small font-medium uppercase tracking-wider text-gold-soft">
-              Featured Movie
+              Featured
             </span>
 
             <h1 className="mt-4 sm:mt-6 font-display text-display lg:text-hero leading-none text-white">
@@ -111,7 +121,11 @@ export default function Hero({ movies }: HeroProps) {
             <div className="mt-4 sm:mt-6 flex flex-wrap items-center gap-4 sm:gap-6 text-small sm:text-caption text-matte-500">
               {movie.rating > 0 && (
                 <div className="flex items-center gap-1.5">
-                  <Star size={14} className="text-gold-DEFAULT" fill="currentColor" />
+                  <Star
+                    size={14}
+                    className="text-gold-DEFAULT"
+                    fill="currentColor"
+                  />
                   <span className="font-medium text-white">{movie.rating}</span>
                 </div>
               )}
@@ -131,8 +145,9 @@ export default function Hero({ movies }: HeroProps) {
             <div className="mt-6 sm:mt-8 flex flex-col sm:flex-row flex-wrap items-start sm:items-center gap-3 sm:gap-4">
               <button
                 onClick={() => {
+                  // Fixed: was /title/ — now consistent with MovieCard (/movie/)
                   const slug = movie.slug || validMovies[currentIndex]?.slug;
-                  if (slug) router.push(`/title/${slug}`);
+                  if (slug) router.push(`/movie/${slug}`);
                 }}
                 className="flex items-center gap-2.5 rounded-lg bg-crimson-DEFAULT px-6 sm:px-8 py-3 sm:py-3.5 text-body font-semibold text-white shadow-glow-lg transition-colors duration-300 hover:bg-crimson-dark w-full sm:w-auto justify-center"
               >

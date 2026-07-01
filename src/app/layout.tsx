@@ -19,9 +19,9 @@ const playfair = Playfair_Display({
 });
 
 export const metadata: Metadata = {
-  title: "Happu TV | Stream Movies & TV Shows",
-  description: "Watch your favorite movies, videos, and TV shows on Happu TV.",
-}
+  title: "Haapu TV | Stream Movies & TV Shows",
+  description: "Watch your favorite movies, videos, and TV shows on Haapu TV.",
+};
 
 export default function RootLayout({
   children,
