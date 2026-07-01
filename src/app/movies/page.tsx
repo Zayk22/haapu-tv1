@@ -15,7 +15,7 @@ function toMovie(item: ContentItem) {
     description: item.description,
     quality: "HD" as const,
     type: "movie" as const,
-    slug: item.slug, // ✅ ADD THIS LINE
+    slug: item.slug,
   };
 }
 
@@ -24,31 +24,36 @@ export default async function MoviesPage() {
   const movies = moviesData.map(toMovie);
 
   return (
-    <main className="min-h-screen pt-24">
-      <div className="mx-auto max-w-screen-2xl px-4 sm:px-6 lg:px-12 mb-8">
-        <h1 className="font-display text-display text-white">Movies</h1>
-        <p className="mt-2 text-body-lg text-matte-500">
-          Explore our full movie catalog.
-        </p>
+    <main className="min-h-screen bg-matte-black">
+      <div className="pt-24 pb-6 px-4 sm:px-6 lg:px-12 mx-auto max-w-screen-2xl">
+        <div className="flex items-end gap-4">
+          <h1 className="font-display text-display text-white">Movies</h1>
+          {movies.length > 0 && (
+            <span className="mb-1 text-body text-matte-500">
+              {movies.length} title{movies.length !== 1 ? "s" : ""}
+            </span>
+          )}
+        </div>
       </div>
 
       {movies.length > 0 ? (
-        <div className="mx-auto max-w-screen-2xl px-4 sm:px-6 lg:px-12">
-          <div className="flex gap-4 overflow-x-auto pb-8 no-scrollbar">
+        <div className="px-4 sm:px-6 lg:px-12 pb-20 mx-auto max-w-screen-2xl">
+          <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 xl:grid-cols-6 gap-3 sm:gap-4 lg:gap-5">
             {movies.map((movie, index) => (
-              <div key={movie.id} className="w-[160px] flex-shrink-0 sm:w-[200px] lg:w-[220px]">
-                <MovieCard
-                  movie={movie}
-                  index={index}
-                  slug={movie.slug}
-                />
-              </div>
+              <MovieCard
+                key={movie.id}
+                movie={movie}
+                index={index}
+                slug={movie.slug}
+              />
             ))}
           </div>
         </div>
       ) : (
-        <div className="flex min-h-[30vh] items-center justify-center">
-          <p className="text-body-lg text-matte-600">No movies available at the moment.</p>
+        <div className="flex min-h-[40vh] items-center justify-center">
+          <p className="text-body-lg text-matte-500">
+            No movies available at the moment.
+          </p>
         </div>
       )}
     </main>
