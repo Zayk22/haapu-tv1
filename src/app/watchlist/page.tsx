@@ -2,22 +2,27 @@
 
 import { useWatchlist } from "@/hooks/useWatchlist";
 import Link from "next/link";
-import { Bookmark, Trash2, Play } from "lucide-react";
+import { Bookmark, Trash2, Play, ChevronLeft } from "lucide-react";
 
 export default function WatchlistPage() {
   const { watchlist, loading, remove } = useWatchlist();
 
   if (loading) {
     return (
-      <main className="min-h-screen bg-matte-black pt-24">
+      <main className="min-h-screen bg-matte-black pt-24 pb-24">
         <div className="mx-auto max-w-screen-2xl px-4 sm:px-6 lg:px-12">
+          {/* Back link skeleton */}
+          <div className="mb-6 h-4 w-20 animate-pulse rounded bg-matte-800" />
           <div className="mb-8">
-            <div className="h-10 w-48 animate-pulse rounded bg-matte-800" />
-            <div className="mt-2 h-5 w-32 animate-pulse rounded bg-matte-800" />
+            <div className="h-10 w-36 animate-pulse rounded bg-matte-800" />
+            <div className="mt-2 h-5 w-24 animate-pulse rounded bg-matte-800" />
           </div>
           <div className="grid grid-cols-2 gap-4 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 xl:grid-cols-6">
             {[...Array(6)].map((_, i) => (
-              <div key={i} className="aspect-[2/3] animate-pulse rounded-lg bg-matte-800" />
+              <div
+                key={i}
+                className="aspect-[2/3] animate-pulse rounded-lg bg-matte-800"
+              />
             ))}
           </div>
         </div>
@@ -26,14 +31,23 @@ export default function WatchlistPage() {
   }
 
   return (
-    <main className="min-h-screen bg-matte-black pt-24 pb-20">
+    <main className="min-h-screen bg-matte-black pt-24 pb-24 lg:pb-8">
       <div className="mx-auto max-w-screen-2xl px-4 sm:px-6 lg:px-12">
 
-        {/* Header */}
-        <div className="mb-8 flex items-end justify-between">
+        {/* Back to Home — always visible, one tap away */}
+        <Link
+          href="/"
+          className="mb-6 inline-flex items-center gap-1.5 text-caption text-matte-500 transition-colors hover:text-white"
+        >
+          <ChevronLeft size={16} />
+          Back to Home
+        </Link>
+
+        {/* Page header */}
+        <div className="mb-8 flex flex-col sm:flex-row sm:items-end sm:justify-between gap-4">
           <div>
             <h1 className="font-display text-display text-white">My List</h1>
-            <p className="mt-2 text-body text-matte-500">
+            <p className="mt-1 text-body text-matte-500">
               {watchlist.length === 0
                 ? "Movies you save will appear here"
                 : `${watchlist.length} title${watchlist.length !== 1 ? "s" : ""} saved`}
@@ -42,9 +56,9 @@ export default function WatchlistPage() {
           {watchlist.length > 0 && (
             <Link
               href="/movies"
-              className="hidden sm:inline-flex rounded-lg border border-matte-700 px-5 py-2 text-caption font-medium text-matte-300 transition-colors hover:border-matte-500 hover:text-white"
+              className="inline-flex items-center gap-2 rounded-lg border border-matte-700 px-5 py-2.5 text-caption font-medium text-matte-300 transition-colors hover:border-matte-500 hover:text-white"
             >
-              Browse More
+              Browse More Movies
             </Link>
           )}
         </div>
@@ -59,17 +73,27 @@ export default function WatchlistPage() {
               Your list is empty
             </h2>
             <p className="text-body text-matte-500 max-w-sm mb-8">
-              Browse movies and tap the + button to save them here for later.
+              Browse movies and tap the{" "}
+              <span className="text-white font-medium">+ My List</span> button
+              on any title to save it here.
             </p>
-            <Link
-              href="/movies"
-              className="rounded-lg bg-crimson-DEFAULT px-8 py-3 text-body font-semibold text-white transition-colors hover:bg-crimson-dark"
-            >
-              Browse Movies
-            </Link>
+            <div className="flex flex-col sm:flex-row gap-3">
+              <Link
+                href="/movies"
+                className="rounded-lg bg-crimson-DEFAULT px-8 py-3 text-body font-semibold text-white transition-colors hover:bg-crimson-dark"
+              >
+                Browse Movies
+              </Link>
+              <Link
+                href="/"
+                className="rounded-lg border border-matte-700 px-8 py-3 text-body font-medium text-matte-300 transition-colors hover:border-matte-500 hover:text-white"
+              >
+                Go Home
+              </Link>
+            </div>
           </div>
         ) : (
-          // Movie grid — same layout as /movies page for consistency
+          /* Movie grid */
           <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 xl:grid-cols-6 gap-3 sm:gap-4 lg:gap-5">
             {watchlist.map((item) => (
               <div key={item.id} className="group relative">
@@ -85,18 +109,18 @@ export default function WatchlistPage() {
                       }}
                     />
                     {/* Play overlay on hover */}
-                    <div className="absolute inset-0 flex items-center justify-center bg-black/40 opacity-0 transition-opacity duration-200 group-hover:opacity-100">
+                    <div className="absolute inset-0 flex items-center justify-center bg-black/50 opacity-0 transition-opacity duration-200 group-hover:opacity-100">
                       <div className="flex h-12 w-12 items-center justify-center rounded-full border-2 border-white bg-white/10 backdrop-blur-sm">
                         <Play size={20} fill="white" className="ml-0.5" />
                       </div>
                     </div>
                   </div>
-                  <h3 className="mt-2 line-clamp-1 text-small font-medium text-matte-300">
+                  <h3 className="mt-2 line-clamp-1 text-small font-medium text-matte-300 group-hover:text-white transition-colors">
                     {item.movie_title}
                   </h3>
                 </Link>
 
-                {/* Remove button */}
+                {/* Remove button — visible on hover */}
                 <button
                   onClick={() => remove(item.movie_id)}
                   className="absolute right-1.5 top-1.5 rounded-full bg-black/70 p-1.5 text-white opacity-0 transition-all duration-200 hover:bg-crimson-DEFAULT group-hover:opacity-100"
