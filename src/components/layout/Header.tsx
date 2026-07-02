@@ -3,11 +3,10 @@
 import { useState, useEffect, useCallback } from "react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import { Search, Bell, Menu, X, Bookmark, User } from "lucide-react";
+import { Search, Bell, User, Bookmark } from "lucide-react";
 import { SignedIn, SignedOut, UserButton } from "@clerk/nextjs";
 import SearchOverlay from "@/components/layout/SearchOverlay";
 
-// Add "TV Shows" and "Kids" back here once content exists
 const navLinks = [
   { label: "Home", href: "/" },
   { label: "Movies", href: "/movies" },
@@ -18,9 +17,7 @@ export default function Header() {
   const pathname = usePathname();
   const [isScrolled, setIsScrolled] = useState(false);
   const [isSearchOpen, setIsSearchOpen] = useState(false);
-  const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
 
-  // ALL hooks must run before any early return — React Rules of Hooks
   useEffect(() => {
     const handleScroll = () => setIsScrolled(window.scrollY > 50);
     window.addEventListener("scroll", handleScroll);
@@ -43,10 +40,7 @@ export default function Header() {
     return () => window.removeEventListener("keydown", handleKeyDown);
   }, [handleKeyDown]);
 
-  // Early return AFTER all hooks — this is the correct place
   if (pathname?.startsWith("/admin")) return null;
-
-  const handleMobileLinkClick = () => setIsMobileMenuOpen(false);
 
   const isActive = (href: string) => {
     if (href === "/") return pathname === "/";
@@ -59,41 +53,48 @@ export default function Header() {
         className={`fixed top-0 z-50 w-full transition-all duration-500 ${
           isScrolled
             ? "bg-matte-black/95 backdrop-blur-md shadow-elevated"
-            : "bg-transparent"
+            : "bg-gradient-to-b from-matte-black/80 to-transparent"
         }`}
       >
         <div className="mx-auto flex max-w-screen-2xl items-center justify-between px-4 py-3 lg:px-12 lg:py-4">
-          {/* LEFT — logo + nav */}
+
+          {/* LEFT — logo + desktop nav */}
           <div className="flex items-center gap-6 lg:gap-10">
-            <Link href="/" className="group flex-shrink-0">
+            <Link href="/" className="flex-shrink-0">
               <img
                 src="/logo.png"
                 alt="Haapu TV"
-                className="h-14 w-auto object-contain"
+                className="h-12 w-auto object-contain"
               />
             </Link>
-            <nav className="hidden items-center gap-6 lg:flex lg:gap-8">
+
+            {/* Desktop nav only — mobile uses bottom nav */}
+            <nav className="hidden items-center gap-8 lg:flex">
               {navLinks.map((link) => (
                 <Link
                   key={link.href}
                   href={link.href}
-                  className={`text-caption font-medium transition-colors duration-300 ${
+                  className={`relative text-caption font-medium transition-colors duration-300 ${
                     isActive(link.href)
                       ? "text-white"
                       : "text-matte-500 hover:text-white"
                   }`}
                 >
                   {link.label}
+                  {/* Gold underline on active link */}
+                  {isActive(link.href) && (
+                    <span className="absolute -bottom-1 left-0 right-0 h-[2px] rounded-full bg-gold-DEFAULT" />
+                  )}
                 </Link>
               ))}
             </nav>
           </div>
 
-          {/* RIGHT — icons + user */}
-          <div className="flex items-center gap-2 sm:gap-4">
+          {/* RIGHT — icons */}
+          <div className="flex items-center gap-2 sm:gap-3">
             <button
               onClick={() => setIsSearchOpen(true)}
-              className="flex items-center gap-2 text-matte-500 transition-colors duration-300 hover:text-white"
+              className="flex items-center gap-2 rounded-full p-2 text-matte-500 transition-all duration-300 hover:bg-white/5 hover:text-white"
               aria-label="Search"
             >
               <Search size={20} strokeWidth={1.5} />
@@ -102,20 +103,21 @@ export default function Header() {
               </kbd>
             </button>
 
+            {/* Watchlist — desktop only, bottom nav handles mobile */}
             <Link
               href="/watchlist"
-              className={`flex h-9 w-9 items-center justify-center rounded-full transition-all duration-300 ${
+              className={`hidden lg:flex h-9 w-9 items-center justify-center rounded-full transition-all duration-300 ${
                 pathname === "/watchlist"
                   ? "text-white"
                   : "text-matte-500 hover:text-white"
               }`}
-              aria-label="Watchlist"
+              aria-label="My List"
             >
               <Bookmark size={18} strokeWidth={1.5} />
             </Link>
 
             <button
-              className="hidden text-matte-500 transition-colors duration-300 hover:text-white sm:block"
+              className="hidden text-matte-500 transition-colors duration-300 hover:text-white lg:block"
               aria-label="Notifications"
             >
               <Bell size={20} strokeWidth={1.5} />
@@ -125,7 +127,7 @@ export default function Header() {
               <UserButton
                 appearance={{
                   elements: {
-                    userButtonAvatarBox: "h-9 w-9",
+                    userButtonAvatarBox: "h-8 w-8 lg:h-9 lg:w-9",
                     userButtonTrigger: "focus:shadow-none",
                   },
                 }}
@@ -136,55 +138,21 @@ export default function Header() {
             <SignedOut>
               <Link
                 href="/sign-in"
-                className="flex h-9 w-9 items-center justify-center rounded-full bg-matte-800 text-matte-500 transition-all duration-300 hover:bg-matte-700 hover:text-white"
+                className="hidden sm:flex items-center gap-2 rounded-lg border border-matte-700 px-4 py-2 text-caption font-medium text-white transition-all hover:border-white/40 hover:bg-white/5"
+              >
+                Sign In
+              </Link>
+              {/* Mobile — just icon */}
+              <Link
+                href="/sign-in"
+                className="sm:hidden flex h-9 w-9 items-center justify-center rounded-full bg-matte-800 text-matte-500 transition-all hover:text-white"
                 aria-label="Sign in"
               >
                 <User size={18} strokeWidth={1.5} />
               </Link>
             </SignedOut>
-
-            <button
-              onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)}
-              className="p-2 text-matte-500 transition-colors hover:text-white lg:hidden"
-              aria-label={isMobileMenuOpen ? "Close menu" : "Open menu"}
-            >
-              {isMobileMenuOpen ? <X size={24} /> : <Menu size={24} />}
-            </button>
           </div>
         </div>
-
-        {/* Mobile menu */}
-        {isMobileMenuOpen && (
-          <nav className="border-t border-matte-800 bg-matte-black/95 backdrop-blur-md lg:hidden">
-            <div className="mx-auto max-w-screen-2xl px-4 py-4">
-              {navLinks.map((link) => (
-                <Link
-                  key={link.href}
-                  href={link.href}
-                  onClick={handleMobileLinkClick}
-                  className={`block py-3 text-body font-medium transition-colors duration-200 ${
-                    isActive(link.href)
-                      ? "text-white"
-                      : "text-matte-300 hover:text-white"
-                  }`}
-                >
-                  {link.label}
-                </Link>
-              ))}
-              <Link
-                href="/watchlist"
-                onClick={handleMobileLinkClick}
-                className={`block py-3 text-body font-medium transition-colors duration-200 ${
-                  pathname === "/watchlist"
-                    ? "text-white"
-                    : "text-matte-300 hover:text-white"
-                }`}
-              >
-                My Watchlist
-              </Link>
-            </div>
-          </nav>
-        )}
       </header>
 
       <SearchOverlay
