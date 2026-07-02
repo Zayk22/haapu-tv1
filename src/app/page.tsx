@@ -4,7 +4,7 @@ import ContinueWatchingRow from "@/components/home/ContinueWatchingRow";
 import Hero from "@/components/home/Hero";
 import MovieRow from "@/components/home/MovieRow";
 
-export const dynamic = 'force-dynamic';
+export const dynamic = "force-dynamic";
 export const revalidate = 0;
 
 function toMovie(movie: any) {
@@ -15,7 +15,10 @@ function toMovie(movie: any) {
     posterUrl: movie.poster_url,
     backdropUrl: movie.backdrop_url,
     rating: movie.rating,
-    year: new Date().getFullYear(),
+    // Use actual release_date from DB — falls back to 0 (hidden by MovieCard)
+    year: movie.release_date
+      ? new Date(movie.release_date).getFullYear()
+      : 0,
     duration: movie.duration,
     genres: movie.genres,
     description: movie.description,
@@ -25,32 +28,14 @@ function toMovie(movie: any) {
 }
 
 export default async function Home() {
-  // Get ALL movies
-  const allMovies = await sql`SELECT * FROM movies ORDER BY id`;
-  
-  // Get ALL featured movies (NO LIMIT!)
-  const featuredMovies = await sql`
-    SELECT * FROM movies 
-    WHERE is_featured = true 
-    ORDER BY hero_order ASC
-  `;
-  
-  // Get trending movies
-  const trendingMovies = await sql`
-    SELECT * FROM movies 
-    WHERE is_trending = true
-  `;
-  
-  // Get recommended movies
-  const recommendedMovies = await sql`
-    SELECT * FROM movies 
-    WHERE is_recommended = true
-  `;
-
-  // DEBUG LOGS - NOW INSIDE THE COMPONENT
-  console.log("=== HOMEPAGE DEBUG ===");
-  console.log("Featured movies count:", featuredMovies.length);
-  console.log("Featured movies:", featuredMovies.map(m => ({ id: m.id, title: m.title, is_featured: m.is_featured })));
+  const [featuredMovies, trendingMovies, recommendedMovies, latestMovies] =
+    await Promise.all([
+      sql`SELECT * FROM movies WHERE is_featured = true ORDER BY hero_order ASC`,
+      sql`SELECT * FROM movies WHERE is_trending = true ORDER BY id DESC`,
+      sql`SELECT * FROM movies WHERE is_recommended = true ORDER BY id DESC`,
+      // "New Additions" — most recently added, always has content
+      sql`SELECT * FROM movies ORDER BY id DESC LIMIT 12`,
+    ]);
 
   return (
     <main>
@@ -58,11 +43,33 @@ export default async function Home() {
       <Hero movies={featuredMovies.map(toMovie)} />
 
       <div className="relative z-20 -mt-16">
+        {/* Continue Watching — only shows when user has watch history */}
         <ContinueWatchingRow />
-        
-        <MovieRow title="Trending Now" movies={trendingMovies.map(toMovie)} viewAllLink="/movies" />
-        <MovieRow title="Popular on Haapu" movies={allMovies.map(toMovie)} viewAllLink="/movies" />
-        <MovieRow title="Recommended for You" movies={recommendedMovies.map(toMovie)} viewAllLink="/movies" />
+
+        {/* Trending — only shown if admin has marked movies as trending */}
+        {trendingMovies.length > 0 && (
+          <MovieRow
+            title="Trending Now"
+            movies={trendingMovies.map(toMovie)}
+            viewAllLink="/movies"
+          />
+        )}
+
+        {/* New Additions — always shows, newest movies first */}
+        <MovieRow
+          title="New Additions"
+          movies={latestMovies.map(toMovie)}
+          viewAllLink="/movies"
+        />
+
+        {/* Recommended — only shown if admin has marked movies as recommended */}
+        {recommendedMovies.length > 0 && (
+          <MovieRow
+            title="Recommended for You"
+            movies={recommendedMovies.map(toMovie)}
+            viewAllLink="/movies"
+          />
+        )}
       </div>
     </main>
   );
