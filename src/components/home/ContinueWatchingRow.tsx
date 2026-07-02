@@ -6,7 +6,8 @@ import MovieCard from "@/components/movie/MovieCard";
 export default function ContinueWatchingRow() {
   const { items, loading } = useContinueWatching();
 
-  const watchedMovies = items.filter((item) => item.progress > 5);
+  // ✅ FIXED: Show any movie that has been watched (progress >= 0) and has a title
+  const watchedMovies = items.filter((item) => item.progress >= 0 && item.movieTitle);
 
   if (loading) {
     return (

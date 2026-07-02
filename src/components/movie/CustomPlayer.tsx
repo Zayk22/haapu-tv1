@@ -53,23 +53,7 @@ export default function CustomPlayer({ movie }: CustomPlayerProps) {
                          videoUrl.includes('youtu.be') || 
                          videoUrl.includes('vimeo.com');
 
-  // 🔧 FIX (React Rules of Hooks violation): the old code put a useEffect
-  // INSIDE this `if (isIframeEmbed)` block and returned JSX from inside it.
-  // That means the number/order of hooks React saw on render #1 (e.g.
-  // while `movie` is still loading and isIframeEmbed is false) could
-  // differ from render #2 (once movie data arrives and isIframeEmbed
-  // flips to true). React requires the exact same hooks, in the exact
-  // same order, on every render of a component instance — when that's
-  // violated React throws "Rendered more hooks than during the previous
-  // render" and the player crashes/blanks out. That's almost certainly
-  // your "Wistia embeds sometimes fail to load" bug: it only happens on
-  // the renders where the hook count changes, not every time.
-  //
-  // The fix: every hook below always runs, every render. We branch on
-  // isIframeEmbed *inside* the effect bodies instead of around the hooks
-  // themselves. The actual iframe-vs-video JSX branch happens later,
-  // after all hooks — branching on JSX is fine, only branching on hooks
-  // is not.
+  // 🔧 FIX: React Rules of Hooks violation fix
   useEffect(() => {
     if (hasAddedRef.current) return;
     if (isIframeEmbed) {
@@ -85,6 +69,32 @@ export default function CustomPlayer({ movie }: CustomPlayerProps) {
       });
     }
   }, [isIframeEmbed, movie, addItem]);
+
+  // ── IFRAME PROGRESS TIMER ──────────────────────────────────────────────
+  // Wistia/YouTube iframes don't expose playback position to the parent
+  // page, so we can't track where the user is in the video. Instead we
+  // track TIME SPENT on the watch page (elapsed wall-clock seconds).
+  // Every 10 seconds we call updateProgress with the running total.
+  // Once it passes 5s the ContinueWatchingRow filter is satisfied and
+  // the movie appears in Continue Watching — on every device the user
+  // is signed in to.
+  useEffect(() => {
+    if (!isIframeEmbed) return;
+
+    let elapsed = 0;
+
+    const timer = setInterval(() => {
+      elapsed += 10;
+      updateProgress(movie.id.toString(), elapsed, {
+        movieSlug: movie.slug || movie.id.toString(),
+        movieTitle: movie.title,
+        posterUrl: movie.posterUrl,
+        duration: undefined,
+      });
+    }, 10000); // every 10 seconds
+
+    return () => clearInterval(timer);
+  }, [isIframeEmbed, movie, updateProgress]);
 
   // For direct video files (MP4, etc.) - fallback
   // Restore saved progress from database
