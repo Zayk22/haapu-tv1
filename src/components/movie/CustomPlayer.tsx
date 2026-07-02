@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useRef, useEffect, useCallback, useMemo } from "react";
+import { useState, useRef, useEffect, useCallback } from "react";
 import { useRouter } from "next/navigation";
 import { motion, AnimatePresence } from "framer-motion";
 import {
@@ -14,24 +14,18 @@ interface CustomPlayerProps {
   movie: Movie;
 }
 
-// Extend window for Wistia globals
-declare global {
-  interface Window {
-    _wq: any[];
-    Wistia: any;
-  }
-}
-
 export default function CustomPlayer({ movie }: CustomPlayerProps) {
   const router = useRouter();
+  const { items, loading: historyLoading, addItem, updateProgress } = useContinueWatching();
+
   const videoRef = useRef<HTMLVideoElement>(null);
   const containerRef = useRef<HTMLDivElement>(null);
   const progressRef = useRef<HTMLDivElement>(null);
   const hideTimer = useRef<NodeJS.Timeout | null>(null);
   const progressInterval = useRef<NodeJS.Timeout | null>(null);
   const hasAddedRef = useRef(false);
-  const wistiaRef = useRef<any>(null);
-  const itemsRef = useRef<any[]>([]);
+  const elapsedRef = useRef(0);
+  const initializedRef = useRef(false);
 
   const [isPlaying, setIsPlaying] = useState(false);
   const [isMuted, setIsMuted] = useState(false);
@@ -46,166 +40,112 @@ export default function CustomPlayer({ movie }: CustomPlayerProps) {
   const [hasError, setHasError] = useState(false);
   const [hoverTime, setHoverTime] = useState<number | null>(null);
   const [hoverPosition, setHoverPosition] = useState(0);
-  const [wistiaReady, setWistiaReady] = useState(false);
-
-  const { items, updateProgress, addItem } = useContinueWatching();
-
-  // Keep itemsRef in sync so Wistia onReady callback can read latest items
-  useEffect(() => {
-    itemsRef.current = items;
-  }, [items]);
 
   const videoUrl = movie.videoEmbedUrl || "";
+  const isWistia = videoUrl.includes("wistia.net") || videoUrl.includes("wistia.com");
+  const isYouTube = videoUrl.includes("youtube.com") || videoUrl.includes("youtu.be");
+  const isVimeo = videoUrl.includes("vimeo.com");
+  const isExternalEmbed = isWistia || isYouTube || isVimeo;
 
-  // Extract Wistia video ID — switches from dumb iframe to inline embed
-  // so we get real JS API access (seek, timechange events, duration)
-  const wistiaVideoId = useMemo(() => {
-    const match = videoUrl.match(
-      /(?:embed\/iframe\/|medias\/|wistia\.com\/medias\/)([a-zA-Z0-9]+)/
-    );
-    return match?.[1] || null;
-  }, [videoUrl]);
+  // Saved progress for this movie from DB — only valid once historyLoading is false
+  const savedItem = items.find((i) => i.movieId === movie.id.toString());
+  const savedProgress = savedItem?.progress || 0;
 
-  const isWistia = Boolean(wistiaVideoId);
-  // YouTube/Vimeo stay as iframes — only Wistia gets the inline treatment
-  const isExternalIframe =
-    !isWistia &&
-    (videoUrl.includes("youtube.com") ||
-      videoUrl.includes("youtu.be") ||
-      videoUrl.includes("vimeo.com"));
+  // Build the embed URL — this is where cross-device resume happens.
+  // We wait for historyLoading to be false before calling this, so
+  // savedProgress always contains the real DB value, not 0.
+  const buildEmbedUrl = useCallback(() => {
+    if (!videoUrl) return "";
 
-  // ── ADD TO WATCH HISTORY ON MOUNT ─────────────────────────────────────
-  useEffect(() => {
-    if (hasAddedRef.current) return;
-    if (isWistia || isExternalIframe) {
-      hasAddedRef.current = true;
-      addItem({
-        movieId: movie.id.toString(),
-        slug: movie.slug || movie.id.toString(),
-        title: movie.title,
-        posterUrl: movie.posterUrl,
-        year: movie.year,
-        rating: movie.rating,
-        type: movie.type,
-      });
-    }
-  }, [isWistia, isExternalIframe, movie, addItem]);
-
-  // ── WISTIA INLINE EMBED SETUP ─────────────────────────────────────────
-  // This is the key cross-device sync fix. Inline embed gives us the
-  // Wistia JS API so we can:
-  //   1. Read the actual video position (not just wall-clock time)
-  //   2. Seek to the saved DB position when the video loads
-  useEffect(() => {
-    if (!isWistia || !wistiaVideoId) return;
-
-    // Load Wistia E-v1.js once per page
-    const scriptId = "wistia-ev1";
-    if (!document.getElementById(scriptId)) {
-      const script = document.createElement("script");
-      script.id = scriptId;
-      script.src = "//fast.wistia.com/assets/external/E-v1.js";
-      script.async = true;
-      document.head.appendChild(script);
+    if (isWistia) {
+      const match = videoUrl.match(/embed\/iframe\/([a-zA-Z0-9]+)/);
+      const videoId = match?.[1];
+      if (!videoId) return videoUrl;
+      const base = `https://fast.wistia.net/embed/iframe/${videoId}`;
+      const params = new URLSearchParams({ autoPlay: "true", endVideoBehavior: "loop" });
+      // Bake resume position directly into the URL — Wistia reads ?time= on load
+      if (savedProgress > 10) {
+        params.set("time", String(Math.floor(savedProgress)));
+      }
+      return `${base}?${params.toString()}`;
     }
 
-    window._wq = window._wq || [];
-    window._wq.push({
-      id: wistiaVideoId,
-      onReady: (video: any) => {
-        wistiaRef.current = video;
-        setIsLoading(false);
-        setWistiaReady(true);
+    if (isYouTube) {
+      const separator = videoUrl.includes("?") ? "&" : "?";
+      const extra = savedProgress > 10
+        ? `autoplay=1&start=${Math.floor(savedProgress)}`
+        : "autoplay=1";
+      return `${videoUrl}${separator}${extra}`;
+    }
 
-        // Seek to the progress saved in our DB — this is the sync magic
-        const saved = itemsRef.current.find(
-          (i) => i.movieId === movie.id.toString()
-        );
-        if (saved && saved.progress > 10) {
-          // Small delay ensures the player is fully initialised before seek
-          setTimeout(() => {
-            video.time(saved.progress);
-          }, 400);
-        }
+    return videoUrl;
+  }, [videoUrl, isWistia, isYouTube, savedProgress]);
 
-        // Also update our UI state as the video plays
-        video.bind("timechange", (t: number) => {
-          setCurrentTime(Math.floor(t));
-        });
-
-        video.bind("play", () => setIsPlaying(true));
-        video.bind("pause", () => setIsPlaying(false));
-        video.bind("end", () => setIsPlaying(false));
-
-        video.bind("durationchange", (d: number) => {
-          setDuration(Math.floor(d));
-        });
-      },
+  // Add to watch history once (after history has loaded so we don't double-add)
+  useEffect(() => {
+    if (historyLoading || hasAddedRef.current || !isExternalEmbed) return;
+    hasAddedRef.current = true;
+    addItem({
+      movieId: movie.id.toString(),
+      slug: movie.slug || movie.id.toString(),
+      title: movie.title,
+      posterUrl: movie.posterUrl,
+      year: movie.year,
+      rating: movie.rating,
+      type: movie.type,
     });
+  }, [historyLoading, isExternalEmbed, movie, addItem]);
 
-    return () => {
-      try {
-        wistiaRef.current?.unbind("timechange");
-        wistiaRef.current?.unbind("play");
-        wistiaRef.current?.unbind("pause");
-        wistiaRef.current?.unbind("end");
-        wistiaRef.current?.unbind("durationchange");
-      } catch {}
-    };
-  }, [isWistia, wistiaVideoId, movie.id]);
-
-  // ── WISTIA PROGRESS SAVE ──────────────────────────────────────────────
-  // Save actual video position to DB every 10 seconds
-  // This is what the OTHER device reads when resuming
+  // Progress timer for external embeds — saves every 10 seconds.
+  // Initialises elapsed from savedProgress so the count continues
+  // from where the user left off on ANY device.
   useEffect(() => {
-    if (!isWistia || !wistiaReady) return;
+    if (historyLoading || !isExternalEmbed) return;
 
-    const interval = setInterval(() => {
-      if (!wistiaRef.current) return;
-      try {
-        const currentPos = Math.floor(wistiaRef.current.time());
-        const totalDur = Math.floor(wistiaRef.current.duration?.() || 0);
-        if (currentPos > 5) {
-          updateProgress(movie.id.toString(), currentPos, {
-            movieSlug: movie.slug || movie.id.toString(),
-            movieTitle: movie.title,
-            posterUrl: movie.posterUrl,
-            duration: totalDur || undefined,
-          });
-        }
-      } catch {}
-    }, 10000);
+    // Only initialise once per mount so re-renders don't reset the counter
+    if (!initializedRef.current) {
+      elapsedRef.current = savedProgress;
+      initializedRef.current = true;
+    }
 
-    return () => clearInterval(interval);
-  }, [isWistia, wistiaReady, movie, updateProgress]);
-
-  // ── FALLBACK EXTERNAL IFRAME PROGRESS TIMER (YouTube/Vimeo) ──────────
-  useEffect(() => {
-    if (!isExternalIframe) return;
-    let elapsed = 0;
     const timer = setInterval(() => {
-      elapsed += 10;
-      updateProgress(movie.id.toString(), elapsed, {
+      elapsedRef.current += 10;
+      updateProgress(movie.id.toString(), elapsedRef.current, {
         movieSlug: movie.slug || movie.id.toString(),
         movieTitle: movie.title,
         posterUrl: movie.posterUrl,
         duration: undefined,
       });
     }, 10000);
+
     return () => clearInterval(timer);
-  }, [isExternalIframe, movie, updateProgress]);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [historyLoading, isExternalEmbed]);
+
+  // ── CONTROLS HIDE TIMER ───────────────────────────────────────────────
+  const resetHideTimer = useCallback(() => {
+    setShowControls(true);
+    if (hideTimer.current) clearTimeout(hideTimer.current);
+    if (isPlaying) {
+      hideTimer.current = setTimeout(() => setShowControls(false), 3000);
+    }
+  }, [isPlaying]);
+
+  useEffect(() => {
+    return () => { if (hideTimer.current) clearTimeout(hideTimer.current); };
+  }, []);
 
   // ── DIRECT VIDEO HOOKS ────────────────────────────────────────────────
   useEffect(() => {
-    if (isWistia || isExternalIframe) return;
-    const saved = items.find((item) => item.movieId === movie.id.toString());
+    if (isExternalEmbed) return;
+    const saved = items.find((i) => i.movieId === movie.id.toString());
     if (saved && saved.progress > 0 && videoRef.current) {
       videoRef.current.currentTime = saved.progress;
     }
-  }, [items, movie.id, isWistia, isExternalIframe]);
+  }, [items, movie.id, isExternalEmbed]);
 
   useEffect(() => {
-    if (isWistia || isExternalIframe) return;
+    if (isExternalEmbed) return;
     if (isPlaying && !hasAddedRef.current) {
       hasAddedRef.current = true;
       addItem({
@@ -218,10 +158,10 @@ export default function CustomPlayer({ movie }: CustomPlayerProps) {
         type: movie.type,
       });
     }
-  }, [isPlaying, movie, addItem, isWistia, isExternalIframe]);
+  }, [isPlaying, movie, addItem, isExternalEmbed]);
 
   useEffect(() => {
-    if (isWistia || isExternalIframe) return;
+    if (isExternalEmbed) return;
     if (isPlaying) {
       progressInterval.current = setInterval(() => {
         if (videoRef.current) {
@@ -236,84 +176,41 @@ export default function CustomPlayer({ movie }: CustomPlayerProps) {
         }
       }, 5000);
     }
-    return () => {
-      if (progressInterval.current) clearInterval(progressInterval.current);
-    };
-  }, [isPlaying, movie, updateProgress, isWistia, isExternalIframe]);
+    return () => { if (progressInterval.current) clearInterval(progressInterval.current); };
+  }, [isPlaying, movie, updateProgress, isExternalEmbed]);
 
   useEffect(() => {
     return () => {
       if (videoRef.current && videoRef.current.currentTime > 0) {
-        updateProgress(
-          movie.id.toString(),
-          Math.floor(videoRef.current.currentTime),
-          {
-            movieSlug: movie.slug || movie.id.toString(),
-            movieTitle: movie.title,
-            posterUrl: movie.posterUrl,
-            duration: Math.floor(videoRef.current.duration || 0),
-          }
-        );
+        updateProgress(movie.id.toString(), Math.floor(videoRef.current.currentTime), {
+          movieSlug: movie.slug || movie.id.toString(),
+          movieTitle: movie.title,
+          posterUrl: movie.posterUrl,
+          duration: Math.floor(videoRef.current.duration || 0),
+        });
       }
     };
   }, [movie, updateProgress]);
 
-  const handleLoadedMetadata = () => {
-    if (videoRef.current) {
-      setDuration(videoRef.current.duration);
-      setIsLoading(false);
-      const saved = items.find((item) => item.movieId === movie.id.toString());
-      if (
-        saved &&
-        saved.progress > 5 &&
-        saved.progress < videoRef.current.duration - 10
-      ) {
-        videoRef.current.currentTime = saved.progress;
-      }
-      videoRef.current.play().catch(() => setIsLoading(false));
-      setIsPlaying(true);
-    }
-  };
-
-  const handleTimeUpdate = () => {
-    if (videoRef.current) setCurrentTime(videoRef.current.currentTime);
-  };
-
-  const handleError = () => {
-    setIsLoading(false);
-    setHasError(true);
-  };
-
-  const resetHideTimer = useCallback(() => {
-    setShowControls(true);
-    if (hideTimer.current) clearTimeout(hideTimer.current);
-    if (isPlaying) {
-      hideTimer.current = setTimeout(() => setShowControls(false), 3000);
-    }
-  }, [isPlaying]);
-
-  useEffect(() => {
-    return () => {
-      if (hideTimer.current) clearTimeout(hideTimer.current);
-    };
-  }, []);
-
   useEffect(() => {
     const handleKeyDown = (e: KeyboardEvent) => {
       if (e.target instanceof HTMLInputElement) return;
+      if (isExternalEmbed) {
+        if (e.key === "Escape") goBack();
+        return;
+      }
       switch (e.key) {
         case " ": case "k": e.preventDefault(); togglePlay(); break;
         case "ArrowLeft": e.preventDefault(); skip(-10); break;
         case "ArrowRight": e.preventDefault(); skip(10); break;
         case "m": e.preventDefault(); setIsMuted((m) => !m); break;
         case "f": e.preventDefault(); toggleFullscreen(); break;
-        case "Escape":
-          if (isFullscreen) toggleFullscreen(); else goBack(); break;
+        case "Escape": if (isFullscreen) toggleFullscreen(); else goBack(); break;
       }
     };
     window.addEventListener("keydown", handleKeyDown);
     return () => window.removeEventListener("keydown", handleKeyDown);
-  }, [isPlaying, isFullscreen]);
+  }, [isPlaying, isFullscreen, isExternalEmbed]);
 
   useEffect(() => {
     if (videoRef.current) videoRef.current.volume = isMuted ? 0 : volume;
@@ -329,11 +226,6 @@ export default function CustomPlayer({ movie }: CustomPlayerProps) {
   };
 
   const togglePlay = () => {
-    if (isWistia && wistiaRef.current) {
-      if (isPlaying) wistiaRef.current.pause();
-      else wistiaRef.current.play();
-      return;
-    }
     if (!videoRef.current) return;
     if (isPlaying) videoRef.current.pause();
     else videoRef.current.play().catch(() => {});
@@ -342,12 +234,6 @@ export default function CustomPlayer({ movie }: CustomPlayerProps) {
   };
 
   const skip = (seconds: number) => {
-    if (isWistia && wistiaRef.current) {
-      const newTime = Math.max(0, wistiaRef.current.time() + seconds);
-      wistiaRef.current.time(newTime);
-      setCurrentTime(Math.floor(newTime));
-      return;
-    }
     if (videoRef.current) {
       videoRef.current.currentTime += seconds;
       setCurrentTime(videoRef.current.currentTime);
@@ -355,18 +241,26 @@ export default function CustomPlayer({ movie }: CustomPlayerProps) {
     }
   };
 
+  const handleLoadedMetadata = () => {
+    if (videoRef.current) {
+      setDuration(videoRef.current.duration);
+      setIsLoading(false);
+      const saved = items.find((i) => i.movieId === movie.id.toString());
+      if (saved && saved.progress > 5 && saved.progress < videoRef.current.duration - 10) {
+        videoRef.current.currentTime = saved.progress;
+      }
+      videoRef.current.play().catch(() => setIsLoading(false));
+      setIsPlaying(true);
+    }
+  };
+
   const handleProgressClick = (e: React.MouseEvent<HTMLDivElement>) => {
-    if (!progressRef.current || duration === 0) return;
+    if (!progressRef.current || !videoRef.current || duration === 0) return;
     e.stopPropagation();
     const rect = progressRef.current.getBoundingClientRect();
     const fraction = Math.max(0, Math.min(1, (e.clientX - rect.left) / rect.width));
-    const newTime = fraction * duration;
-    if (isWistia && wistiaRef.current) {
-      wistiaRef.current.time(newTime);
-    } else if (videoRef.current) {
-      videoRef.current.currentTime = newTime;
-    }
-    setCurrentTime(newTime);
+    videoRef.current.currentTime = fraction * duration;
+    setCurrentTime(fraction * duration);
     resetHideTimer();
   };
 
@@ -394,98 +288,84 @@ export default function CustomPlayer({ movie }: CustomPlayerProps) {
     const hrs = Math.floor(seconds / 3600);
     const mins = Math.floor((seconds % 3600) / 60);
     const secs = Math.floor(seconds % 60);
-    if (hrs > 0) {
-      return `${hrs}:${mins.toString().padStart(2, "0")}:${secs.toString().padStart(2, "0")}`;
-    }
+    if (hrs > 0) return `${hrs}:${mins.toString().padStart(2, "0")}:${secs.toString().padStart(2, "0")}`;
     return `${mins}:${secs.toString().padStart(2, "0")}`;
+  };
+
+  const formatTimeLabel = (secs: number) => {
+    const h = Math.floor(secs / 3600);
+    const m = Math.floor((secs % 3600) / 60);
+    if (h > 0) return `${h}h ${m}m`;
+    return `${m}m`;
   };
 
   const progress = duration > 0 ? (currentTime / duration) * 100 : 0;
   const speeds = [0.5, 0.75, 1, 1.25, 1.5, 2];
 
-  // ── WISTIA INLINE EMBED ───────────────────────────────────────────────
-  if (isWistia && wistiaVideoId) {
+  // ── SHOW LOADING SPINNER WHILE HISTORY LOADS ──────────────────────────
+  // Critical: don't render the iframe until we have the saved position.
+  // This is what makes cross-device resume work.
+  if (historyLoading) {
     return (
-      <div
-        className="relative h-screen w-screen bg-black overflow-hidden"
-        ref={containerRef}
-        onMouseMove={resetHideTimer}
-      >
-        {/* Wistia inline embed — NOT an iframe, gives us full JS API */}
-        <div
-          className={`wistia_embed wistia_async_${wistiaVideoId} videoFoam=true`}
-          style={{ position: "absolute", inset: 0, height: "100%", width: "100%" }}
-        />
-
-        {/* Back button */}
-        <AnimatePresence>
-          {showControls && (
-            <motion.div
-              initial={{ opacity: 0, y: -10 }}
-              animate={{ opacity: 1, y: 0 }}
-              exit={{ opacity: 0, y: -10 }}
-              className="absolute top-0 left-0 right-0 z-20 bg-gradient-to-b from-black/70 to-transparent px-4 pt-4 pb-12"
-            >
-              <div className="flex items-center justify-between">
-                <button
-                  onClick={goBack}
-                  className="flex items-center gap-2 text-white hover:text-crimson-DEFAULT transition-colors"
-                >
-                  <ArrowLeft size={20} />
-                  <span className="text-caption font-medium">Back</span>
-                </button>
-                <div className="text-right">
-                  <p className="text-caption text-matte-400">Now Playing</p>
-                  <h2 className="font-display text-heading-3 text-white drop-shadow-lg">
-                    {movie.title}
-                  </h2>
-                </div>
-              </div>
-            </motion.div>
-          )}
-        </AnimatePresence>
-
-        {isLoading && (
-          <div className="absolute inset-0 z-10 flex items-center justify-center bg-black/60 pointer-events-none">
-            <div className="h-14 w-14 animate-spin rounded-full border-4 border-white/20 border-t-crimson-DEFAULT" />
-          </div>
-        )}
+      <div className="flex h-screen items-center justify-center bg-black">
+        <div className="flex flex-col items-center gap-4">
+          <div className="h-12 w-12 animate-spin rounded-full border-4 border-white/20 border-t-crimson-DEFAULT" />
+          <p className="text-caption text-matte-500">Loading...</p>
+        </div>
       </div>
     );
   }
 
-  // ── EXTERNAL IFRAME (YouTube / Vimeo) ─────────────────────────────────
-  if (isExternalIframe && videoUrl) {
+  // ── EXTERNAL EMBED (Wistia / YouTube / Vimeo) ─────────────────────────
+  if (isExternalEmbed) {
+    const embedUrl = buildEmbedUrl();
+
     return (
       <div className="relative h-screen w-screen bg-black" ref={containerRef}>
-        <div className="absolute inset-0">
-          <iframe
-            src={videoUrl}
-            className="h-full w-full"
-            allowFullScreen
-            allow="autoplay; picture-in-picture"
-            onLoad={() => setIsLoading(false)}
-          />
-        </div>
+        {/* Resume indicator — shown briefly if we're resuming */}
+        {savedProgress > 10 && (
+          <div className="absolute top-20 left-1/2 -translate-x-1/2 z-50 rounded-full bg-black/80 px-4 py-2 text-caption text-white backdrop-blur-sm">
+            Resuming from {formatTimeLabel(savedProgress)}
+          </div>
+        )}
+
+        <iframe
+          src={embedUrl}
+          className="absolute inset-0 h-full w-full"
+          allowFullScreen
+          allow="autoplay; fullscreen; picture-in-picture; clipboard-write"
+          onLoad={() => setIsLoading(false)}
+        />
+
+        {isLoading && (
+          <div className="absolute inset-0 z-30 flex items-center justify-center bg-black pointer-events-none">
+            <div className="h-12 w-12 animate-spin rounded-full border-4 border-white/20 border-t-crimson-DEFAULT" />
+          </div>
+        )}
+
+        {/* Back button — always visible */}
         <button
           onClick={goBack}
-          className="absolute top-4 left-4 z-50 flex items-center gap-2 rounded-lg bg-black/80 px-4 py-2.5 text-white backdrop-blur-md hover:bg-black transition-colors"
+          className="absolute top-4 left-4 z-50 flex items-center gap-2 rounded-lg bg-black/80 px-4 py-2.5 text-white backdrop-blur-md transition-colors hover:bg-black"
         >
           <ArrowLeft size={18} />
           <span className="text-sm font-medium">Back</span>
         </button>
-        {isLoading && (
-          <div className="absolute inset-0 z-30 flex items-center justify-center bg-black/50 pointer-events-none">
-            <div className="h-14 w-14 animate-spin rounded-full border-4 border-white/20 border-t-crimson-DEFAULT" />
-          </div>
-        )}
+
+        {/* Title — top right */}
+        <div className="absolute top-4 right-4 z-50 text-right pointer-events-none">
+          <p className="text-small text-white/50">Now Playing</p>
+          <h2 className="font-display text-xl text-white drop-shadow-lg max-w-xs truncate">
+            {movie.title}
+          </h2>
+        </div>
       </div>
     );
   }
 
-  // ── DIRECT VIDEO PLAYER (MP4 etc.) ────────────────────────────────────
-  const savedItem = items.find((item) => item.movieId === movie.id.toString());
-  const hasSavedProgress = savedItem && savedItem.progress > 30;
+  // ── DIRECT VIDEO PLAYER (MP4) ─────────────────────────────────────────
+  const savedItemForVideo = items.find((i) => i.movieId === movie.id.toString());
+  const hasSavedProgress = savedItemForVideo && savedItemForVideo.progress > 30;
 
   return (
     <div
@@ -515,11 +395,11 @@ export default function CustomPlayer({ movie }: CustomPlayerProps) {
           src={videoUrl}
           className="absolute inset-0 h-full w-full object-contain bg-black cursor-pointer"
           onLoadedMetadata={handleLoadedMetadata}
-          onTimeUpdate={handleTimeUpdate}
+          onTimeUpdate={() => { if (videoRef.current) setCurrentTime(videoRef.current.currentTime); }}
           onEnded={() => setIsPlaying(false)}
           onWaiting={() => setIsLoading(true)}
           onPlaying={() => setIsLoading(false)}
-          onError={handleError}
+          onError={() => { setIsLoading(false); setHasError(true); }}
           onClick={(e) => { e.stopPropagation(); togglePlay(); }}
           playsInline
           preload="auto"
@@ -533,14 +413,14 @@ export default function CustomPlayer({ movie }: CustomPlayerProps) {
       )}
 
       {hasSavedProgress && !isPlaying && !isLoading && (
-        <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 z-25 text-center">
+        <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 z-20 text-center">
           <p className="text-caption text-matte-400 mb-3">
-            Resume from {formatTime(savedItem!.progress)}?
+            Resume from {formatTime(savedItemForVideo!.progress)}?
           </p>
           <button
             onClick={() => {
-              if (videoRef.current && savedItem) {
-                videoRef.current.currentTime = savedItem.progress;
+              if (videoRef.current && savedItemForVideo) {
+                videoRef.current.currentTime = savedItemForVideo.progress;
                 videoRef.current.play().catch(() => {});
                 setIsPlaying(true);
               }
@@ -606,7 +486,7 @@ export default function CustomPlayer({ movie }: CustomPlayerProps) {
               <div className="absolute top-0 left-0 h-full w-full rounded-full bg-white/20" />
               <div className="absolute top-0 left-0 h-full rounded-full bg-crimson-DEFAULT" style={{ width: `${progress}%` }} />
               <div
-                className="absolute top-1/2 -translate-y-1/2 h-4 w-4 rounded-full bg-white opacity-0 group-hover:opacity-100 transition-opacity shadow-lg"
+                className="absolute top-1/2 -translate-y-1/2 h-4 w-4 rounded-full bg-white opacity-0 group-hover:opacity-100 transition-opacity"
                 style={{ left: `${progress}%`, marginLeft: "-8px" }}
               />
               {hoverTime !== null && (
@@ -625,12 +505,10 @@ export default function CustomPlayer({ movie }: CustomPlayerProps) {
                   {isPlaying ? <Pause size={22} fill="white" /> : <Play size={22} fill="white" />}
                 </button>
                 <button onClick={(e) => { e.stopPropagation(); skip(-10); }} className="hidden sm:flex items-center text-white/70 hover:text-white">
-                  <SkipForward size={16} className="rotate-180" />
-                  <span className="text-caption ml-0.5">10</span>
+                  <SkipForward size={16} className="rotate-180" /><span className="text-caption ml-0.5">10</span>
                 </button>
                 <button onClick={(e) => { e.stopPropagation(); skip(10); }} className="hidden sm:flex items-center text-white/70 hover:text-white">
-                  <SkipForward size={16} />
-                  <span className="text-caption ml-0.5">10</span>
+                  <SkipForward size={16} /><span className="text-caption ml-0.5">10</span>
                 </button>
                 <div className="hidden sm:flex items-center gap-2">
                   <button onClick={(e) => { e.stopPropagation(); setIsMuted(!isMuted); }} className="text-white/70 hover:text-white">
@@ -649,6 +527,7 @@ export default function CustomPlayer({ movie }: CustomPlayerProps) {
                   <span className="text-white/60">{formatTime(duration)}</span>
                 </span>
               </div>
+
               <div className="flex items-center gap-3">
                 <div className="relative">
                   <button
@@ -659,7 +538,7 @@ export default function CustomPlayer({ movie }: CustomPlayerProps) {
                     <span className="text-caption hidden sm:inline">{playbackSpeed}x</span>
                   </button>
                   {showSpeedMenu && (
-                    <div className="absolute bottom-full right-0 mb-2 rounded-lg border border-white/10 bg-black/90 backdrop-blur-md py-1 shadow-elevated">
+                    <div className="absolute bottom-full right-0 mb-2 rounded-lg border border-white/10 bg-black/90 backdrop-blur-md py-1">
                       {speeds.map((s) => (
                         <button
                           key={s}
