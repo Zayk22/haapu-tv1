@@ -6,7 +6,12 @@ import { ChevronLeft, ChevronRight } from "lucide-react";
 import MovieCard from "@/components/movie/MovieCard";
 import type { MovieRowProps } from "@/types/movie";
 
-export default function MovieRow({ title, movies, isLoading = false, viewAllLink }: MovieRowProps) {
+export default function MovieRow({
+  title,
+  movies,
+  isLoading = false,
+  viewAllLink,
+}: MovieRowProps) {
   const scrollContainerRef = useRef<HTMLDivElement>(null);
   const [canScrollLeft, setCanScrollLeft] = useState(false);
   const [canScrollRight, setCanScrollRight] = useState(true);
@@ -16,7 +21,9 @@ export default function MovieRow({ title, movies, isLoading = false, viewAllLink
     const container = scrollContainerRef.current;
     if (!container) return;
     setCanScrollLeft(container.scrollLeft > 10);
-    const isAtEnd = container.scrollLeft + container.clientWidth >= container.scrollWidth - 10;
+    const isAtEnd =
+      container.scrollLeft + container.clientWidth >=
+      container.scrollWidth - 10;
     setCanScrollRight(!isAtEnd);
   }, []);
 
@@ -32,9 +39,10 @@ export default function MovieRow({ title, movies, isLoading = false, viewAllLink
     const container = scrollContainerRef.current;
     if (!container) return;
     const scrollAmount = container.clientWidth * 0.7;
-    const targetScroll = direction === "left"
-      ? container.scrollLeft - scrollAmount
-      : container.scrollLeft + scrollAmount;
+    const targetScroll =
+      direction === "left"
+        ? container.scrollLeft - scrollAmount
+        : container.scrollLeft + scrollAmount;
     container.scrollTo({ left: targetScroll, behavior: "smooth" });
   };
 
@@ -43,11 +51,11 @@ export default function MovieRow({ title, movies, isLoading = false, viewAllLink
       <section className="py-6 sm:py-8">
         <div className="mx-auto max-w-screen-2xl px-4 sm:px-6 lg:px-12">
           <div className="mb-4 h-8 w-48 animate-pulse rounded bg-matte-800" />
-          <div className="flex gap-2 sm:gap-3 overflow-hidden">
+          <div className="flex gap-3 overflow-hidden">
             {Array.from({ length: 6 }).map((_, i) => (
               <div
                 key={i}
-                className="aspect-[2/3] w-[150px] sm:w-[180px] lg:w-[220px] flex-shrink-0 animate-pulse rounded-lg bg-matte-800"
+                className="w-[130px] sm:w-[160px] lg:w-[190px] flex-shrink-0 aspect-[2/3] animate-pulse rounded-lg bg-matte-800"
               />
             ))}
           </div>
@@ -56,9 +64,7 @@ export default function MovieRow({ title, movies, isLoading = false, viewAllLink
     );
   }
 
-  if (!movies || movies.length === 0) {
-    return null;
-  }
+  if (!movies || movies.length === 0) return null;
 
   return (
     <section
@@ -67,12 +73,13 @@ export default function MovieRow({ title, movies, isLoading = false, viewAllLink
       onMouseLeave={() => setIsHovering(false)}
     >
       <div className="mx-auto max-w-screen-2xl px-4 sm:px-6 lg:px-12">
+        {/* Row header */}
         <div className="mb-3 sm:mb-4 flex items-center justify-between">
-          <h2 className="font-display text-heading-3 sm:text-heading-2 lg:text-heading-3 font-semibold text-white">
+          <h2 className="font-display text-heading-3 sm:text-heading-2 font-semibold text-white">
             {title}
           </h2>
           {viewAllLink && (
-            <Link 
+            <Link
               href={viewAllLink}
               className="text-caption font-medium text-matte-500 transition-colors duration-300 hover:text-crimson-DEFAULT"
             >
@@ -82,6 +89,7 @@ export default function MovieRow({ title, movies, isLoading = false, viewAllLink
         </div>
 
         <div className="relative group/row">
+          {/* Left scroll button */}
           {canScrollLeft && (
             <button
               onClick={() => scroll("left")}
@@ -96,17 +104,24 @@ export default function MovieRow({ title, movies, isLoading = false, viewAllLink
             </button>
           )}
 
+          {/* Cards — each card gets a FIXED width so they're all identical regardless of image */}
           <div
             ref={scrollContainerRef}
-            className="no-scrollbar flex gap-2 sm:gap-3 overflow-x-auto scroll-smooth pb-4"
+            className="no-scrollbar flex gap-3 overflow-x-auto scroll-smooth pb-4"
           >
             {movies
               .filter((movie) => movie && movie.id && movie.posterUrl)
               .map((movie, index) => (
-                <MovieCard key={movie.id} movie={movie} index={index} />
+                <div
+                  key={movie.id}
+                  className="w-[130px] sm:w-[160px] lg:w-[190px] flex-shrink-0"
+                >
+                  <MovieCard movie={movie} index={index} slug={movie.slug} />
+                </div>
               ))}
           </div>
 
+          {/* Right scroll button */}
           {canScrollRight && (
             <button
               onClick={() => scroll("right")}
