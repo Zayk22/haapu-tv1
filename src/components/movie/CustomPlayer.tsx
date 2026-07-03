@@ -40,6 +40,7 @@ export default function CustomPlayer({ movie }: CustomPlayerProps) {
   const [hasError, setHasError] = useState(false);
   const [hoverTime, setHoverTime] = useState<number | null>(null);
   const [hoverPosition, setHoverPosition] = useState(0);
+  const [showResuming, setShowResuming] = useState(true);
 
   const videoUrl = movie.videoEmbedUrl || "";
   const isWistia = videoUrl.includes("wistia.net") || videoUrl.includes("wistia.com");
@@ -47,13 +48,9 @@ export default function CustomPlayer({ movie }: CustomPlayerProps) {
   const isVimeo = videoUrl.includes("vimeo.com");
   const isExternalEmbed = isWistia || isYouTube || isVimeo;
 
-  // Saved progress for this movie from DB — only valid once historyLoading is false
   const savedItem = items.find((i) => i.movieId === movie.id.toString());
   const savedProgress = savedItem?.progress || 0;
 
-  // Build the embed URL — this is where cross-device resume happens.
-  // We wait for historyLoading to be false before calling this, so
-  // savedProgress always contains the real DB value, not 0.
   const buildEmbedUrl = useCallback(() => {
     if (!videoUrl) return "";
 
@@ -63,7 +60,6 @@ export default function CustomPlayer({ movie }: CustomPlayerProps) {
       if (!videoId) return videoUrl;
       const base = `https://fast.wistia.net/embed/iframe/${videoId}`;
       const params = new URLSearchParams({ autoPlay: "true", endVideoBehavior: "loop" });
-      // Bake resume position directly into the URL — Wistia reads ?time= on load
       if (savedProgress > 10) {
         params.set("time", String(Math.floor(savedProgress)));
       }
@@ -81,7 +77,6 @@ export default function CustomPlayer({ movie }: CustomPlayerProps) {
     return videoUrl;
   }, [videoUrl, isWistia, isYouTube, savedProgress]);
 
-  // Add to watch history once (after history has loaded so we don't double-add)
   useEffect(() => {
     if (historyLoading || hasAddedRef.current || !isExternalEmbed) return;
     hasAddedRef.current = true;
@@ -96,18 +91,12 @@ export default function CustomPlayer({ movie }: CustomPlayerProps) {
     });
   }, [historyLoading, isExternalEmbed, movie, addItem]);
 
-  // Progress timer for external embeds — saves every 10 seconds.
-  // Initialises elapsed from savedProgress so the count continues
-  // from where the user left off on ANY device.
   useEffect(() => {
     if (historyLoading || !isExternalEmbed) return;
-
-    // Only initialise once per mount so re-renders don't reset the counter
     if (!initializedRef.current) {
       elapsedRef.current = savedProgress;
       initializedRef.current = true;
     }
-
     const timer = setInterval(() => {
       elapsedRef.current += 10;
       updateProgress(movie.id.toString(), elapsedRef.current, {
@@ -117,12 +106,17 @@ export default function CustomPlayer({ movie }: CustomPlayerProps) {
         duration: undefined,
       });
     }, 10000);
-
     return () => clearInterval(timer);
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [historyLoading, isExternalEmbed]);
 
-  // ── CONTROLS HIDE TIMER ───────────────────────────────────────────────
+  // Auto-hide the "Resuming from" badge after 3 seconds
+  useEffect(() => {
+    if (!savedProgress || savedProgress <= 10) return;
+    const t = setTimeout(() => setShowResuming(false), 3000);
+    return () => clearTimeout(t);
+  }, [savedProgress]);
+
   const resetHideTimer = useCallback(() => {
     setShowControls(true);
     if (hideTimer.current) clearTimeout(hideTimer.current);
@@ -135,7 +129,6 @@ export default function CustomPlayer({ movie }: CustomPlayerProps) {
     return () => { if (hideTimer.current) clearTimeout(hideTimer.current); };
   }, []);
 
-  // ── DIRECT VIDEO HOOKS ────────────────────────────────────────────────
   useEffect(() => {
     if (isExternalEmbed) return;
     const saved = items.find((i) => i.movieId === movie.id.toString());
@@ -302,9 +295,7 @@ export default function CustomPlayer({ movie }: CustomPlayerProps) {
   const progress = duration > 0 ? (currentTime / duration) * 100 : 0;
   const speeds = [0.5, 0.75, 1, 1.25, 1.5, 2];
 
-  // ── SHOW LOADING SPINNER WHILE HISTORY LOADS ──────────────────────────
-  // Critical: don't render the iframe until we have the saved position.
-  // This is what makes cross-device resume work.
+  // Wait for history to load before rendering iframe
   if (historyLoading) {
     return (
       <div className="flex h-screen items-center justify-center bg-black">
@@ -322,12 +313,6 @@ export default function CustomPlayer({ movie }: CustomPlayerProps) {
 
     return (
       <div className="relative h-screen w-screen bg-black" ref={containerRef}>
-        {/* Resume indicator — shown briefly if we're resuming */}
-        {savedProgress > 10 && (
-          <div className="absolute top-20 left-1/2 -translate-x-1/2 z-50 rounded-full bg-black/80 px-4 py-2 text-caption text-white backdrop-blur-sm">
-            Resuming from {formatTimeLabel(savedProgress)}
-          </div>
-        )}
 
         <iframe
           src={embedUrl}
@@ -343,21 +328,34 @@ export default function CustomPlayer({ movie }: CustomPlayerProps) {
           </div>
         )}
 
-        {/* Back button — always visible */}
-        <button
-          onClick={goBack}
-          className="absolute top-4 left-4 z-50 flex items-center gap-2 rounded-lg bg-black/80 px-4 py-2.5 text-white backdrop-blur-md transition-colors hover:bg-black"
-        >
-          <ArrowLeft size={18} />
-          <span className="text-sm font-medium">Back</span>
-        </button>
+        {/* Top bar — single row, back button left, title right, no overlap */}
+        <div className="absolute top-0 left-0 right-0 z-50 flex items-center justify-between gap-2 bg-gradient-to-b from-black/80 to-transparent px-4 py-3">
+          <button
+            onClick={goBack}
+            className="flex flex-shrink-0 items-center gap-2 rounded-lg bg-black/60 px-3 py-2 text-white backdrop-blur-sm transition-colors hover:bg-black/90"
+          >
+            <ArrowLeft size={18} />
+            <span className="text-sm font-medium">Back</span>
+          </button>
+          <div className="min-w-0 text-right pointer-events-none">
+            <p className="text-[10px] uppercase tracking-wider text-white/40">Now Playing</p>
+            <h2 className="truncate text-sm font-semibold text-white max-w-[180px] sm:max-w-xs">
+              {movie.title}
+            </h2>
+          </div>
+        </div>
 
-        {/* Title — top right */}
-        <div className="absolute top-4 right-4 z-50 text-right pointer-events-none">
-          <p className="text-small text-white/50">Now Playing</p>
-          <h2 className="font-display text-xl text-white drop-shadow-lg max-w-xs truncate">
-            {movie.title}
-          </h2>
+        {/* Resuming badge — auto-hides after 3 seconds */}
+        {savedProgress > 10 && showResuming && (
+          <div className="absolute top-16 left-1/2 -translate-x-1/2 z-50 rounded-full bg-black/80 px-4 py-2 text-caption text-white backdrop-blur-sm">
+            ▶ Resuming from {formatTimeLabel(savedProgress)}
+          </div>
+        )}
+
+        <div className="absolute bottom-6 left-0 right-0 z-50 text-center pointer-events-none sm:hidden">
+          <p className="text-[11px] text-white/30 tracking-wide">
+            Rotate device for full screen
+          </p>
         </div>
       </div>
     );

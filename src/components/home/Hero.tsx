@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useEffect, useCallback } from "react";
+import { useState, useEffect, useCallback, useRef } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { Play, Star, Calendar, ChevronLeft, ChevronRight } from "lucide-react";
 import { useRouter } from "next/navigation";
@@ -15,6 +15,7 @@ export default function Hero({ movies }: HeroProps) {
   const router = useRouter();
   const [currentIndex, setCurrentIndex] = useState(0);
   const validMovies = movies.filter((m): m is Movie => m !== null);
+  const touchStartX = useRef(0);
 
   useEffect(() => {
     if (validMovies.length <= 1) return;
@@ -56,8 +57,24 @@ export default function Hero({ movies }: HeroProps) {
 
   const movie = validMovies[currentIndex];
 
+  const handleTouchStart = (e: React.TouchEvent) => {
+    touchStartX.current = e.changedTouches[0].clientX;
+  };
+
+  const handleTouchEnd = (e: React.TouchEvent) => {
+    const diff = touchStartX.current - e.changedTouches[0].clientX;
+    if (Math.abs(diff) > 50) {
+      if (diff > 0) goNext();
+      else goPrev();
+    }
+  };
+
   return (
-    <section className="relative flex min-h-screen items-center overflow-hidden">
+    <section
+      className="relative flex min-h-screen items-center overflow-hidden"
+      onTouchStart={handleTouchStart}
+      onTouchEnd={handleTouchEnd}
+    >
       <AnimatePresence mode="wait">
         <motion.div
           key={currentIndex}
@@ -72,7 +89,7 @@ export default function Hero({ movies }: HeroProps) {
               <img
                 src={movie.backdropUrl}
                 alt=""
-                className="h-full w-full object-cover"
+                className="h-full w-full object-cover object-center"
               />
               <div className="absolute inset-0 bg-gradient-to-t from-matte-black via-matte-black/60 to-matte-950/30" />
               <div className="absolute inset-0 bg-gradient-to-r from-matte-black/90 via-matte-black/40 to-transparent" />

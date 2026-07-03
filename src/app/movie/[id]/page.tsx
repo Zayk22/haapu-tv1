@@ -74,7 +74,7 @@ export default async function MovieDetailPage({
             <img
               src={movie.backdropUrl}
               alt={movie.title}
-              className="h-full w-full object-cover object-top"
+              className="h-full w-full object-cover object-center"
             />
           </div>
         ) : (
