@@ -3,91 +3,71 @@
 @tailwind utilities;
 
 /* ============================================
-   CUSTOM SCROLLBAR — Premium micro-interaction
+   CUSTOM SCROLLBAR
    ============================================ */
-::-webkit-scrollbar {
-  width: 6px;
-  height: 6px;
-}
-
-::-webkit-scrollbar-track {
-  background: #0A0A0A; /* matte-black */
-}
-
-::-webkit-scrollbar-thumb {
-  background: #333333; /* matte-700 */
-  border-radius: 3px;
-  transition: background 0.3s ease;
-}
-
-::-webkit-scrollbar-thumb:hover {
-  background: #E50914; /* crimson — subtle brand moment */
-}
-
-/* Firefox scrollbar */
-* {
-  scrollbar-width: thin;
-  scrollbar-color: #333333 #0A0A0A;
-}
+::-webkit-scrollbar { width: 6px; height: 6px; }
+::-webkit-scrollbar-track { background: #0A0A0A; }
+::-webkit-scrollbar-thumb { background: #333333; border-radius: 3px; transition: background 0.3s ease; }
+::-webkit-scrollbar-thumb:hover { background: #E50914; }
+* { scrollbar-width: thin; scrollbar-color: #333333 #0A0A0A; }
 
 /* ============================================
    SMOOTH SCROLLING
    ============================================ */
-html {
-  scroll-behavior: smooth;
-}
+html { scroll-behavior: smooth; }
 
 /* ============================================
-   TEXT SELECTION — Branded interaction
+   TEXT SELECTION
    ============================================ */
-::selection {
-  background-color: rgba(229, 9, 20, 0.3); /* crimson with opacity */
-  color: #FFFFFF;
-}
+::selection { background-color: rgba(229, 9, 20, 0.3); color: #FFFFFF; }
 
 /* ============================================
-   BASE LAYER STYLES
+   BASE
    ============================================ */
 @layer base {
-  * {
-    @apply border-matte-800; /* Default border color everywhere */
-  }
+  * { @apply border-matte-800; }
 
   body {
     @apply bg-matte-950 text-white antialiased;
-    font-feature-settings: "rlig" 1, "calt" 1; /* Inter ligatures for polish */
+    font-feature-settings: "rlig" 1, "calt" 1;
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
   }
 
-  /* Ensure images are block by default to avoid spacing issues */
   img {
-    @apply block;
+    /* Sharper image rendering across all browsers */
+    image-rendering: -webkit-optimize-contrast;
+    image-rendering: crisp-edges;
   }
 }
 
 /* ============================================
-   UTILITY CLASSES
+   CRIMSON SHIMMER — replaces grey pulse on
+   loading skeletons. Branded, not generic.
    ============================================ */
-@layer utilities {
-  /* Hide scrollbar while keeping scroll functionality */
-  .no-scrollbar::-webkit-scrollbar {
-    display: none;
-  }
-  .no-scrollbar {
-    -ms-overflow-style: none;
-    scrollbar-width: none;
-  }
+@keyframes shimmer-crimson {
+  0%   { background-position: -200% center; }
+  100% { background-position: 200% center; }
+}
 
-  /* Text balance for better line wrapping on headings */
-  .text-balance {
-    text-wrap: balance;
-  }
+.skeleton {
+  background: linear-gradient(
+    90deg,
+    #1a1a1a 25%,
+    #2a1212 50%,
+    #1a1a1a 75%
+  );
+  background-size: 200% 100%;
+  animation: shimmer-crimson 1.8s ease-in-out infinite;
 }
-.text-gradient {
-  background: linear-gradient(135deg, #f59e0b 0%, #ea580c 100%);
-  -webkit-background-clip: text;
-  background-clip: text;
-  color: transparent;
-}
-.shadow-glow-sm {
-  box-shadow: 0 0 8px rgba(229, 9, 20, 0.4);
-}
+
+/* ============================================
+   HIDE SCROLLBAR UTILITY (used on movie rows)
+   ============================================ */
+.no-scrollbar::-webkit-scrollbar { display: none; }
+.no-scrollbar { -ms-overflow-style: none; scrollbar-width: none; }
+
+/* ============================================
+   SAFE AREA — for devices with home indicator
+   ============================================ */
+.safe-area-pb { padding-bottom: env(safe-area-inset-bottom, 0px); }

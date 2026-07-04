@@ -19,30 +19,44 @@ export default function MovieCard({ movie, index = 0, slug }: MovieCardProps) {
 
   const handleClick = () => {
     const target = slug || movie.slug;
-    if (target) {
-      router.push(`/movie/${target}`);
-    } else if (movie.type === "anime") {
-      router.push(`/anime/${movie.id}`);
-    } else {
-      router.push(`/movie/${movie.id}`);
-    }
+    if (target) router.push(`/movie/${target}`);
+    else if (movie.type === "anime") router.push(`/anime/${movie.id}`);
+    else router.push(`/movie/${movie.id}`);
   };
 
-  // Don't show "0" or "0.0" — only show if there's a real value
   const showRating = movie.rating && movie.rating > 0;
   const showYear = movie.year && movie.year > 0;
 
   return (
     <motion.div
       className="group relative cursor-pointer w-full"
+      // Scroll-triggered entrance — fires when card enters viewport, not on page load
       initial={{ opacity: 0, y: 20 }}
-      animate={{ opacity: 1, y: 0 }}
-      transition={{ duration: 0.5, delay: index * 0.05, ease: "easeOut" }}
+      whileInView={{ opacity: 1, y: 0 }}
+      viewport={{ once: true, margin: "-30px" }}
+      transition={{
+        duration: 0.4,
+        // Cap delay at 0.25s so later cards in long rows don't wait forever
+        delay: Math.min(index * 0.06, 0.25),
+        ease: "easeOut",
+      }}
+      // Subtle lift on hover — 3% scale, barely noticeable, very satisfying
+      whileHover={{ scale: 1.03, transition: { duration: 0.2, ease: "easeOut" } }}
+      // Physical press feel on tap
+      whileTap={{ scale: 0.97, transition: { duration: 0.1 } }}
       onMouseEnter={() => setIsHovered(true)}
       onMouseLeave={() => setIsHovered(false)}
       onClick={handleClick}
     >
-      {/* Poster image */}
+      {/*
+        Glow layer — sits BEHIND the card at -z-10.
+        Uses crimson at 20% opacity + blur-md so it reads as
+        a soft ambient light, not a visible shape.
+        Only appears on hover via group-hover.
+      */}
+      <div className="pointer-events-none absolute -inset-1 -z-10 rounded-xl bg-crimson-DEFAULT/20 opacity-0 blur-md transition-opacity duration-300 group-hover:opacity-100" />
+
+      {/* Poster */}
       <div className="relative aspect-[2/3] overflow-hidden rounded-lg bg-matte-800">
         {!imageLoaded && (
           <div className="absolute inset-0 z-10 animate-pulse bg-matte-800" />
@@ -62,15 +76,15 @@ export default function MovieCard({ movie, index = 0, slug }: MovieCardProps) {
           decoding="async"
         />
 
-        {/* Hover overlay */}
+        {/* Hover overlay — only on desktop */}
         <motion.div
           className="absolute inset-0 flex flex-col justify-end bg-gradient-to-t from-matte-black/95 via-matte-black/40 to-transparent p-3 sm:p-4"
           initial={{ opacity: 0 }}
           animate={{ opacity: isHovered ? 1 : 0 }}
-          transition={{ duration: 0.25 }}
+          transition={{ duration: 0.2 }}
         >
           <div className="mb-2 flex justify-center">
-            <div className="flex h-10 w-10 items-center justify-center rounded-full border-2 border-white bg-white/10 backdrop-blur-sm transition-transform duration-300 hover:scale-110">
+            <div className="flex h-10 w-10 items-center justify-center rounded-full border-2 border-white bg-white/10 backdrop-blur-sm">
               <Play size={16} fill="white" className="ml-0.5" />
             </div>
           </div>
@@ -92,9 +106,9 @@ export default function MovieCard({ movie, index = 0, slug }: MovieCardProps) {
         </motion.div>
       </div>
 
-      {/* Below-card title — stays visible on mobile (no hover on touch screens) */}
+      {/* Below-card label — always visible on mobile */}
       <div className="mt-2 px-0.5">
-        <h3 className="text-small font-medium text-matte-300 line-clamp-1">
+        <h3 className="text-small font-medium text-matte-300 line-clamp-1 transition-colors duration-200 group-hover:text-white">
           {movie.title}
         </h3>
         {(showYear || showRating) && (

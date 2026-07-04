@@ -2,6 +2,7 @@
 
 import { useState, useEffect } from "react";
 import { usePathname } from "next/navigation";
+import { AnimatePresence, motion } from "framer-motion";
 import Header from "@/components/layout/Header";
 import Footer from "@/components/layout/Footer";
 import MobileBottomNav from "@/components/layout/MobileBottomNav";
@@ -23,7 +24,6 @@ export default function LayoutWrapper({
   const isWatchPage = pathname?.startsWith("/watch");
   const isAdminPage = pathname?.startsWith("/admin");
 
-  // No chrome at all on watch or admin pages
   if (isWatchPage || isAdminPage) {
     return <>{children}</>;
   }
@@ -31,9 +31,24 @@ export default function LayoutWrapper({
   return (
     <>
       <Header />
-      {/* pb-16 on mobile so content doesn't hide behind the bottom nav */}
       <div className="pb-16 lg:pb-0">
-        {children}
+        {/*
+          Page transition — 250ms fade + subtle upward rise.
+          key={pathname} triggers exit/enter on every route change.
+          mode="wait" ensures exit completes before next page enters.
+          You feel it, you don't consciously see it — that's the goal.
+        */}
+        <AnimatePresence mode="wait">
+          <motion.main
+            key={pathname}
+            initial={{ opacity: 0, y: 8 }}
+            animate={{ opacity: 1, y: 0 }}
+            exit={{ opacity: 0, y: -8 }}
+            transition={{ duration: 0.25, ease: "easeInOut" }}
+          >
+            {children}
+          </motion.main>
+        </AnimatePresence>
       </div>
       <Footer />
       <MobileBottomNav />
