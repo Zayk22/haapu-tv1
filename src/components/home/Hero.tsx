@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useEffect, useCallback, useRef } from "react";
+import { useState, useEffect, useCallback } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { Play, Star, Calendar, ChevronLeft, ChevronRight } from "lucide-react";
 import { useRouter } from "next/navigation";
@@ -15,7 +15,6 @@ export default function Hero({ movies }: HeroProps) {
   const router = useRouter();
   const [currentIndex, setCurrentIndex] = useState(0);
   const validMovies = movies.filter((m): m is Movie => m !== null);
-  const sectionRef = useRef<HTMLElement>(null);
 
   useEffect(() => {
     if (validMovies.length <= 1) return;
@@ -35,36 +34,6 @@ export default function Hero({ movies }: HeroProps) {
     setCurrentIndex((prev) => (prev - 1 + validMovies.length) % validMovies.length);
   }, [validMovies.length]);
 
-  // Native touch listeners — React synthetic events don't fire reliably
-  // when Framer Motion AnimatePresence sits between the section and the
-  // touch target, because motion divs consume the event first.
-  useEffect(() => {
-    const section = sectionRef.current;
-    if (!section) return;
-
-    let startX = 0;
-
-    const onTouchStart = (e: TouchEvent) => {
-      startX = e.changedTouches[0].clientX;
-    };
-
-    const onTouchEnd = (e: TouchEvent) => {
-      const diff = startX - e.changedTouches[0].clientX;
-      if (Math.abs(diff) > 50) {
-        if (diff > 0) goNext();
-        else goPrev();
-      }
-    };
-
-    section.addEventListener("touchstart", onTouchStart, { passive: true });
-    section.addEventListener("touchend", onTouchEnd, { passive: true });
-
-    return () => {
-      section.removeEventListener("touchstart", onTouchStart);
-      section.removeEventListener("touchend", onTouchEnd);
-    };
-  }, [goNext, goPrev]);
-
   if (validMovies.length === 0) {
     return (
       <section className="relative flex min-h-screen items-center overflow-hidden">
@@ -80,10 +49,9 @@ export default function Hero({ movies }: HeroProps) {
   const movie = validMovies[currentIndex];
 
   return (
-    <section
-      ref={sectionRef}
-      className="relative flex min-h-screen items-center overflow-hidden"
-    >
+    <section className="relative flex min-h-screen items-center overflow-hidden">
+
+      {/* Background image */}
       <AnimatePresence mode="wait">
         <motion.div
           key={currentIndex}
@@ -96,22 +64,24 @@ export default function Hero({ movies }: HeroProps) {
           {movie?.backdropUrl || movie?.posterUrl ? (
             <>
               {/*
-                Mobile: use the POSTER image (portrait-oriented, designed for
-                tall screens — gospel headshots fill mobile without heavy crop).
-                Desktop: use the BACKDROP (landscape, designed for wide screens).
+                Mobile: poster image (portrait-oriented, fits tall screens better).
+                object-[center_15%] shows the upper-centre of the image where
+                faces almost always are, avoiding the heavy body-crop that
+                object-center causes on portrait screens.
               */}
               <img
                 src={movie.posterUrl || movie.backdropUrl}
                 alt=""
-                className="block sm:hidden h-full w-full object-cover object-top"
+                className="block sm:hidden h-full w-full object-cover object-[center_15%]"
               />
+              {/* Desktop: wide backdrop image */}
               <img
                 src={movie.backdropUrl || movie.posterUrl}
                 alt=""
-                className="hidden sm:block h-full w-full object-cover object-center"
+                className="hidden sm:block h-full w-full object-cover object-[center_20%]"
               />
-              <div className="absolute inset-0 bg-gradient-to-t from-matte-black via-matte-black/70 to-matte-black/20" />
-              <div className="absolute inset-0 bg-gradient-to-r from-matte-black/90 via-matte-black/40 to-transparent" />
+              <div className="absolute inset-0 bg-gradient-to-t from-matte-black via-matte-black/70 to-matte-black/10" />
+              <div className="absolute inset-0 bg-gradient-to-r from-matte-black/90 via-matte-black/30 to-transparent" />
             </>
           ) : (
             <>
@@ -122,11 +92,13 @@ export default function Hero({ movies }: HeroProps) {
         </motion.div>
       </AnimatePresence>
 
+      {/* Ambient glow */}
       <div className="absolute inset-0 z-0 pointer-events-none">
         <div className="absolute left-1/3 top-1/4 h-96 w-96 rounded-full bg-gold-DEFAULT opacity-[0.03] blur-[120px]" />
         <div className="absolute right-1/4 bottom-1/3 h-64 w-64 rounded-full bg-crimson-DEFAULT opacity-[0.04] blur-[100px]" />
       </div>
 
+      {/* Content */}
       <AnimatePresence mode="wait">
         <motion.div
           key={currentIndex}
@@ -184,29 +156,32 @@ export default function Hero({ movies }: HeroProps) {
                 <Play size={18} fill="currentColor" />
                 Watch Now
               </button>
-
               <WatchlistButton movie={movie} />
             </div>
           </div>
         </motion.div>
       </AnimatePresence>
 
-      {/* Desktop arrows only */}
+      {/*
+        Navigation arrows — visible on ALL screen sizes.
+        Small (h-9 w-9) on mobile, larger (h-12 w-12) on desktop.
+        Positioned closer to the edges on mobile so they don't overlap content.
+      */}
       {validMovies.length > 1 && (
         <>
           <button
             onClick={goPrev}
-            className="absolute left-8 top-1/2 -translate-y-1/2 z-20 hidden md:flex h-12 w-12 items-center justify-center rounded-full bg-matte-black/60 text-white backdrop-blur-sm transition-all hover:bg-matte-black/80 hover:scale-110"
+            className="absolute left-2 sm:left-8 top-1/2 -translate-y-1/2 z-20 flex h-9 w-9 sm:h-12 sm:w-12 items-center justify-center rounded-full bg-black/50 text-white backdrop-blur-sm transition-all hover:bg-black/80 hover:scale-110 active:scale-95"
             aria-label="Previous"
           >
-            <ChevronLeft size={24} />
+            <ChevronLeft size={20} />
           </button>
           <button
             onClick={goNext}
-            className="absolute right-8 top-1/2 -translate-y-1/2 z-20 hidden md:flex h-12 w-12 items-center justify-center rounded-full bg-matte-black/60 text-white backdrop-blur-sm transition-all hover:bg-matte-black/80 hover:scale-110"
+            className="absolute right-2 sm:right-8 top-1/2 -translate-y-1/2 z-20 flex h-9 w-9 sm:h-12 sm:w-12 items-center justify-center rounded-full bg-black/50 text-white backdrop-blur-sm transition-all hover:bg-black/80 hover:scale-110 active:scale-95"
             aria-label="Next"
           >
-            <ChevronRight size={24} />
+            <ChevronRight size={20} />
           </button>
         </>
       )}
