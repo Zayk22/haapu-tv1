@@ -1,5 +1,5 @@
 import Link from "next/link";
-import { Facebook, Twitter, Instagram, Youtube } from "lucide-react";
+import { Facebook, Twitter, Instagram, Music } from "lucide-react";
 
 // ============================================
 // FOOTER LINK DATA — Centralized for easy editing
@@ -12,7 +12,7 @@ const footerLinks = [
       { label: "Movies", href: "/movies" },
       { label: "TV Shows", href: "/tv-shows" },
       { label: "Kids", href: "/kids" },
-      { label: "New & Popular", href: "/new" },
+      { label: "New & Popular", href: "/" }, // ← Changed to homepage
     ],
   },
   {
@@ -36,10 +36,10 @@ const footerLinks = [
 ];
 
 const socialLinks = [
-  { icon: Facebook, label: "Facebook", href: "#" },
-  { icon: Twitter, label: "Twitter", href: "#" },
-  { icon: Instagram, label: "Instagram", href: "#" },
-  { icon: Youtube, label: "YouTube", href: "#" },
+  { icon: Facebook, label: "Facebook", href: "https://www.facebook.com/share/1B4zj1guvm/?mibextid=wwXIfr" },
+  { icon: Twitter, label: "Twitter (X)", href: "https://x.com/haaputv?s=11" },
+  { icon: Instagram, label: "Instagram", href: "https://www.instagram.com/haaputv?igsh=YWV1aGE2anU3Mnhh" },
+  { icon: Music, label: "TikTok", href: "https://www.tiktok.com/@haaputv?_r=1&_t=ZS-97kjUYj6jSh" },
 ];
 
 // ============================================
@@ -58,7 +58,7 @@ export default function Footer() {
           <div className="col-span-2 lg:col-span-2">
             <Link href="/" className="inline-block">
               <span className="font-display text-heading-2 font-bold tracking-tight text-white">
-                Happu TV
+                Haapu TV
               </span>
             </Link>
             <p className="mt-3 max-w-xs text-body text-matte-500">
@@ -72,6 +72,8 @@ export default function Footer() {
                 <a
                   key={social.label}
                   href={social.href}
+                  target="_blank"
+                  rel="noopener noreferrer"
                   aria-label={social.label}
                   className="flex h-9 w-9 items-center justify-center rounded-full bg-matte-900 text-matte-500 transition-all duration-300 hover:bg-matte-800 hover:text-white"
                 >
@@ -106,7 +108,7 @@ export default function Footer() {
         {/* ========== DIVIDER ========== */}
         <div className="mt-12 border-t border-matte-800/50 pt-8">
           <div className="flex flex-col items-center justify-between gap-4 text-small text-matte-600 sm:flex-row">
-            <p>&copy; {currentYear} Happu TV. All rights reserved.</p>
+            <p>&copy; {currentYear} Haapu TV. All rights reserved.</p>
             <p>
               Designed with precision. Built for cinema lovers.
             </p>
