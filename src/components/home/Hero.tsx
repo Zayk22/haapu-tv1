@@ -15,7 +15,7 @@ export default function Hero({ movies }: HeroProps) {
   const router = useRouter();
   const [currentIndex, setCurrentIndex] = useState(0);
   const validMovies = movies.filter((m): m is Movie => m !== null);
-  const touchStartX = useRef(0);
+  const sectionRef = useRef<HTMLElement>(null);
 
   useEffect(() => {
     if (validMovies.length <= 1) return;
@@ -25,31 +25,53 @@ export default function Hero({ movies }: HeroProps) {
     return () => clearInterval(timer);
   }, [validMovies.length]);
 
-  const goTo = useCallback((index: number) => {
-    setCurrentIndex(index);
-  }, []);
+  const goTo = useCallback((index: number) => setCurrentIndex(index), []);
 
   const goNext = useCallback(() => {
     setCurrentIndex((prev) => (prev + 1) % validMovies.length);
   }, [validMovies.length]);
 
   const goPrev = useCallback(() => {
-    setCurrentIndex(
-      (prev) => (prev - 1 + validMovies.length) % validMovies.length
-    );
+    setCurrentIndex((prev) => (prev - 1 + validMovies.length) % validMovies.length);
   }, [validMovies.length]);
+
+  // Native touch listeners — React synthetic events don't fire reliably
+  // when Framer Motion AnimatePresence sits between the section and the
+  // touch target, because motion divs consume the event first.
+  useEffect(() => {
+    const section = sectionRef.current;
+    if (!section) return;
+
+    let startX = 0;
+
+    const onTouchStart = (e: TouchEvent) => {
+      startX = e.changedTouches[0].clientX;
+    };
+
+    const onTouchEnd = (e: TouchEvent) => {
+      const diff = startX - e.changedTouches[0].clientX;
+      if (Math.abs(diff) > 50) {
+        if (diff > 0) goNext();
+        else goPrev();
+      }
+    };
+
+    section.addEventListener("touchstart", onTouchStart, { passive: true });
+    section.addEventListener("touchend", onTouchEnd, { passive: true });
+
+    return () => {
+      section.removeEventListener("touchstart", onTouchStart);
+      section.removeEventListener("touchend", onTouchEnd);
+    };
+  }, [goNext, goPrev]);
 
   if (validMovies.length === 0) {
     return (
       <section className="relative flex min-h-screen items-center overflow-hidden">
         <div className="absolute inset-0 z-0 bg-gradient-to-br from-matte-black via-matte-950 to-matte-900" />
         <div className="relative z-10 mx-auto max-w-screen-2xl px-6 pt-20 text-center">
-          <h1 className="font-display text-display text-white">
-            Welcome to Haapu TV
-          </h1>
-          <p className="mt-4 text-body-lg text-matte-400">
-            No featured content available.
-          </p>
+          <h1 className="font-display text-display text-white">Welcome to Haapu TV</h1>
+          <p className="mt-4 text-body-lg text-matte-400">No featured content available.</p>
         </div>
       </section>
     );
@@ -57,23 +79,10 @@ export default function Hero({ movies }: HeroProps) {
 
   const movie = validMovies[currentIndex];
 
-  const handleTouchStart = (e: React.TouchEvent) => {
-    touchStartX.current = e.changedTouches[0].clientX;
-  };
-
-  const handleTouchEnd = (e: React.TouchEvent) => {
-    const diff = touchStartX.current - e.changedTouches[0].clientX;
-    if (Math.abs(diff) > 50) {
-      if (diff > 0) goNext();
-      else goPrev();
-    }
-  };
-
   return (
     <section
+      ref={sectionRef}
       className="relative flex min-h-screen items-center overflow-hidden"
-      onTouchStart={handleTouchStart}
-      onTouchEnd={handleTouchEnd}
     >
       <AnimatePresence mode="wait">
         <motion.div
@@ -84,21 +93,30 @@ export default function Hero({ movies }: HeroProps) {
           exit={{ opacity: 0 }}
           transition={{ duration: 0.8 }}
         >
-          {movie?.backdropUrl ? (
+          {movie?.backdropUrl || movie?.posterUrl ? (
             <>
+              {/*
+                Mobile: use the POSTER image (portrait-oriented, designed for
+                tall screens — gospel headshots fill mobile without heavy crop).
+                Desktop: use the BACKDROP (landscape, designed for wide screens).
+              */}
               <img
-                src={movie.backdropUrl}
+                src={movie.posterUrl || movie.backdropUrl}
                 alt=""
-                className="h-full w-full object-cover object-center"
+                className="block sm:hidden h-full w-full object-cover object-top"
               />
-              <div className="absolute inset-0 bg-gradient-to-t from-matte-black via-matte-black/60 to-matte-950/30" />
+              <img
+                src={movie.backdropUrl || movie.posterUrl}
+                alt=""
+                className="hidden sm:block h-full w-full object-cover object-center"
+              />
+              <div className="absolute inset-0 bg-gradient-to-t from-matte-black via-matte-black/70 to-matte-black/20" />
               <div className="absolute inset-0 bg-gradient-to-r from-matte-black/90 via-matte-black/40 to-transparent" />
             </>
           ) : (
             <>
               <div className="h-full w-full bg-gradient-to-br from-matte-black via-matte-950 to-matte-900" />
               <div className="absolute inset-0 bg-gradient-to-t from-matte-black via-matte-black/60 to-transparent" />
-              <div className="absolute inset-0 bg-gradient-to-r from-matte-black/80 via-transparent to-matte-black/40" />
             </>
           )}
         </motion.div>
@@ -132,17 +150,13 @@ export default function Hero({ movies }: HeroProps) {
             </p>
 
             <p className="mt-3 max-w-lg text-caption leading-relaxed text-matte-400 sm:hidden line-clamp-2">
-              {movie.description?.slice(0, 100) + "..."}
+              {movie.description?.slice(0, 100)}...
             </p>
 
             <div className="mt-4 sm:mt-6 flex flex-wrap items-center gap-4 sm:gap-6 text-small sm:text-caption text-matte-500">
               {movie.rating > 0 && (
                 <div className="flex items-center gap-1.5">
-                  <Star
-                    size={14}
-                    className="text-gold-DEFAULT"
-                    fill="currentColor"
-                  />
+                  <Star size={14} className="text-gold-DEFAULT" fill="currentColor" />
                   <span className="font-medium text-white">{movie.rating}</span>
                 </div>
               )}
@@ -162,7 +176,6 @@ export default function Hero({ movies }: HeroProps) {
             <div className="mt-6 sm:mt-8 flex flex-col sm:flex-row flex-wrap items-start sm:items-center gap-3 sm:gap-4">
               <button
                 onClick={() => {
-                  // Fixed: was /title/ — now consistent with MovieCard (/movie/)
                   const slug = movie.slug || validMovies[currentIndex]?.slug;
                   if (slug) router.push(`/movie/${slug}`);
                 }}
@@ -178,25 +191,27 @@ export default function Hero({ movies }: HeroProps) {
         </motion.div>
       </AnimatePresence>
 
+      {/* Desktop arrows only */}
       {validMovies.length > 1 && (
         <>
           <button
             onClick={goPrev}
             className="absolute left-8 top-1/2 -translate-y-1/2 z-20 hidden md:flex h-12 w-12 items-center justify-center rounded-full bg-matte-black/60 text-white backdrop-blur-sm transition-all hover:bg-matte-black/80 hover:scale-110"
-            aria-label="Previous movie"
+            aria-label="Previous"
           >
             <ChevronLeft size={24} />
           </button>
           <button
             onClick={goNext}
             className="absolute right-8 top-1/2 -translate-y-1/2 z-20 hidden md:flex h-12 w-12 items-center justify-center rounded-full bg-matte-black/60 text-white backdrop-blur-sm transition-all hover:bg-matte-black/80 hover:scale-110"
-            aria-label="Next movie"
+            aria-label="Next"
           >
             <ChevronRight size={24} />
           </button>
         </>
       )}
 
+      {/* Dots */}
       {validMovies.length > 1 && (
         <div className="absolute bottom-24 left-0 right-0 z-20 flex justify-center gap-2">
           {validMovies.map((_, index) => (
@@ -208,7 +223,7 @@ export default function Hero({ movies }: HeroProps) {
                   ? "w-8 bg-crimson-DEFAULT"
                   : "w-2 bg-matte-600 hover:bg-matte-500"
               }`}
-              aria-label={`Go to movie ${index + 1}`}
+              aria-label={`Go to slide ${index + 1}`}
             />
           ))}
         </div>

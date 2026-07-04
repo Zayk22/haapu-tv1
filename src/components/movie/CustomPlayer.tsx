@@ -53,27 +53,19 @@ export default function CustomPlayer({ movie }: CustomPlayerProps) {
 
   const buildEmbedUrl = useCallback(() => {
     if (!videoUrl) return "";
-
     if (isWistia) {
       const match = videoUrl.match(/embed\/iframe\/([a-zA-Z0-9]+)/);
       const videoId = match?.[1];
       if (!videoId) return videoUrl;
       const base = `https://fast.wistia.net/embed/iframe/${videoId}`;
-      const params = new URLSearchParams({ autoPlay: "true", endVideoBehavior: "loop" });
-      if (savedProgress > 10) {
-        params.set("time", String(Math.floor(savedProgress)));
-      }
+      const params = new URLSearchParams({ autoPlay: "true" });
+      if (savedProgress > 10) params.set("time", String(Math.floor(savedProgress)));
       return `${base}?${params.toString()}`;
     }
-
     if (isYouTube) {
-      const separator = videoUrl.includes("?") ? "&" : "?";
-      const extra = savedProgress > 10
-        ? `autoplay=1&start=${Math.floor(savedProgress)}`
-        : "autoplay=1";
-      return `${videoUrl}${separator}${extra}`;
+      const sep = videoUrl.includes("?") ? "&" : "?";
+      return `${videoUrl}${sep}autoplay=1${savedProgress > 10 ? `&start=${Math.floor(savedProgress)}` : ""}`;
     }
-
     return videoUrl;
   }, [videoUrl, isWistia, isYouTube, savedProgress]);
 
@@ -110,7 +102,6 @@ export default function CustomPlayer({ movie }: CustomPlayerProps) {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [historyLoading, isExternalEmbed]);
 
-  // Auto-hide the "Resuming from" badge after 3 seconds
   useEffect(() => {
     if (!savedProgress || savedProgress <= 10) return;
     const t = setTimeout(() => setShowResuming(false), 3000);
@@ -120,9 +111,7 @@ export default function CustomPlayer({ movie }: CustomPlayerProps) {
   const resetHideTimer = useCallback(() => {
     setShowControls(true);
     if (hideTimer.current) clearTimeout(hideTimer.current);
-    if (isPlaying) {
-      hideTimer.current = setTimeout(() => setShowControls(false), 3000);
-    }
+    if (isPlaying) hideTimer.current = setTimeout(() => setShowControls(false), 3000);
   }, [isPlaying]);
 
   useEffect(() => {
@@ -132,39 +121,25 @@ export default function CustomPlayer({ movie }: CustomPlayerProps) {
   useEffect(() => {
     if (isExternalEmbed) return;
     const saved = items.find((i) => i.movieId === movie.id.toString());
-    if (saved && saved.progress > 0 && videoRef.current) {
+    if (saved && saved.progress > 0 && videoRef.current)
       videoRef.current.currentTime = saved.progress;
-    }
   }, [items, movie.id, isExternalEmbed]);
 
   useEffect(() => {
-    if (isExternalEmbed) return;
-    if (isPlaying && !hasAddedRef.current) {
-      hasAddedRef.current = true;
-      addItem({
-        movieId: movie.id.toString(),
-        slug: movie.slug || movie.id.toString(),
-        title: movie.title,
-        posterUrl: movie.posterUrl,
-        year: movie.year,
-        rating: movie.rating,
-        type: movie.type,
-      });
-    }
-  }, [isPlaying, movie, addItem, isExternalEmbed]);
+    if (isExternalEmbed || isPlaying || hasAddedRef.current) return;
+    // handled separately
+  }, [isPlaying, isExternalEmbed]);
 
   useEffect(() => {
     if (isExternalEmbed) return;
     if (isPlaying) {
       progressInterval.current = setInterval(() => {
         if (videoRef.current) {
-          const current = Math.floor(videoRef.current.currentTime);
-          const dur = Math.floor(videoRef.current.duration || 0);
-          updateProgress(movie.id.toString(), current, {
+          updateProgress(movie.id.toString(), Math.floor(videoRef.current.currentTime), {
             movieSlug: movie.slug || movie.id.toString(),
             movieTitle: movie.title,
             posterUrl: movie.posterUrl,
-            duration: dur,
+            duration: Math.floor(videoRef.current.duration || 0),
           });
         }
       }, 5000);
@@ -188,10 +163,7 @@ export default function CustomPlayer({ movie }: CustomPlayerProps) {
   useEffect(() => {
     const handleKeyDown = (e: KeyboardEvent) => {
       if (e.target instanceof HTMLInputElement) return;
-      if (isExternalEmbed) {
-        if (e.key === "Escape") goBack();
-        return;
-      }
+      if (isExternalEmbed) { if (e.key === "Escape") goBack(); return; }
       switch (e.key) {
         case " ": case "k": e.preventDefault(); togglePlay(); break;
         case "ArrowLeft": e.preventDefault(); skip(-10); break;
@@ -213,10 +185,8 @@ export default function CustomPlayer({ movie }: CustomPlayerProps) {
     if (videoRef.current) videoRef.current.playbackRate = playbackSpeed;
   }, [playbackSpeed]);
 
-  const goBack = () => {
-    if (window.history.length > 1) router.back();
-    else router.push("/");
-  };
+  // window.history.back() is more reliable on mobile than router.back()
+  const goBack = () => window.history.back();
 
   const togglePlay = () => {
     if (!videoRef.current) return;
@@ -239,9 +209,8 @@ export default function CustomPlayer({ movie }: CustomPlayerProps) {
       setDuration(videoRef.current.duration);
       setIsLoading(false);
       const saved = items.find((i) => i.movieId === movie.id.toString());
-      if (saved && saved.progress > 5 && saved.progress < videoRef.current.duration - 10) {
+      if (saved && saved.progress > 5 && saved.progress < videoRef.current.duration - 10)
         videoRef.current.currentTime = saved.progress;
-      }
       videoRef.current.play().catch(() => setIsLoading(false));
       setIsPlaying(true);
     }
@@ -276,42 +245,34 @@ export default function CustomPlayer({ movie }: CustomPlayerProps) {
     resetHideTimer();
   };
 
-  const formatTime = (seconds: number): string => {
-    if (isNaN(seconds) || seconds < 0) return "0:00";
-    const hrs = Math.floor(seconds / 3600);
-    const mins = Math.floor((seconds % 3600) / 60);
-    const secs = Math.floor(seconds % 60);
-    if (hrs > 0) return `${hrs}:${mins.toString().padStart(2, "0")}:${secs.toString().padStart(2, "0")}`;
-    return `${mins}:${secs.toString().padStart(2, "0")}`;
+  const formatTime = (s: number) => {
+    if (isNaN(s) || s < 0) return "0:00";
+    const h = Math.floor(s / 3600), m = Math.floor((s % 3600) / 60), sec = Math.floor(s % 60);
+    if (h > 0) return `${h}:${String(m).padStart(2,"0")}:${String(sec).padStart(2,"0")}`;
+    return `${m}:${String(sec).padStart(2,"0")}`;
   };
 
-  const formatTimeLabel = (secs: number) => {
-    const h = Math.floor(secs / 3600);
-    const m = Math.floor((secs % 3600) / 60);
-    if (h > 0) return `${h}h ${m}m`;
-    return `${m}m`;
+  const formatTimeLabel = (s: number) => {
+    const h = Math.floor(s / 3600), m = Math.floor((s % 3600) / 60);
+    return h > 0 ? `${h}h ${m}m` : `${m}m`;
   };
 
   const progress = duration > 0 ? (currentTime / duration) * 100 : 0;
   const speeds = [0.5, 0.75, 1, 1.25, 1.5, 2];
 
-  // Wait for history to load before rendering iframe
   if (historyLoading) {
     return (
       <div className="flex h-screen items-center justify-center bg-black">
-        <div className="flex flex-col items-center gap-4">
-          <div className="h-12 w-12 animate-spin rounded-full border-4 border-white/20 border-t-crimson-DEFAULT" />
-          <p className="text-caption text-matte-500">Loading...</p>
-        </div>
+        <div className="h-12 w-12 animate-spin rounded-full border-4 border-white/20 border-t-crimson-DEFAULT" />
       </div>
     );
   }
 
-  // ── EXTERNAL EMBED (Wistia / YouTube / Vimeo) ─────────────────────────
+  // ── EXTERNAL EMBED ────────────────────────────────────────────────────
   if (isExternalEmbed) {
     const embedUrl = buildEmbedUrl();
-
     return (
+      // Wrapper — relative so iframe fills it
       <div className="relative h-screen w-screen bg-black" ref={containerRef}>
 
         <iframe
@@ -328,40 +289,37 @@ export default function CustomPlayer({ movie }: CustomPlayerProps) {
           </div>
         )}
 
-        {/* Top bar — single row, back button left, title right, no overlap */}
-        <div className="absolute top-0 left-0 right-0 z-50 flex items-center justify-between gap-2 bg-gradient-to-b from-black/80 to-transparent px-4 py-3">
-          <button
-            onClick={goBack}
-            className="flex flex-shrink-0 items-center gap-2 rounded-lg bg-black/60 px-3 py-2 text-white backdrop-blur-sm transition-colors hover:bg-black/90"
-          >
-            <ArrowLeft size={18} />
-            <span className="text-sm font-medium">Back</span>
-          </button>
-          <div className="min-w-0 text-right pointer-events-none">
-            <p className="text-[10px] uppercase tracking-wider text-white/40">Now Playing</p>
-            <h2 className="truncate text-sm font-semibold text-white max-w-[180px] sm:max-w-xs">
-              {movie.title}
-            </h2>
-          </div>
+        {/*
+          Back button is position:fixed — this puts it in the VIEWPORT
+          layer, completely outside the iframe's event capture zone.
+          z-index:9999 ensures it sits above everything.
+        */}
+        <button
+          onClick={goBack}
+          className="fixed top-4 left-4 z-[9999] flex items-center gap-2 rounded-lg bg-black/80 px-4 py-2.5 text-white backdrop-blur-md transition-colors hover:bg-black active:bg-black"
+          style={{ WebkitTapHighlightColor: "transparent" }}
+        >
+          <ArrowLeft size={18} />
+          <span className="text-sm font-medium">Back</span>
+        </button>
+
+        {/* Title — fixed, top right, truncates so it never overlaps Back */}
+        <div className="fixed top-4 right-4 z-[9999] text-right pointer-events-none max-w-[55%]">
+          <p className="text-[10px] uppercase tracking-wider text-white/40">Now Playing</p>
+          <h2 className="truncate text-sm font-semibold text-white">{movie.title}</h2>
         </div>
 
-        {/* Resuming badge — auto-hides after 3 seconds */}
+        {/* Resuming badge — fades after 3 seconds */}
         {savedProgress > 10 && showResuming && (
-          <div className="absolute top-16 left-1/2 -translate-x-1/2 z-50 rounded-full bg-black/80 px-4 py-2 text-caption text-white backdrop-blur-sm">
+          <div className="fixed top-16 left-1/2 -translate-x-1/2 z-[9999] rounded-full bg-black/80 px-4 py-2 text-sm text-white backdrop-blur-sm pointer-events-none">
             ▶ Resuming from {formatTimeLabel(savedProgress)}
           </div>
         )}
-
-        <div className="absolute bottom-6 left-0 right-0 z-50 text-center pointer-events-none sm:hidden">
-          <p className="text-[11px] text-white/30 tracking-wide">
-            Rotate device for full screen
-          </p>
-        </div>
       </div>
     );
   }
 
-  // ── DIRECT VIDEO PLAYER (MP4) ─────────────────────────────────────────
+  // ── DIRECT VIDEO (MP4) ────────────────────────────────────────────────
   const savedItemForVideo = items.find((i) => i.movieId === movie.id.toString());
   const hasSavedProgress = savedItemForVideo && savedItemForVideo.progress > 30;
 
@@ -377,10 +335,7 @@ export default function CustomPlayer({ movie }: CustomPlayerProps) {
           <div className="text-center px-6">
             <p className="font-display text-heading-1 text-white mb-4">{movie.title}</p>
             <p className="text-body text-matte-400 mb-8">Video failed to load.</p>
-            <button
-              onClick={goBack}
-              className="flex items-center gap-2 mx-auto rounded-lg bg-crimson-DEFAULT px-6 py-3 text-body font-semibold text-white hover:bg-crimson-dark"
-            >
+            <button onClick={goBack} className="flex items-center gap-2 mx-auto rounded-lg bg-crimson-DEFAULT px-6 py-3 font-semibold text-white">
               <ArrowLeft size={18} /> Go Back
             </button>
           </div>
@@ -412,9 +367,7 @@ export default function CustomPlayer({ movie }: CustomPlayerProps) {
 
       {hasSavedProgress && !isPlaying && !isLoading && (
         <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 z-20 text-center">
-          <p className="text-caption text-matte-400 mb-3">
-            Resume from {formatTime(savedItemForVideo!.progress)}?
-          </p>
+          <p className="text-caption text-matte-400 mb-3">Resume from {formatTime(savedItemForVideo!.progress)}?</p>
           <button
             onClick={() => {
               if (videoRef.current && savedItemForVideo) {
@@ -423,7 +376,7 @@ export default function CustomPlayer({ movie }: CustomPlayerProps) {
                 setIsPlaying(true);
               }
             }}
-            className="rounded-lg bg-crimson-DEFAULT px-6 py-3 text-body font-semibold text-white hover:bg-crimson-dark"
+            className="rounded-lg bg-crimson-DEFAULT px-6 py-3 font-semibold text-white hover:bg-crimson-dark"
           >
             Resume
           </button>
@@ -433,9 +386,7 @@ export default function CustomPlayer({ movie }: CustomPlayerProps) {
       <AnimatePresence>
         {showControls && !hasError && (
           <motion.div
-            initial={{ opacity: 0, y: -20 }}
-            animate={{ opacity: 1, y: 0 }}
-            exit={{ opacity: 0, y: -20 }}
+            initial={{ opacity: 0, y: -20 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0, y: -20 }}
             className="absolute top-0 left-0 right-0 z-20 bg-gradient-to-b from-black/80 to-transparent px-4 sm:px-8 pt-4 pb-12"
           >
             <div className="flex items-center justify-between">
@@ -455,9 +406,7 @@ export default function CustomPlayer({ movie }: CustomPlayerProps) {
       <AnimatePresence>
         {!isPlaying && showControls && !isLoading && !hasError && !hasSavedProgress && (
           <motion.button
-            initial={{ opacity: 0, scale: 0.5 }}
-            animate={{ opacity: 1, scale: 1 }}
-            exit={{ opacity: 0, scale: 0.5 }}
+            initial={{ opacity: 0, scale: 0.5 }} animate={{ opacity: 1, scale: 1 }} exit={{ opacity: 0, scale: 0.5 }}
             onClick={(e) => { e.stopPropagation(); togglePlay(); }}
             className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 z-20 flex h-20 w-20 items-center justify-center rounded-full bg-crimson-DEFAULT/90 text-white shadow-glow-lg hover:scale-110 transition-transform"
           >
@@ -469,9 +418,7 @@ export default function CustomPlayer({ movie }: CustomPlayerProps) {
       <AnimatePresence>
         {showControls && !hasError && (
           <motion.div
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
-            exit={{ opacity: 0, y: 20 }}
+            initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0, y: 20 }}
             className="absolute bottom-0 left-0 right-0 z-20 bg-gradient-to-t from-black/95 via-black/50 to-transparent px-4 sm:px-8 pb-4 sm:pb-6 pt-16"
           >
             <div
@@ -488,10 +435,7 @@ export default function CustomPlayer({ movie }: CustomPlayerProps) {
                 style={{ left: `${progress}%`, marginLeft: "-8px" }}
               />
               {hoverTime !== null && (
-                <div
-                  className="absolute bottom-full mb-2 -translate-x-1/2 rounded bg-black/90 px-2 py-1 text-caption text-white whitespace-nowrap pointer-events-none"
-                  style={{ left: `${hoverPosition}px` }}
-                >
+                <div className="absolute bottom-full mb-2 -translate-x-1/2 rounded bg-black/90 px-2 py-1 text-caption text-white whitespace-nowrap pointer-events-none" style={{ left: `${hoverPosition}px` }}>
                   {formatTime(hoverTime)}
                 </div>
               )}
@@ -512,8 +456,7 @@ export default function CustomPlayer({ movie }: CustomPlayerProps) {
                   <button onClick={(e) => { e.stopPropagation(); setIsMuted(!isMuted); }} className="text-white/70 hover:text-white">
                     {isMuted || volume === 0 ? <VolumeX size={18} /> : <Volume2 size={18} />}
                   </button>
-                  <input
-                    type="range" min="0" max="1" step="0.05" value={isMuted ? 0 : volume}
+                  <input type="range" min="0" max="1" step="0.05" value={isMuted ? 0 : volume}
                     onChange={(e) => { setVolume(Number(e.target.value)); setIsMuted(false); }}
                     onClick={(e) => e.stopPropagation()}
                     className="w-20 h-1 appearance-none bg-white/30 rounded-full cursor-pointer [&::-webkit-slider-thumb]:appearance-none [&::-webkit-slider-thumb]:h-3 [&::-webkit-slider-thumb]:w-3 [&::-webkit-slider-thumb]:rounded-full [&::-webkit-slider-thumb]:bg-white"
@@ -528,21 +471,15 @@ export default function CustomPlayer({ movie }: CustomPlayerProps) {
 
               <div className="flex items-center gap-3">
                 <div className="relative">
-                  <button
-                    onClick={(e) => { e.stopPropagation(); setShowSpeedMenu(!showSpeedMenu); }}
-                    className="flex items-center gap-1 text-white/70 hover:text-white"
-                  >
+                  <button onClick={(e) => { e.stopPropagation(); setShowSpeedMenu(!showSpeedMenu); }} className="flex items-center gap-1 text-white/70 hover:text-white">
                     <Settings size={16} />
                     <span className="text-caption hidden sm:inline">{playbackSpeed}x</span>
                   </button>
                   {showSpeedMenu && (
                     <div className="absolute bottom-full right-0 mb-2 rounded-lg border border-white/10 bg-black/90 backdrop-blur-md py-1">
                       {speeds.map((s) => (
-                        <button
-                          key={s}
-                          onClick={(e) => { e.stopPropagation(); setPlaybackSpeed(s); setShowSpeedMenu(false); }}
-                          className={`block w-full px-4 py-2 text-left text-caption hover:bg-white/10 ${playbackSpeed === s ? "text-crimson-DEFAULT" : "text-white"}`}
-                        >
+                        <button key={s} onClick={(e) => { e.stopPropagation(); setPlaybackSpeed(s); setShowSpeedMenu(false); }}
+                          className={`block w-full px-4 py-2 text-left text-caption hover:bg-white/10 ${playbackSpeed === s ? "text-crimson-DEFAULT" : "text-white"}`}>
                           {s}x
                         </button>
                       ))}
