@@ -125,7 +125,7 @@ export default function Hero({ movies }: HeroProps) {
         <AnimatePresence mode="wait">
           <motion.div
             key={currentIndex}
-            className="px-4 pt-3 pb-4"
+            className="px-4 pt-3 pb-8"
             initial={{ opacity: 0, y: 10 }}
             animate={{ opacity: 1, y: 0 }}
             exit={{ opacity: 0 }}
@@ -163,10 +163,11 @@ export default function Hero({ movies }: HeroProps) {
               )}
             </div>
 
-            <div className="mt-4 flex flex-col gap-2.5">
+            {/* ✅ FIXED: Side by side — Watch Now takes most space, My List is compact */}
+            <div className="mt-4 flex flex-row items-center gap-2.5">
               <button
                 onClick={() => { if (movie.slug) router.push(`/movie/${movie.slug}`); }}
-                className="flex w-full items-center justify-center gap-2 rounded-lg bg-crimson-DEFAULT py-3 text-body font-semibold text-white active:scale-[0.98] transition-transform"
+                className="flex flex-1 items-center justify-center gap-2 rounded-lg bg-crimson-DEFAULT py-3 text-body font-semibold text-white active:scale-[0.98] transition-transform"
               >
                 <Play size={18} fill="currentColor" />
                 Watch Now
