@@ -205,9 +205,9 @@ export default function AddMoviePage() {
               hint="Portrait (2:3 ratio). Shown on movie cards throughout the site."
             >
               <ImageUpload
-                value={formData.posterUrl}
-                onChange={(url) => set("posterUrl", url)}
-                label="Upload Poster"
+                onImageUploaded={(url) => set("posterUrl", url)}
+                currentImage={formData.posterUrl}
+                label=""
               />
             </Field>
 
@@ -216,9 +216,9 @@ export default function AddMoviePage() {
               hint="Landscape (16:9 ratio). Used in the hero carousel and detail page background."
             >
               <ImageUpload
-                value={formData.backdropUrl}
-                onChange={(url) => set("backdropUrl", url)}
-                label="Upload Backdrop"
+                onImageUploaded={(url) => set("backdropUrl", url)}
+                currentImage={formData.backdropUrl}
+                label=""
               />
             </Field>
 
