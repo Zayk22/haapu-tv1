@@ -5,25 +5,19 @@ import { usePathname, useRouter } from "next/navigation";
 import Link from "next/link";
 import { useAuth } from "@clerk/nextjs";
 import {
-  LayoutDashboard,
-  Film,
-  Image as ImageIcon,
-  Settings,
-  Menu,
-  X,
-  LogOut,
-  ChevronRight,
-  Tv,
-  Layout,
+  LayoutDashboard, Film, Image as ImageIcon,
+  Settings, Menu, LogOut, ChevronRight,
+  Tv, Layout, Users,
 } from "lucide-react";
 
 const navItems = [
-  { href: "/admin",           label: "Dashboard",       icon: LayoutDashboard, exact: true },
-  { href: "/admin/movies",    label: "Movies",           icon: Film },
-  { href: "/admin/hero",      label: "Hero Carousel",    icon: Tv },
-  { href: "/admin/homepage",  label: "Homepage Sections",icon: Layout },
-  { href: "/admin/media",     label: "Media Library",    icon: ImageIcon },
-  { href: "/admin/settings",  label: "Settings",         icon: Settings },
+  { href: "/admin",           label: "Dashboard",         icon: LayoutDashboard, exact: true },
+  { href: "/admin/movies",    label: "Movies",             icon: Film },
+  { href: "/admin/hero",      label: "Hero Carousel",      icon: Tv },
+  { href: "/admin/homepage",  label: "Homepage Sections",  icon: Layout },
+  { href: "/admin/users",     label: "Users",              icon: Users },
+  { href: "/admin/media",     label: "Media Library",      icon: ImageIcon },
+  { href: "/admin/settings",  label: "Settings",           icon: Settings },
 ];
 
 export default function AdminLayout({ children }: { children: React.ReactNode }) {
@@ -43,16 +37,13 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
 
   const Sidebar = () => (
     <div className="flex h-full flex-col bg-matte-900 border-r border-matte-800">
-      {/* Logo */}
-      <div className="flex items-center gap-3 border-b border-matte-800 px-5 py-4">
-        <img src="/logo.png" alt="Haapu TV" className="h-10 w-auto object-contain" />
-        <div>
-          <p className="text-xs font-semibold text-white">Admin Panel</p>
-          <p className="text-[10px] text-matte-500">Content Manager</p>
-        </div>
+      {/* Logo only — no text needed */}
+      <div className="flex items-center border-b border-matte-800 px-5 py-4">
+        <Link href="/" target="_blank">
+          <img src="/logo.png" alt="Haapu TV" className="h-10 w-auto object-contain" />
+        </Link>
       </div>
 
-      {/* Nav */}
       <nav className="flex-1 overflow-y-auto px-3 py-4 space-y-0.5">
         {navItems.map((item) => {
           const active = isActive(item);
@@ -69,13 +60,12 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
             >
               <item.icon size={17} />
               <span>{item.label}</span>
-              {active && <ChevronRight size={14} className="ml-auto" />}
+              {active && <ChevronRight size={14} className="ml-auto opacity-60" />}
             </Link>
           );
         })}
       </nav>
 
-      {/* Footer */}
       <div className="border-t border-matte-800 px-3 py-3 space-y-1">
         <Link
           href="/"
@@ -98,12 +88,10 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
 
   return (
     <div className="flex h-screen bg-matte-950 overflow-hidden">
-      {/* Desktop sidebar */}
       <div className="hidden lg:block w-60 flex-shrink-0 h-full">
         <Sidebar />
       </div>
 
-      {/* Mobile sidebar overlay */}
       {sidebarOpen && (
         <div className="fixed inset-0 z-40 lg:hidden">
           <div
@@ -116,9 +104,7 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
         </div>
       )}
 
-      {/* Main content */}
       <div className="flex flex-1 flex-col overflow-hidden">
-        {/* Mobile header */}
         <div className="flex items-center gap-4 border-b border-matte-800 bg-matte-900 px-4 py-3 lg:hidden">
           <button
             onClick={() => setSidebarOpen(true)}
@@ -129,7 +115,6 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
           <span className="font-semibold text-white">Admin Panel</span>
         </div>
 
-        {/* Page content */}
         <main className="flex-1 overflow-y-auto p-4 sm:p-6 lg:p-8">
           {children}
         </main>
