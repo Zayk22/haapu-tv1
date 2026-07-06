@@ -1,11 +1,17 @@
-import { sql } from '@/lib/db';
-import HeroManagerClient from './HeroManagerClient';
+import { sql } from "@/lib/db";
+import HeroManagerClient from "./HeroManagerClient";
+
+export const dynamic = "force-dynamic";
 
 export default async function HeroPage() {
   const movies = await sql`
     SELECT
-      id::text, title, slug, poster_url as "posterUrl",
-      is_featured, hero_order
+      id::text,
+      title,
+      slug,
+      poster_url AS "posterUrl",
+      is_featured,
+      hero_order
     FROM movies
     ORDER BY
       is_featured DESC,
