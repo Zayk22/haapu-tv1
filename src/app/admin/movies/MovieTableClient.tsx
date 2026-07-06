@@ -31,6 +31,13 @@ function Toggle({
   );
 }
 
+const TOGGLES = [
+  { field: "is_featured",    label: "Hero" },
+  { field: "is_trending",    label: "Trending" },
+  { field: "is_new",         label: "New to Haapu" },
+  { field: "is_recommended", label: "Recommended" },
+];
+
 export default function MovieTableClient({ movies }: { movies: any[] }) {
   const [searchTerm, setSearchTerm] = useState("");
   const [movieList, setMovieList] = useState(movies);
@@ -76,40 +83,17 @@ export default function MovieTableClient({ movies }: { movies: any[] }) {
     setUpdating((prev) => ({ ...prev, [key]: false }));
   };
 
-  const updateHeroOrder = async (id: string, order: number) => {
-    if (isNaN(order)) return;
-    try {
-      const res = await fetch(`/api/admin/movies/${id}`, {
-        method: "PATCH",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ hero_order: order }),
-      });
-      if (res.ok) {
-        setMovieList((prev) =>
-          prev.map((m) => (m.id === id ? { ...m, hero_order: order } : m))
-        );
-      }
-    } catch (err) {
-      console.error("Hero order update failed", err);
-    }
-  };
-
-  const TOGGLES = [
-    { field: "is_featured",    label: "Hero" },
-    { field: "is_trending",    label: "Trending" },
-    { field: "is_new",         label: "New to Haapu" },
-    { field: "is_recommended", label: "Recommended" },
-  ];
-
   return (
     <div>
+      {/* Header */}
       <div className="mb-6 flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
         <div>
           <h1 className="font-display text-2xl font-bold text-white sm:text-3xl">
             Movies
           </h1>
           <p className="mt-1 text-sm text-matte-400">
-            {movieList.length} title{movieList.length !== 1 ? "s" : ""} in your catalog
+            {movieList.length} title{movieList.length !== 1 ? "s" : ""} in
+            your catalog
           </p>
         </div>
         <Link
@@ -121,6 +105,16 @@ export default function MovieTableClient({ movies }: { movies: any[] }) {
         </Link>
       </div>
 
+      {/* Note about Hero Order */}
+      <div className="mb-5 rounded-lg border border-matte-800 bg-matte-900/60 px-4 py-3 text-xs text-matte-500">
+        💡 To manage hero carousel order and minimum counts, use{" "}
+        <Link href="/admin/hero" className="text-crimson-DEFAULT hover:underline">
+          Hero Carousel
+        </Link>{" "}
+        in the sidebar.
+      </div>
+
+      {/* Search */}
       <div className="mb-6 max-w-sm">
         <div className="relative">
           <Search className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-matte-500" />
@@ -137,7 +131,10 @@ export default function MovieTableClient({ movies }: { movies: any[] }) {
       {/* Mobile cards */}
       <div className="space-y-3 lg:hidden">
         {filtered.map((movie) => (
-          <div key={movie.id} className="rounded-xl border border-matte-800 bg-matte-900 p-4">
+          <div
+            key={movie.id}
+            className="rounded-xl border border-matte-800 bg-matte-900 p-4"
+          >
             <div className="flex gap-3">
               <img
                 src={movie.posterUrl}
@@ -154,7 +151,9 @@ export default function MovieTableClient({ movies }: { movies: any[] }) {
                     <div key={field} className="flex items-center gap-2">
                       <Toggle
                         value={movie[field] || false}
-                        onChange={() => updateFlag(movie.id, field, movie[field] || false)}
+                        onChange={() =>
+                          updateFlag(movie.id, field, movie[field] || false)
+                        }
                         disabled={updating[`${movie.id}-${field}`]}
                       />
                       <span className="text-xs text-matte-400">{label}</span>
@@ -192,21 +191,30 @@ export default function MovieTableClient({ movies }: { movies: any[] }) {
         ))}
       </div>
 
-      {/* Desktop table */}
+      {/* Desktop table — Hero Order column removed, managed via /admin/hero */}
       <div className="hidden overflow-hidden rounded-xl border border-matte-800 lg:block">
         <table className="w-full">
           <thead>
             <tr className="border-b border-matte-800 bg-matte-900/80">
-              {["Movie", "Duration", "Hero", "Trending", "New to Haapu", "Recommended", "Hero Order", "Actions"].map((h) => (
-                <th key={h} className="px-5 py-3.5 text-left text-xs font-semibold uppercase tracking-wider text-matte-500">
-                  {h}
-                </th>
-              ))}
+              {["Movie", "Duration", "Hero", "Trending", "New to Haapu", "Recommended", "Actions"].map(
+                (h) => (
+                  <th
+                    key={h}
+                    className="px-5 py-3.5 text-left text-xs font-semibold uppercase tracking-wider text-matte-500"
+                  >
+                    {h}
+                  </th>
+                )
+              )}
             </tr>
           </thead>
           <tbody className="divide-y divide-matte-800 bg-matte-900">
             {filtered.map((movie) => (
-              <tr key={movie.id} className="transition-colors hover:bg-matte-800/40">
+              <tr
+                key={movie.id}
+                className="transition-colors hover:bg-matte-800/40"
+              >
+                {/* Movie */}
                 <td className="px-5 py-4">
                   <div className="flex items-center gap-3">
                     <img
@@ -215,42 +223,35 @@ export default function MovieTableClient({ movies }: { movies: any[] }) {
                       className="h-12 w-9 flex-shrink-0 rounded object-cover bg-matte-800"
                     />
                     <div className="min-w-0">
-                      <p className="truncate max-w-[160px] font-semibold text-white">
+                      <p className="truncate max-w-[180px] font-semibold text-white">
                         {movie.title}
                       </p>
-                      <p className="truncate max-w-[160px] text-xs text-matte-500">
+                      <p className="truncate max-w-[180px] text-xs text-matte-500">
                         {movie.genres?.slice(0, 2).join(", ")}
                       </p>
                     </div>
                   </div>
                 </td>
 
+                {/* Duration */}
                 <td className="px-5 py-4 text-sm text-matte-400">
                   {movie.duration || "—"}
                 </td>
 
+                {/* Toggles */}
                 {TOGGLES.map(({ field }) => (
                   <td key={field} className="px-5 py-4">
                     <Toggle
                       value={movie[field] || false}
-                      onChange={() => updateFlag(movie.id, field, movie[field] || false)}
+                      onChange={() =>
+                        updateFlag(movie.id, field, movie[field] || false)
+                      }
                       disabled={updating[`${movie.id}-${field}`]}
                     />
                   </td>
                 ))}
 
-                <td className="px-5 py-4">
-                  <input
-                    type="number"
-                    min="1"
-                    max="20"
-                    defaultValue={movie.hero_order || ""}
-                    onBlur={(e) => updateHeroOrder(movie.id, parseInt(e.target.value))}
-                    className="w-16 rounded-lg border border-matte-700 bg-matte-800 px-2 py-1.5 text-center text-sm text-white focus:border-crimson-DEFAULT focus:outline-none"
-                    placeholder="—"
-                  />
-                </td>
-
+                {/* Actions */}
                 <td className="px-5 py-4">
                   <div className="flex items-center gap-1">
                     <Link
@@ -275,7 +276,11 @@ export default function MovieTableClient({ movies }: { movies: any[] }) {
                           ? "bg-red-500/10 text-red-400"
                           : "text-matte-400 hover:bg-matte-800 hover:text-red-400"
                       }`}
-                      title={deleteConfirm === movie.id ? "Click again to confirm" : "Delete"}
+                      title={
+                        deleteConfirm === movie.id
+                          ? "Click again to confirm"
+                          : "Delete"
+                      }
                     >
                       <Trash2 size={15} />
                     </button>
@@ -295,7 +300,10 @@ export default function MovieTableClient({ movies }: { movies: any[] }) {
             ) : (
               <>
                 No movies yet.{" "}
-                <Link href="/admin/movies/add" className="text-crimson-DEFAULT">
+                <Link
+                  href="/admin/movies/add"
+                  className="text-crimson-DEFAULT"
+                >
                   Add your first movie.
                 </Link>
               </>

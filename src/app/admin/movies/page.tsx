@@ -3,25 +3,25 @@ import MovieTableClient from "./MovieTableClient";
 
 export default async function AdminMoviesPage() {
   const movies = await sql`
-    SELECT 
-      id::text, 
-      slug, 
-      title, 
-      poster_url as "posterUrl", 
-      backdrop_url as "backdropUrl",
+    SELECT
+      id::text,
+      slug,
+      title,
+      poster_url       AS "posterUrl",
+      backdrop_url     AS "backdropUrl",
       description,
       duration,
       genres,
       rating,
       is_featured,
       is_trending,
-      is_recommended,
-      hero_order
-    FROM movies 
+      is_new,
+      is_recommended
+    FROM movies
     ORDER BY id
   `;
-  
-  const formattedMovies = movies.map(movie => ({
+
+  const formattedMovies = movies.map((movie) => ({
     id: movie.id,
     slug: movie.slug,
     title: movie.title,
@@ -31,10 +31,10 @@ export default async function AdminMoviesPage() {
     duration: movie.duration,
     genres: movie.genres,
     rating: movie.rating,
-    is_featured: movie.is_featured ?? false,
-    is_trending: movie.is_trending ?? false,
+    is_featured:    movie.is_featured    ?? false,
+    is_trending:    movie.is_trending    ?? false,
+    is_new:         movie.is_new         ?? false,
     is_recommended: movie.is_recommended ?? false,
-    hero_order: movie.hero_order,
   }));
 
   return <MovieTableClient movies={formattedMovies} />;
