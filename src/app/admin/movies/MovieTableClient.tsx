@@ -94,9 +94,15 @@ export default function MovieTableClient({ movies }: { movies: any[] }) {
     }
   };
 
+  const TOGGLES = [
+    { field: "is_featured",    label: "Hero" },
+    { field: "is_trending",    label: "Trending" },
+    { field: "is_new",         label: "New to Haapu" },
+    { field: "is_recommended", label: "Recommended" },
+  ];
+
   return (
     <div>
-      {/* Page header */}
       <div className="mb-6 flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
         <div>
           <h1 className="font-display text-2xl font-bold text-white sm:text-3xl">
@@ -115,7 +121,6 @@ export default function MovieTableClient({ movies }: { movies: any[] }) {
         </Link>
       </div>
 
-      {/* Search */}
       <div className="mb-6 max-w-sm">
         <div className="relative">
           <Search className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-matte-500" />
@@ -132,10 +137,7 @@ export default function MovieTableClient({ movies }: { movies: any[] }) {
       {/* Mobile cards */}
       <div className="space-y-3 lg:hidden">
         {filtered.map((movie) => (
-          <div
-            key={movie.id}
-            className="rounded-xl border border-matte-800 bg-matte-900 p-4"
-          >
+          <div key={movie.id} className="rounded-xl border border-matte-800 bg-matte-900 p-4">
             <div className="flex gap-3">
               <img
                 src={movie.posterUrl}
@@ -147,18 +149,12 @@ export default function MovieTableClient({ movies }: { movies: any[] }) {
                 <p className="mt-0.5 text-xs text-matte-500">
                   {movie.genres?.slice(0, 2).join(", ")} • {movie.duration}
                 </p>
-                <div className="mt-3 space-y-2">
-                  {[
-                    { field: "is_featured", label: "Featured" },
-                    { field: "is_trending", label: "Trending" },
-                    { field: "is_recommended", label: "Recommended" },
-                  ].map(({ field, label }) => (
+                <div className="mt-3 grid grid-cols-2 gap-y-2 gap-x-4">
+                  {TOGGLES.map(({ field, label }) => (
                     <div key={field} className="flex items-center gap-2">
                       <Toggle
                         value={movie[field] || false}
-                        onChange={() =>
-                          updateFlag(movie.id, field, movie[field] || false)
-                        }
+                        onChange={() => updateFlag(movie.id, field, movie[field] || false)}
                         disabled={updating[`${movie.id}-${field}`]}
                       />
                       <span className="text-xs text-matte-400">{label}</span>
@@ -201,19 +197,8 @@ export default function MovieTableClient({ movies }: { movies: any[] }) {
         <table className="w-full">
           <thead>
             <tr className="border-b border-matte-800 bg-matte-900/80">
-              {[
-                "Movie",
-                "Duration",
-                "Featured",
-                "Trending",
-                "Recommended",
-                "Hero Order",
-                "Actions",
-              ].map((h) => (
-                <th
-                  key={h}
-                  className="px-5 py-3.5 text-left text-xs font-semibold uppercase tracking-wider text-matte-500"
-                >
+              {["Movie", "Duration", "Hero", "Trending", "New to Haapu", "Recommended", "Hero Order", "Actions"].map((h) => (
+                <th key={h} className="px-5 py-3.5 text-left text-xs font-semibold uppercase tracking-wider text-matte-500">
                   {h}
                 </th>
               ))}
@@ -221,11 +206,7 @@ export default function MovieTableClient({ movies }: { movies: any[] }) {
           </thead>
           <tbody className="divide-y divide-matte-800 bg-matte-900">
             {filtered.map((movie) => (
-              <tr
-                key={movie.id}
-                className="transition-colors hover:bg-matte-800/40"
-              >
-                {/* Movie */}
+              <tr key={movie.id} className="transition-colors hover:bg-matte-800/40">
                 <td className="px-5 py-4">
                   <div className="flex items-center gap-3">
                     <img
@@ -234,50 +215,42 @@ export default function MovieTableClient({ movies }: { movies: any[] }) {
                       className="h-12 w-9 flex-shrink-0 rounded object-cover bg-matte-800"
                     />
                     <div className="min-w-0">
-                      <p className="truncate max-w-[180px] font-semibold text-white">
+                      <p className="truncate max-w-[160px] font-semibold text-white">
                         {movie.title}
                       </p>
-                      <p className="truncate max-w-[180px] text-xs text-matte-500">
+                      <p className="truncate max-w-[160px] text-xs text-matte-500">
                         {movie.genres?.slice(0, 2).join(", ")}
                       </p>
                     </div>
                   </div>
                 </td>
 
-                {/* Duration */}
                 <td className="px-5 py-4 text-sm text-matte-400">
                   {movie.duration || "—"}
                 </td>
 
-                {/* Toggles */}
-                {["is_featured", "is_trending", "is_recommended"].map((field) => (
+                {TOGGLES.map(({ field }) => (
                   <td key={field} className="px-5 py-4">
                     <Toggle
                       value={movie[field] || false}
-                      onChange={() =>
-                        updateFlag(movie.id, field, movie[field] || false)
-                      }
+                      onChange={() => updateFlag(movie.id, field, movie[field] || false)}
                       disabled={updating[`${movie.id}-${field}`]}
                     />
                   </td>
                 ))}
 
-                {/* Hero order */}
                 <td className="px-5 py-4">
                   <input
                     type="number"
                     min="1"
                     max="20"
                     defaultValue={movie.hero_order || ""}
-                    onBlur={(e) =>
-                      updateHeroOrder(movie.id, parseInt(e.target.value))
-                    }
+                    onBlur={(e) => updateHeroOrder(movie.id, parseInt(e.target.value))}
                     className="w-16 rounded-lg border border-matte-700 bg-matte-800 px-2 py-1.5 text-center text-sm text-white focus:border-crimson-DEFAULT focus:outline-none"
                     placeholder="—"
                   />
                 </td>
 
-                {/* Actions */}
                 <td className="px-5 py-4">
                   <div className="flex items-center gap-1">
                     <Link
@@ -302,11 +275,7 @@ export default function MovieTableClient({ movies }: { movies: any[] }) {
                           ? "bg-red-500/10 text-red-400"
                           : "text-matte-400 hover:bg-matte-800 hover:text-red-400"
                       }`}
-                      title={
-                        deleteConfirm === movie.id
-                          ? "Click again to confirm"
-                          : "Delete"
-                      }
+                      title={deleteConfirm === movie.id ? "Click again to confirm" : "Delete"}
                     >
                       <Trash2 size={15} />
                     </button>
@@ -318,7 +287,6 @@ export default function MovieTableClient({ movies }: { movies: any[] }) {
         </table>
       </div>
 
-      {/* Empty state */}
       {filtered.length === 0 && (
         <div className="rounded-xl border border-matte-800 bg-matte-900 py-16 text-center">
           <p className="text-sm text-matte-400">

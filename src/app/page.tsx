@@ -1,11 +1,16 @@
 import { sql } from "@/lib/db";
-import AuthGate from "@/components/home/AuthGate";
-import ContinueWatchingRow from "@/components/home/ContinueWatchingRow";
 import Hero from "@/components/home/Hero";
 import MovieRow from "@/components/home/MovieRow";
+import ContinueWatchingRow from "@/components/home/ContinueWatchingRow";
 
 export const dynamic = "force-dynamic";
 export const revalidate = 0;
+
+const DEFAULT_SECTIONS = [
+  { id: "trending",     title: "Trending Now",        source: "is_trending",    enabled: true,  order: 1 },
+  { id: "new_to_haapu", title: "New to Haapu",        source: "is_new",         enabled: true,  order: 2 },
+  { id: "recommended",  title: "Recommended for You", source: "is_recommended", enabled: false, order: 3 },
+];
 
 function toMovie(movie: any) {
   return {
@@ -15,7 +20,6 @@ function toMovie(movie: any) {
     posterUrl: movie.poster_url,
     backdropUrl: movie.backdrop_url,
     rating: movie.rating,
-    // Use actual release_date from DB — falls back to 0 (hidden by MovieCard)
     year: movie.release_date
       ? new Date(movie.release_date).getFullYear()
       : 0,
@@ -28,47 +32,49 @@ function toMovie(movie: any) {
 }
 
 export default async function Home() {
-  const [featuredMovies, trendingMovies, recommendedMovies, latestMovies] =
-    await Promise.all([
-      sql`SELECT * FROM movies WHERE is_featured = true ORDER BY hero_order ASC`,
-      sql`SELECT * FROM movies WHERE is_trending = true ORDER BY id DESC`,
-      sql`SELECT * FROM movies WHERE is_recommended = true ORDER BY id DESC`,
-      // "New Additions" — most recently added, always has content
-      sql`SELECT * FROM movies ORDER BY id DESC LIMIT 12`,
-    ]);
+  // Load sections config + featured movies in parallel
+  const [settingsResult, featuredMovies] = await Promise.all([
+    sql`SELECT value FROM site_settings WHERE key = 'homepage_sections'`,
+    sql`SELECT * FROM movies WHERE is_featured = true ORDER BY COALESCE(hero_order, 999) ASC`,
+  ]);
+
+  // Fall back to defaults if settings haven't been saved yet
+  const sections: typeof DEFAULT_SECTIONS =
+    settingsResult[0]?.value || DEFAULT_SECTIONS;
+
+  const enabledSections = sections
+    .filter((s) => s.enabled)
+    .sort((a, b) => a.order - b.order);
+
+  // Fetch movies for each enabled section
+  const sectionMovies = await Promise.all(
+    enabledSections.map(async (section) => {
+      const rows = await sql`
+        SELECT * FROM movies
+        WHERE ${sql.unsafe(section.source)} = true
+        ORDER BY id DESC
+      `;
+      return { section, movies: rows.map(toMovie) };
+    })
+  );
 
   return (
     <main>
-      <AuthGate />
       <Hero movies={featuredMovies.map(toMovie)} />
 
       <div className="relative z-20 -mt-16">
-        {/* Continue Watching — only shows when user has watch history */}
         <ContinueWatchingRow />
 
-        {/* Trending — only shown if admin has marked movies as trending */}
-        {trendingMovies.length > 0 && (
-          <MovieRow
-            title="Trending Now"
-            movies={trendingMovies.map(toMovie)}
-            viewAllLink="/movies"
-          />
-        )}
-
-        {/* New Additions — always shows, newest movies first */}
-        <MovieRow
-          title="New Additions"
-          movies={latestMovies.map(toMovie)}
-          viewAllLink="/movies"
-        />
-
-        {/* Recommended — only shown if admin has marked movies as recommended */}
-        {recommendedMovies.length > 0 && (
-          <MovieRow
-            title="Recommended for You"
-            movies={recommendedMovies.map(toMovie)}
-            viewAllLink="/movies"
-          />
+        {sectionMovies.map(({ section, movies }) =>
+          // Skip rows with no movies — no point showing an empty row
+          movies.length === 0 ? null : (
+            <MovieRow
+              key={section.id}
+              title={section.title}
+              movies={movies}
+              viewAllLink="/movies"
+            />
+          )
         )}
       </div>
     </main>
