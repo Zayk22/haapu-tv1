@@ -1,6 +1,8 @@
 import { sql } from "@/lib/db";
 import MovieTableClient from "./MovieTableClient";
 
+export const dynamic = "force-dynamic";
+
 export default async function AdminMoviesPage() {
   const movies = await sql`
     SELECT
@@ -13,7 +15,6 @@ export default async function AdminMoviesPage() {
       duration,
       genres,
       rating,
-      is_featured,
       is_trending,
       is_new,
       is_recommended
@@ -22,16 +23,15 @@ export default async function AdminMoviesPage() {
   `;
 
   const formattedMovies = movies.map((movie) => ({
-    id: movie.id,
-    slug: movie.slug,
-    title: movie.title,
-    posterUrl: movie.posterUrl,
-    backdropUrl: movie.backdropUrl,
-    description: movie.description,
-    duration: movie.duration,
-    genres: movie.genres,
-    rating: movie.rating,
-    is_featured:    movie.is_featured    ?? false,
+    id:             movie.id,
+    slug:           movie.slug,
+    title:          movie.title,
+    posterUrl:      movie.posterUrl,
+    backdropUrl:    movie.backdropUrl,
+    description:    movie.description,
+    duration:       movie.duration,
+    genres:         movie.genres,
+    rating:         movie.rating,
     is_trending:    movie.is_trending    ?? false,
     is_new:         movie.is_new         ?? false,
     is_recommended: movie.is_recommended ?? false,

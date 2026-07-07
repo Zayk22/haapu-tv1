@@ -31,18 +31,21 @@ function Toggle({
   );
 }
 
+// Hero toggle intentionally removed from this table.
+// Carousel curation (add/remove/order) is managed exclusively
+// via /admin/hero which has the minimum-4 guard.
 const TOGGLES = [
-  { field: "is_featured",    label: "Hero" },
   { field: "is_trending",    label: "Trending" },
   { field: "is_new",         label: "New to Haapu" },
   { field: "is_recommended", label: "Recommended" },
 ];
 
 export default function MovieTableClient({ movies }: { movies: any[] }) {
-  const [searchTerm, setSearchTerm] = useState("");
-  const [movieList, setMovieList] = useState(movies);
-  const [updating, setUpdating] = useState<Record<string, boolean>>({});
+  const [searchTerm, setSearchTerm]   = useState("");
+  const [movieList, setMovieList]     = useState(movies);
+  const [updating, setUpdating]       = useState<Record<string, boolean>>({});
   const [deleteConfirm, setDeleteConfirm] = useState<string | null>(null);
+  const [error, setError]             = useState<string | null>(null);
 
   const filtered = movieList.filter((m) =>
     m.title.toLowerCase().includes(searchTerm.toLowerCase())
@@ -57,15 +60,21 @@ export default function MovieTableClient({ movies }: { movies: any[] }) {
     setDeleteConfirm(null);
     try {
       const res = await fetch(`/api/admin/movies/${id}`, { method: "DELETE" });
-      if (res.ok) setMovieList((prev) => prev.filter((m) => m.id !== id));
+      if (res.ok) {
+        setMovieList((prev) => prev.filter((m) => m.id !== id));
+      } else {
+        setError("Delete failed — check console for details");
+      }
     } catch (err) {
       console.error("Delete failed", err);
+      setError("Delete failed — network error");
     }
   };
 
   const updateFlag = async (id: string, field: string, current: boolean) => {
     const key = `${id}-${field}`;
     setUpdating((prev) => ({ ...prev, [key]: true }));
+    setError(null);
     try {
       const res = await fetch(`/api/admin/movies/${id}`, {
         method: "PATCH",
@@ -76,9 +85,13 @@ export default function MovieTableClient({ movies }: { movies: any[] }) {
         setMovieList((prev) =>
           prev.map((m) => (m.id === id ? { ...m, [field]: !current } : m))
         );
+      } else {
+        const data = await res.json().catch(() => ({}));
+        setError(`Failed to update (${res.status}): ${data.error || "unknown error"}`);
       }
     } catch (err) {
       console.error("Update failed", err);
+      setError("Update failed — network error");
     }
     setUpdating((prev) => ({ ...prev, [key]: false }));
   };
@@ -105,14 +118,25 @@ export default function MovieTableClient({ movies }: { movies: any[] }) {
         </Link>
       </div>
 
-      {/* Note about Hero Order */}
-      <div className="mb-5 rounded-lg border border-matte-800 bg-matte-900/60 px-4 py-3 text-xs text-matte-500">
-        💡 To manage hero carousel order and minimum counts, use{" "}
-        <Link href="/admin/hero" className="text-crimson-DEFAULT hover:underline">
-          Hero Carousel
-        </Link>{" "}
-        in the sidebar.
+      {/* Hero carousel note */}
+      <div className="mb-5 flex items-center gap-2 rounded-lg border border-matte-800 bg-matte-900/60 px-4 py-3 text-xs text-matte-500">
+        <span>🎬</span>
+        <span>
+          Hero carousel is managed in{" "}
+          <Link href="/admin/hero" className="text-crimson-DEFAULT hover:underline">
+            Hero Carousel
+          </Link>
+          {" "}— add, remove, and reorder slides there.
+        </span>
       </div>
+
+      {/* Error banner */}
+      {error && (
+        <div className="mb-4 flex items-center justify-between rounded-lg border border-red-500/30 bg-red-500/10 px-4 py-3 text-sm text-red-400">
+          <span>{error}</span>
+          <button onClick={() => setError(null)} className="ml-4 text-red-400/60 hover:text-red-400">✕</button>
+        </div>
+      )}
 
       {/* Search */}
       <div className="mb-6 max-w-sm">
@@ -146,7 +170,7 @@ export default function MovieTableClient({ movies }: { movies: any[] }) {
                 <p className="mt-0.5 text-xs text-matte-500">
                   {movie.genres?.slice(0, 2).join(", ")} • {movie.duration}
                 </p>
-                <div className="mt-3 grid grid-cols-2 gap-y-2 gap-x-4">
+                <div className="mt-3 space-y-2">
                   {TOGGLES.map(({ field, label }) => (
                     <div key={field} className="flex items-center gap-2">
                       <Toggle
@@ -191,12 +215,12 @@ export default function MovieTableClient({ movies }: { movies: any[] }) {
         ))}
       </div>
 
-      {/* Desktop table — Hero Order column removed, managed via /admin/hero */}
+      {/* Desktop table */}
       <div className="hidden overflow-hidden rounded-xl border border-matte-800 lg:block">
         <table className="w-full">
           <thead>
             <tr className="border-b border-matte-800 bg-matte-900/80">
-              {["Movie", "Duration", "Hero", "Trending", "New to Haapu", "Recommended", "Actions"].map(
+              {["Movie", "Duration", "Trending", "New to Haapu", "Recommended", "Actions"].map(
                 (h) => (
                   <th
                     key={h}
@@ -238,7 +262,7 @@ export default function MovieTableClient({ movies }: { movies: any[] }) {
                   {movie.duration || "—"}
                 </td>
 
-                {/* Toggles */}
+                {/* Toggles — no Hero */}
                 {TOGGLES.map(({ field }) => (
                   <td key={field} className="px-5 py-4">
                     <Toggle
@@ -300,16 +324,13 @@ export default function MovieTableClient({ movies }: { movies: any[] }) {
             ) : (
               <>
                 No movies yet.{" "}
-                <Link
-                  href="/admin/movies/add"
-                  className="text-crimson-DEFAULT"
-                >
+                <Link href="/admin/movies/add" className="text-crimson-DEFAULT">
                   Add your first movie.
                 </Link>
               </>
             )}
           </p>
-        </div>
+          </div>
       )}
     </div>
   );
