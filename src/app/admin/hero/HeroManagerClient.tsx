@@ -1,11 +1,13 @@
 "use client";
 
 import { useState } from "react";
+import { useRouter } from "next/navigation";
 import { AlertTriangle, CheckCircle, GripVertical } from "lucide-react";
 
 const MIN_FEATURED = 4;
 
 export default function HeroManagerClient({ movies }: { movies: any[] }) {
+  const router = useRouter();
   const [movieList, setMovieList] = useState(movies);
   const [saving, setSaving]       = useState<string | null>(null);
   const [message, setMessage]     = useState<{ type: "success" | "error"; text: string } | null>(null);
@@ -18,7 +20,7 @@ export default function HeroManagerClient({ movies }: { movies: any[] }) {
 
   const flash = (type: "success" | "error", text: string) => {
     setMessage({ type, text });
-    setTimeout(() => setMessage(null), 3500);
+    setTimeout(() => setMessage(null), 5000);
   };
 
   const toggleFeatured = async (id: string, current: boolean) => {
@@ -28,8 +30,6 @@ export default function HeroManagerClient({ movies }: { movies: any[] }) {
     }
     setSaving(id);
 
-    // When ADDING: auto-assign the next unique order number so we never
-    // get duplicate hero_order values (the bug showing 2, 2, 3, 4, 5)
     const nextOrder = current ? undefined : featured.length + 1;
     const patchBody = current
       ? { is_featured: false }
@@ -41,7 +41,9 @@ export default function HeroManagerClient({ movies }: { movies: any[] }) {
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify(patchBody),
       });
+
       if (res.ok) {
+        // Update local state immediately for snappy UI
         setMovieList((prev) =>
           prev.map((m) =>
             m.id === id
@@ -50,12 +52,18 @@ export default function HeroManagerClient({ movies }: { movies: any[] }) {
           )
         );
         flash("success", current ? "Removed from carousel" : "Added to carousel");
+        // Re-fetch server data to confirm DB was updated.
+        // If the count reverts after this, the SQL UPDATE isn't persisting.
+        router.refresh();
       } else {
         const data = await res.json().catch(() => ({}));
-        flash("error", `Failed (${res.status}): ${data.error || "unknown error"}`);
+        const errorMsg = `Save failed (HTTP ${res.status}): ${data.error || "unknown"}`;
+        flash("error", errorMsg);
+        console.error("Hero PATCH failed:", res.status, data);
       }
-    } catch {
-      flash("error", "Network error — try again");
+    } catch (err) {
+      flash("error", "Network error — check your connection and try again");
+      console.error("Hero PATCH network error:", err);
     }
     setSaving(null);
   };
@@ -72,8 +80,13 @@ export default function HeroManagerClient({ movies }: { movies: any[] }) {
         setMovieList((prev) =>
           prev.map((m) => (m.id === id ? { ...m, hero_order: order } : m))
         );
+        router.refresh();
+      } else {
+        console.error("Order update failed:", res.status);
       }
-    } catch {}
+    } catch (err) {
+      console.error("Order update network error:", err);
+    }
   };
 
   return (
@@ -103,7 +116,9 @@ export default function HeroManagerClient({ movies }: { movies: any[] }) {
             {count < MIN_FEATURED && ` — need ${MIN_FEATURED - count} more`}
           </p>
           <p className="mt-0.5 text-xs text-matte-500">
-            {count < MIN_FEATURED ? `Add ${MIN_FEATURED - count} more movie${MIN_FEATURED - count > 1 ? "s" : ""} below.` : "Carousel is healthy."}
+            {count < MIN_FEATURED
+              ? `Add ${MIN_FEATURED - count} more below.`
+              : "Carousel is healthy."}
           </p>
         </div>
       </div>
@@ -124,7 +139,7 @@ export default function HeroManagerClient({ movies }: { movies: any[] }) {
         <div className="border-b border-matte-800 px-5 py-4">
           <h2 className="font-semibold text-white">In Carousel</h2>
           <p className="mt-0.5 text-xs text-matte-500">
-            Edit the order number to control which slide appears first. New movies are auto-assigned the next number.
+            Edit the order number to control which slide appears first.
           </p>
         </div>
         {featured.length === 0 ? (
@@ -155,14 +170,13 @@ export default function HeroManagerClient({ movies }: { movies: any[] }) {
                     defaultValue={movie.hero_order ?? i + 1}
                     onBlur={(e) => updateOrder(movie.id, parseInt(e.target.value))}
                     className="w-14 rounded border border-matte-700 bg-matte-800 px-2 py-1 text-center text-xs text-white focus:border-crimson-DEFAULT focus:outline-none"
-                    title="Slide order (1 = first)"
                   />
                   <button
                     onClick={() => toggleFeatured(movie.id, true)}
                     disabled={saving === movie.id}
                     className="rounded-lg border border-red-500/30 px-3 py-1.5 text-xs font-medium text-red-400 transition-colors hover:bg-red-500/10 disabled:opacity-40"
                   >
-                    Remove
+                    {saving === movie.id ? "..." : "Remove"}
                   </button>
                 </div>
               </div>
@@ -176,7 +190,9 @@ export default function HeroManagerClient({ movies }: { movies: any[] }) {
         <div className="rounded-xl border border-matte-800 bg-matte-900">
           <div className="border-b border-matte-800 px-5 py-4">
             <h2 className="font-semibold text-white">Not in Carousel</h2>
-            <p className="mt-0.5 text-xs text-matte-500">Click Add to feature a movie.</p>
+            <p className="mt-0.5 text-xs text-matte-500">
+              Click Add to feature a movie.
+            </p>
           </div>
           <div className="divide-y divide-matte-800">
             {notFeatured.map((movie) => (
@@ -194,7 +210,7 @@ export default function HeroManagerClient({ movies }: { movies: any[] }) {
                   disabled={saving === movie.id}
                   className="rounded-lg border border-crimson-DEFAULT/40 bg-crimson-DEFAULT/10 px-3 py-1.5 text-xs font-medium text-crimson-DEFAULT transition-colors hover:bg-crimson-DEFAULT/20 disabled:opacity-40"
                 >
-                  + Add
+                  {saving === movie.id ? "..." : "+ Add"}
                 </button>
               </div>
             ))}
