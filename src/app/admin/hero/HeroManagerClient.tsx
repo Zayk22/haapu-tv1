@@ -6,13 +6,15 @@ import { AlertTriangle, CheckCircle, GripVertical } from "lucide-react";
 const MIN_FEATURED = 4;
 
 export default function HeroManagerClient({ movies }: { movies: any[] }) {
-  const [movieList, setMovieList]   = useState(movies);
-  const [saving, setSaving]         = useState<string | null>(null);
-  const [message, setMessage]       = useState<{ type: "success" | "error"; text: string } | null>(null);
+  const [movieList, setMovieList] = useState(movies);
+  const [saving, setSaving]       = useState<string | null>(null);
+  const [message, setMessage]     = useState<{ type: "success" | "error"; text: string } | null>(null);
 
-  const featured    = movieList.filter((m) => m.is_featured).sort((a, b) => (a.hero_order ?? 999) - (b.hero_order ?? 999));
+  const featured = movieList
+    .filter((m) => m.is_featured)
+    .sort((a, b) => (a.hero_order ?? 999) - (b.hero_order ?? 999));
   const notFeatured = movieList.filter((m) => !m.is_featured);
-  const count       = featured.length;
+  const count = featured.length;
 
   const flash = (type: "success" | "error", text: string) => {
     setMessage({ type, text });
@@ -25,22 +27,35 @@ export default function HeroManagerClient({ movies }: { movies: any[] }) {
       return;
     }
     setSaving(id);
+
+    // When ADDING: auto-assign the next unique order number so we never
+    // get duplicate hero_order values (the bug showing 2, 2, 3, 4, 5)
+    const nextOrder = current ? undefined : featured.length + 1;
+    const patchBody = current
+      ? { is_featured: false }
+      : { is_featured: true, hero_order: nextOrder };
+
     try {
       const res = await fetch(`/api/admin/movies/${id}`, {
         method: "PATCH",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ is_featured: !current }),
+        body: JSON.stringify(patchBody),
       });
       if (res.ok) {
         setMovieList((prev) =>
-          prev.map((m) => (m.id === id ? { ...m, is_featured: !current } : m))
+          prev.map((m) =>
+            m.id === id
+              ? { ...m, is_featured: !current, hero_order: nextOrder ?? m.hero_order }
+              : m
+          )
         );
         flash("success", current ? "Removed from carousel" : "Added to carousel");
       } else {
-        flash("error", "Update failed. Try again.");
+        const data = await res.json().catch(() => ({}));
+        flash("error", `Failed (${res.status}): ${data.error || "unknown error"}`);
       }
     } catch {
-      flash("error", "Update failed. Try again.");
+      flash("error", "Network error — try again");
     }
     setSaving(null);
   };
@@ -48,27 +63,31 @@ export default function HeroManagerClient({ movies }: { movies: any[] }) {
   const updateOrder = async (id: string, order: number) => {
     if (isNaN(order) || order < 1) return;
     try {
-      await fetch(`/api/admin/movies/${id}`, {
+      const res = await fetch(`/api/admin/movies/${id}`, {
         method: "PATCH",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ hero_order: order }),
       });
-      setMovieList((prev) =>
-        prev.map((m) => (m.id === id ? { ...m, hero_order: order } : m))
-      );
+      if (res.ok) {
+        setMovieList((prev) =>
+          prev.map((m) => (m.id === id ? { ...m, hero_order: order } : m))
+        );
+      }
     } catch {}
   };
 
   return (
     <div className="mx-auto max-w-2xl">
       <div className="mb-8">
-        <h1 className="font-display text-2xl font-bold text-white sm:text-3xl">Hero Carousel</h1>
+        <h1 className="font-display text-2xl font-bold text-white sm:text-3xl">
+          Hero Carousel
+        </h1>
         <p className="mt-1 text-sm text-matte-400">
           Control which movies appear in the homepage hero. Minimum {MIN_FEATURED} required.
         </p>
       </div>
 
-      {/* Status banner */}
+      {/* Status */}
       <div className={`mb-6 flex items-center gap-3 rounded-xl border px-5 py-4 ${
         count < MIN_FEATURED
           ? "border-red-500/40 bg-red-500/10"
@@ -83,10 +102,8 @@ export default function HeroManagerClient({ movies }: { movies: any[] }) {
             {count} movie{count !== 1 ? "s" : ""} in carousel
             {count < MIN_FEATURED && ` — need ${MIN_FEATURED - count} more`}
           </p>
-          <p className="text-xs text-matte-500 mt-0.5">
-            {count < MIN_FEATURED
-              ? `Add ${MIN_FEATURED - count} more below to meet the minimum.`
-              : "Carousel is healthy."}
+          <p className="mt-0.5 text-xs text-matte-500">
+            {count < MIN_FEATURED ? `Add ${MIN_FEATURED - count} more movie${MIN_FEATURED - count > 1 ? "s" : ""} below.` : "Carousel is healthy."}
           </p>
         </div>
       </div>
@@ -102,29 +119,40 @@ export default function HeroManagerClient({ movies }: { movies: any[] }) {
         </div>
       )}
 
-      {/* Currently in carousel */}
+      {/* In Carousel */}
       <div className="mb-6 rounded-xl border border-matte-800 bg-matte-900">
         <div className="border-b border-matte-800 px-5 py-4">
           <h2 className="font-semibold text-white">In Carousel</h2>
-          <p className="text-xs text-matte-500 mt-0.5">Set order number to control which slide appears first.</p>
+          <p className="mt-0.5 text-xs text-matte-500">
+            Edit the order number to control which slide appears first. New movies are auto-assigned the next number.
+          </p>
         </div>
         {featured.length === 0 ? (
-          <p className="px-5 py-10 text-center text-sm text-matte-500">No movies in carousel yet.</p>
+          <p className="px-5 py-10 text-center text-sm text-matte-500">
+            No movies in carousel yet. Add some below.
+          </p>
         ) : (
           <div className="divide-y divide-matte-800">
             {featured.map((movie, i) => (
               <div key={movie.id} className="flex items-center gap-3 px-5 py-3.5">
                 <GripVertical size={16} className="flex-shrink-0 text-matte-700" />
-                <div className="flex h-10 w-7 items-center justify-center rounded bg-matte-800 text-xs font-bold text-matte-400">
+                <div className="flex h-10 w-7 flex-shrink-0 items-center justify-center rounded bg-matte-800 text-xs font-bold text-matte-400">
                   {i + 1}
                 </div>
-                <img src={movie.posterUrl} alt={movie.title}
-                  className="h-12 w-9 flex-shrink-0 rounded object-cover bg-matte-800" />
-                <p className="flex-1 min-w-0 truncate font-medium text-white">{movie.title}</p>
+                <img
+                  src={movie.posterUrl}
+                  alt={movie.title}
+                  className="h-12 w-9 flex-shrink-0 rounded object-cover bg-matte-800"
+                />
+                <p className="flex-1 min-w-0 truncate font-medium text-white">
+                  {movie.title}
+                </p>
                 <div className="flex items-center gap-2">
                   <input
-                    type="number" min="1" max="20"
-                    defaultValue={movie.hero_order || i + 1}
+                    type="number"
+                    min="1"
+                    max="20"
+                    defaultValue={movie.hero_order ?? i + 1}
                     onBlur={(e) => updateOrder(movie.id, parseInt(e.target.value))}
                     className="w-14 rounded border border-matte-700 bg-matte-800 px-2 py-1 text-center text-xs text-white focus:border-crimson-DEFAULT focus:outline-none"
                     title="Slide order (1 = first)"
@@ -143,19 +171,24 @@ export default function HeroManagerClient({ movies }: { movies: any[] }) {
         )}
       </div>
 
-      {/* Not in carousel */}
+      {/* Not in Carousel */}
       {notFeatured.length > 0 && (
         <div className="rounded-xl border border-matte-800 bg-matte-900">
           <div className="border-b border-matte-800 px-5 py-4">
             <h2 className="font-semibold text-white">Not in Carousel</h2>
-            <p className="text-xs text-matte-500 mt-0.5">Click Add to feature a movie.</p>
+            <p className="mt-0.5 text-xs text-matte-500">Click Add to feature a movie.</p>
           </div>
           <div className="divide-y divide-matte-800">
             {notFeatured.map((movie) => (
               <div key={movie.id} className="flex items-center gap-3 px-5 py-3.5">
-                <img src={movie.posterUrl} alt={movie.title}
-                  className="h-12 w-9 flex-shrink-0 rounded object-cover bg-matte-800" />
-                <p className="flex-1 min-w-0 truncate text-sm text-matte-300">{movie.title}</p>
+                <img
+                  src={movie.posterUrl}
+                  alt={movie.title}
+                  className="h-12 w-9 flex-shrink-0 rounded object-cover bg-matte-800"
+                />
+                <p className="flex-1 min-w-0 truncate text-sm text-matte-300">
+                  {movie.title}
+                </p>
                 <button
                   onClick={() => toggleFeatured(movie.id, false)}
                   disabled={saving === movie.id}
