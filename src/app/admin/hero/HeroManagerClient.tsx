@@ -54,7 +54,7 @@ export default function HeroManagerClient({ movies }: { movies: any[] }) {
         flash("success", current ? "Removed from carousel" : "Added to carousel");
         // Re-fetch server data to confirm DB was updated.
         // If the count reverts after this, the SQL UPDATE isn't persisting.
-        router.refresh();
+        setTimeout(() => router.refresh(), 1000);
       } else {
         const data = await res.json().catch(() => ({}));
         const errorMsg = `Save failed (HTTP ${res.status}): ${data.error || "unknown"}`;
@@ -80,7 +80,7 @@ export default function HeroManagerClient({ movies }: { movies: any[] }) {
         setMovieList((prev) =>
           prev.map((m) => (m.id === id ? { ...m, hero_order: order } : m))
         );
-        router.refresh();
+        setTimeout(() => router.refresh(), 1000);
       } else {
         console.error("Order update failed:", res.status);
       }
