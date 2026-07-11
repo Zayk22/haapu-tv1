@@ -2,7 +2,6 @@
 
 import { useState } from "react";
 import Link from "next/link";
-import Image from "next/image";
 import {
   Play, ChevronDown, Tv, Shield, Users, Zap,
 } from "lucide-react";
@@ -112,8 +111,10 @@ export default function MarketingPage() {
             </span>
           </div>
 
-          <h1 className="font-display text-5xl font-bold leading-none text-white sm:text-6xl lg:text-8xl">
-            Join the{" "}
+          {/* ✅ FIXED: "Movement" now appears on its own line with gradient */}
+          <h1 className="font-display text-5xl font-bold leading-tight text-white sm:text-6xl lg:text-8xl">
+            Join the
+            <br />
             <span className="bg-gradient-to-r from-crimson-DEFAULT to-gold-DEFAULT bg-clip-text text-transparent">
               Movement
             </span>
