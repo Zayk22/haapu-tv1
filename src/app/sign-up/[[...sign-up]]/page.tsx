@@ -4,6 +4,10 @@ export default function SignUpPage() {
   return (
     <main className="flex min-h-screen items-center justify-center bg-matte-950">
       <SignUp
+        path="/sign-up"
+        routing="path"
+        signInUrl="/sign-in"
+        afterSignUpUrl="/"
         appearance={{
           elements: {
             rootBox: "mx-auto",
