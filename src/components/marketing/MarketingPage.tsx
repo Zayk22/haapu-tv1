@@ -2,6 +2,7 @@
 
 import { useState } from "react";
 import Link from "next/link";
+import Image from "next/image";
 import {
   Play, ChevronDown, Tv, Shield, Users, Zap,
 } from "lucide-react";
@@ -88,14 +89,19 @@ export default function MarketingPage() {
       {/* ── HERO ─────────────────────────────────────────────────────── */}
       <section className="relative flex min-h-screen flex-col items-center justify-center overflow-hidden px-4 text-center">
 
-        {/* Ambient background */}
-        <div className="absolute inset-0 pointer-events-none">
-          <div className="absolute left-1/4 top-1/4 h-[600px] w-[600px] rounded-full bg-crimson-DEFAULT/5 blur-[160px]" />
-          <div className="absolute right-1/4 bottom-1/4 h-[400px] w-[400px] rounded-full bg-gold-DEFAULT/5 blur-[120px]" />
+        {/* Background Image — placeholder */}
+        <div className="absolute inset-0 z-0">
+          <div className="absolute inset-0 bg-gradient-to-br from-matte-950 via-matte-900 to-matte-950" />
+          <div className="absolute inset-0 bg-[url('https://placehold.co/1920x1080/1a1a1a/808080?text=Haapu+TV+Background')] bg-cover bg-center opacity-20" />
+          <div className="absolute inset-0 bg-gradient-to-t from-matte-black via-matte-black/60 to-transparent" />
+          <div className="absolute inset-0 bg-gradient-to-r from-matte-black/80 via-transparent to-matte-black/40" />
         </div>
 
-        {/* Gold top line */}
-        <div className="absolute top-0 left-0 right-0 h-px bg-gradient-to-r from-transparent via-gold-DEFAULT/40 to-transparent" />
+        {/* Ambient glow */}
+        <div className="absolute inset-0 pointer-events-none z-0">
+          <div className="absolute left-1/4 top-1/4 h-[600px] w-[600px] rounded-full bg-crimson-DEFAULT/10 blur-[160px]" />
+          <div className="absolute right-1/4 bottom-1/4 h-[400px] w-[400px] rounded-full bg-gold-DEFAULT/10 blur-[120px]" />
+        </div>
 
         <div className="relative z-10 max-w-4xl">
           {/* Badge */}
@@ -184,6 +190,7 @@ export default function MarketingPage() {
       <section className="relative overflow-hidden px-4 py-20 sm:py-32">
         <div className="absolute inset-0 pointer-events-none">
           <div className="absolute inset-0 bg-gradient-to-r from-crimson-DEFAULT/5 via-transparent to-gold-DEFAULT/5" />
+          <div className="absolute inset-0 bg-[url('https://placehold.co/1920x800/1a1a1a/808080?text=Covenant+Members')] bg-cover bg-center opacity-10" />
         </div>
 
         <div className="relative mx-auto max-w-3xl text-center">
