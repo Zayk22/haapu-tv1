@@ -1,7 +1,9 @@
+import { auth } from "@clerk/nextjs/server";
 import { sql } from "@/lib/db";
 import Hero from "@/components/home/Hero";
 import MovieRow from "@/components/home/MovieRow";
 import ContinueWatchingRow from "@/components/home/ContinueWatchingRow";
+import MarketingPage from "@/components/marketing/MarketingPage";
 
 export const dynamic = "force-dynamic";
 export const revalidate = 0;
@@ -29,10 +31,6 @@ function toMovie(movie: any) {
   };
 }
 
-// sql.unsafe doesn't work with neon's tagged template client —
-// the column name gets treated as a string parameter, not a SQL
-// identifier, so the WHERE clause never matches anything.
-// Use explicit queries per source instead.
 async function getMoviesBySource(source: string) {
   switch (source) {
     case "is_trending":
@@ -47,6 +45,14 @@ async function getMoviesBySource(source: string) {
 }
 
 export default async function Home() {
+  const { userId } = await auth();
+
+  // Not logged in → show marketing page
+  if (!userId) {
+    return <MarketingPage />;
+  }
+
+  // Logged in → show streaming dashboard
   const [settingsResult, featuredMovies] = await Promise.all([
     sql`SELECT value FROM site_settings WHERE key = 'homepage_sections'`,
     sql`SELECT * FROM movies WHERE is_featured = true ORDER BY COALESCE(hero_order, 999) ASC`,
