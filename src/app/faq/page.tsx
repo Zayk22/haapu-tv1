@@ -120,7 +120,7 @@ export default function FAQPage() {
           </h1>
           <p className="mt-4 text-body text-matte-400">
             Everything you need to know about Haapu TV. Can't find your answer?{" "}
-            
+            <a
               href="mailto:hello@haapu.tv"
               className="text-crimson-DEFAULT hover:underline"
             >
@@ -152,7 +152,7 @@ export default function FAQPage() {
           <p className="mt-2 text-body text-matte-400">
             We're here to help. Reach out and we'll get back to you as soon as possible.
           </p>
-          
+          <a
             href="mailto:hello@haapu.tv"
             className="mt-6 inline-flex items-center gap-2 rounded-lg bg-crimson-DEFAULT px-6 py-3 text-body font-semibold text-white transition-colors hover:bg-crimson-dark"
           >
