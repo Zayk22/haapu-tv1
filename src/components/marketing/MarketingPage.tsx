@@ -2,9 +2,7 @@
 
 import { useState } from "react";
 import Link from "next/link";
-import {
-  Play, ChevronDown, Tv, Shield, Users, Zap,
-} from "lucide-react";
+import { Play, ChevronDown, Tv, Shield, Users, Zap } from "lucide-react";
 
 const FAQS = [
   {
@@ -65,8 +63,8 @@ function FAQItem({ q, a }: { q: string; a: string }) {
         </span>
         <ChevronDown
           size={20}
-          className={`flex-shrink-0 text-crimson-DEFAULT transition-transform duration-300 ${
-            open ? "rotate-180" : ""
+          className={`flex-shrink-0 transition-transform duration-300 ${
+            open ? "rotate-180 text-crimson" : "text-matte-500"
           }`}
         />
       </button>
@@ -85,42 +83,49 @@ export default function MarketingPage() {
   return (
     <div className="bg-matte-black">
 
-      {/* ── HERO ─────────────────────────────────────────────────────── */}
+      {/* ── HERO ─────────────────────────────────────────────────── */}
       <section className="relative flex min-h-screen flex-col items-center justify-center overflow-hidden px-4 text-center">
 
-        {/* Background Image — placeholder */}
-        <div className="absolute inset-0 z-0">
-          <div className="absolute inset-0 bg-gradient-to-br from-matte-950 via-matte-900 to-matte-950" />
-          <div className="absolute inset-0 bg-[url('https://placehold.co/1920x1080/1a1a1a/808080?text=Haapu+TV+Background')] bg-cover bg-center opacity-20" />
-          <div className="absolute inset-0 bg-gradient-to-t from-matte-black via-matte-black/60 to-transparent" />
-          <div className="absolute inset-0 bg-gradient-to-r from-matte-black/80 via-transparent to-matte-black/40" />
+        {/* Ambient glow blobs */}
+        <div className="pointer-events-none absolute inset-0">
+          <div
+            className="absolute left-1/4 top-1/4 h-[600px] w-[600px] rounded-full blur-[160px]"
+            style={{ backgroundColor: "rgba(229,9,20,0.06)" }}
+          />
+          <div
+            className="absolute right-1/4 bottom-1/4 h-[400px] w-[400px] rounded-full blur-[120px]"
+            style={{ backgroundColor: "rgba(212,175,55,0.06)" }}
+          />
         </div>
 
-        {/* Ambient glow */}
-        <div className="absolute inset-0 pointer-events-none z-0">
-          <div className="absolute left-1/4 top-1/4 h-[600px] w-[600px] rounded-full bg-crimson-DEFAULT/10 blur-[160px]" />
-          <div className="absolute right-1/4 bottom-1/4 h-[400px] w-[400px] rounded-full bg-gold-DEFAULT/10 blur-[120px]" />
-        </div>
+        {/* Top accent line */}
+        <div className="absolute top-0 left-0 right-0 h-px bg-gradient-to-r from-transparent via-yellow-600/30 to-transparent" />
 
         <div className="relative z-10 max-w-4xl">
           {/* Badge */}
-          <div className="mb-6 inline-flex items-center gap-2 rounded-full border border-gold-DEFAULT/30 bg-gold-DEFAULT/10 px-4 py-1.5">
-            <span className="h-1.5 w-1.5 rounded-full bg-gold-DEFAULT animate-pulse" />
-            <span className="text-small font-medium uppercase tracking-widest text-gold-soft">
+          <div className="mb-8 inline-flex items-center gap-2 rounded-full border border-yellow-600/30 bg-yellow-600/10 px-4 py-1.5">
+            <span className="h-1.5 w-1.5 animate-pulse rounded-full bg-yellow-500" />
+            <span className="text-small font-medium uppercase tracking-widest text-yellow-400">
               A Platform where Faith and Entertainment Comes Alive
             </span>
           </div>
 
-          {/* ✅ FIXED: "Movement" now appears on its own line with gradient */}
+          {/* Headline — gradient via inline style so it always works */}
           <h1 className="font-display text-5xl font-bold leading-tight text-white sm:text-6xl lg:text-8xl">
-            Join the
-            <br />
-            <span className="bg-gradient-to-r from-crimson-DEFAULT to-gold-DEFAULT bg-clip-text text-transparent">
+            Join the{" "}
+            <span
+              style={{
+                background: "linear-gradient(to right, #E50914, #D4AF37)",
+                WebkitBackgroundClip: "text",
+                WebkitTextFillColor: "transparent",
+                backgroundClip: "text",
+              }}
+            >
               Movement
             </span>
           </h1>
 
-          <p className="mt-6 max-w-2xl mx-auto text-body-lg leading-relaxed text-matte-300 sm:text-xl">
+          <p className="mx-auto mt-6 max-w-2xl text-body-lg leading-relaxed text-matte-300 sm:text-xl">
             Step into a world where your voice shapes the screen. Discover shows
             and movies powered by you, for your family. Start now — your support
             makes the difference.
@@ -129,14 +134,15 @@ export default function MarketingPage() {
           <div className="mt-10 flex flex-col items-center gap-4 sm:flex-row sm:justify-center">
             <Link
               href="/sign-up"
-              className="flex items-center gap-2.5 rounded-lg bg-crimson-DEFAULT px-8 py-4 text-body font-bold text-white shadow-glow-lg transition-all duration-300 hover:bg-crimson-dark hover:scale-105 active:scale-95 w-full sm:w-auto justify-center"
+              className="flex w-full items-center justify-center gap-2.5 rounded-lg px-8 py-4 text-body font-bold text-white transition-all duration-300 hover:opacity-90 hover:scale-105 active:scale-95 sm:w-auto"
+              style={{ backgroundColor: "#E50914" }}
             >
               <Play size={18} fill="currentColor" />
               Start Watching Free
             </Link>
             <Link
               href="/sign-in"
-              className="flex items-center gap-2.5 rounded-lg border border-matte-700 px-8 py-4 text-body font-semibold text-matte-300 transition-all duration-300 hover:border-matte-500 hover:text-white w-full sm:w-auto justify-center"
+              className="flex w-full items-center justify-center gap-2.5 rounded-lg border border-matte-700 px-8 py-4 text-body font-semibold text-matte-300 transition-all duration-300 hover:border-matte-400 hover:text-white sm:w-auto"
             >
               Sign In
             </Link>
@@ -148,18 +154,18 @@ export default function MarketingPage() {
         </div>
 
         {/* Scroll indicator */}
-        <div className="absolute bottom-10 left-1/2 -translate-x-1/2 flex flex-col items-center gap-2 animate-bounce">
-          <div className="h-8 w-px bg-gradient-to-b from-matte-700 to-transparent" />
+        <div className="absolute bottom-10 left-1/2 -translate-x-1/2 flex flex-col items-center animate-bounce">
+          <div className="h-8 w-px bg-gradient-to-b from-matte-600 to-transparent" />
         </div>
       </section>
 
-      {/* ── FEATURES ─────────────────────────────────────────────────── */}
+      {/* ── FEATURES ─────────────────────────────────────────────── */}
       <section className="px-4 py-20 sm:py-32">
         <div className="mx-auto max-w-screen-xl">
           <div className="mb-16 text-center">
             <h2 className="font-display text-4xl font-bold text-white sm:text-5xl">
               Everything you need,{" "}
-              <span className="text-crimson-DEFAULT">nothing you don't</span>
+              <span className="text-crimson">nothing you don't</span>
             </h2>
             <p className="mt-4 text-body-lg text-matte-400">
               Brought to you by our incredible Covenant Members.
@@ -170,10 +176,13 @@ export default function MarketingPage() {
             {FEATURES.map(({ icon: Icon, title, description }) => (
               <div
                 key={title}
-                className="group rounded-2xl border border-matte-800 bg-matte-900 p-6 transition-all duration-300 hover:border-crimson-DEFAULT/30 hover:bg-matte-800/50"
+                className="group rounded-2xl border border-matte-800 bg-matte-900 p-6 transition-all duration-300 hover:border-red-900/50 hover:bg-matte-800/50"
               >
-                <div className="mb-4 flex h-12 w-12 items-center justify-center rounded-xl bg-crimson-DEFAULT/10 transition-colors duration-300 group-hover:bg-crimson-DEFAULT/20">
-                  <Icon size={22} className="text-crimson-DEFAULT" />
+                <div
+                  className="mb-4 flex h-12 w-12 items-center justify-center rounded-xl transition-colors duration-300"
+                  style={{ backgroundColor: "rgba(229,9,20,0.12)" }}
+                >
+                  <Icon size={22} style={{ color: "#E50914" }} />
                 </div>
                 <h3 className="mb-2 font-display text-lg font-semibold text-white">
                   {title}
@@ -187,15 +196,17 @@ export default function MarketingPage() {
         </div>
       </section>
 
-      {/* ── COVENANT MEMBERS ─────────────────────────────────────────── */}
+      {/* ── COVENANT MEMBERS ─────────────────────────────────────── */}
       <section className="relative overflow-hidden px-4 py-20 sm:py-32">
-        <div className="absolute inset-0 pointer-events-none">
-          <div className="absolute inset-0 bg-gradient-to-r from-crimson-DEFAULT/5 via-transparent to-gold-DEFAULT/5" />
-          <div className="absolute inset-0 bg-[url('https://placehold.co/1920x800/1a1a1a/808080?text=Covenant+Members')] bg-cover bg-center opacity-10" />
-        </div>
-
+        <div
+          className="absolute inset-0 pointer-events-none"
+          style={{
+            background:
+              "linear-gradient(to right, rgba(229,9,20,0.04), transparent, rgba(212,175,55,0.04))",
+          }}
+        />
         <div className="relative mx-auto max-w-3xl text-center">
-          <span className="mb-4 inline-block rounded-full border border-gold-DEFAULT/30 bg-gold-DEFAULT/10 px-4 py-1.5 text-small font-medium uppercase tracking-widest text-gold-soft">
+          <span className="mb-4 inline-block rounded-full border border-yellow-600/30 bg-yellow-600/10 px-4 py-1.5 text-small font-medium uppercase tracking-widest text-yellow-400">
             Covenant Members
           </span>
           <h2 className="font-display text-4xl font-bold text-white sm:text-5xl">
@@ -210,13 +221,14 @@ export default function MarketingPage() {
           <div className="mt-10 flex flex-col items-center gap-4 sm:flex-row sm:justify-center">
             <Link
               href="/sign-up"
-              className="rounded-lg bg-gold-DEFAULT px-8 py-4 text-body font-bold text-matte-black transition-all duration-300 hover:bg-gold-soft hover:scale-105 w-full sm:w-auto text-center"
+              className="w-full rounded-lg px-8 py-4 text-center text-body font-bold text-matte-black transition-all duration-300 hover:opacity-90 hover:scale-105 sm:w-auto"
+              style={{ backgroundColor: "#D4AF37" }}
             >
               Become a Covenant Member
             </Link>
             <Link
               href="/sign-up"
-              className="rounded-lg border border-matte-700 px-8 py-4 text-body font-semibold text-matte-300 transition-all duration-300 hover:border-matte-500 hover:text-white w-full sm:w-auto text-center"
+              className="w-full rounded-lg border border-matte-700 px-8 py-4 text-center text-body font-semibold text-matte-300 transition-all duration-300 hover:border-matte-400 hover:text-white sm:w-auto"
             >
               Watch for Free
             </Link>
@@ -224,7 +236,7 @@ export default function MarketingPage() {
         </div>
       </section>
 
-      {/* ── FAQ ──────────────────────────────────────────────────────── */}
+      {/* ── FAQ ──────────────────────────────────────────────────── */}
       <section className="px-4 py-20 sm:py-32">
         <div className="mx-auto max-w-3xl">
           <div className="mb-12 text-center">
@@ -243,18 +255,27 @@ export default function MarketingPage() {
         </div>
       </section>
 
-      {/* ── FINAL CTA ────────────────────────────────────────────────── */}
+      {/* ── FINAL CTA ────────────────────────────────────────────── */}
       <section className="px-4 pb-20 sm:pb-32">
-        <div className="mx-auto max-w-2xl rounded-2xl border border-crimson-DEFAULT/20 bg-gradient-to-br from-crimson-DEFAULT/10 via-matte-900 to-gold-DEFAULT/5 p-10 text-center sm:p-16">
+        <div
+          className="mx-auto max-w-2xl rounded-2xl border p-10 text-center sm:p-16"
+          style={{
+            borderColor: "rgba(229,9,20,0.2)",
+            background:
+              "linear-gradient(135deg, rgba(229,9,20,0.08), rgba(10,10,10,0.9), rgba(212,175,55,0.04))",
+          }}
+        >
           <h2 className="font-display text-3xl font-bold text-white sm:text-4xl">
             Ready to start watching?
           </h2>
           <p className="mt-4 text-body text-matte-300">
-            Join thousands of families already streaming on Haapu TV. Free, forever.
+            Join thousands of families already streaming on Haapu TV. Free,
+            forever.
           </p>
           <Link
             href="/sign-up"
-            className="mt-8 inline-flex items-center gap-2.5 rounded-lg bg-crimson-DEFAULT px-8 py-4 text-body font-bold text-white shadow-glow-lg transition-all duration-300 hover:bg-crimson-dark hover:scale-105"
+            className="mt-8 inline-flex items-center gap-2.5 rounded-lg px-8 py-4 text-body font-bold text-white transition-all duration-300 hover:opacity-90 hover:scale-105"
+            style={{ backgroundColor: "#E50914" }}
           >
             <Play size={18} fill="currentColor" />
             Get Started Free
@@ -262,7 +283,7 @@ export default function MarketingPage() {
         </div>
       </section>
 
-      {/* ── FOOTER ───────────────────────────────────────────────────── */}
+      {/* ── FOOTER ───────────────────────────────────────────────── */}
       <footer className="border-t border-matte-800 px-4 py-10">
         <div className="mx-auto max-w-screen-xl">
           <div className="flex flex-col items-center gap-6 sm:flex-row sm:justify-between">
@@ -271,7 +292,7 @@ export default function MarketingPage() {
               alt="Haapu TV"
               className="h-10 w-auto object-contain"
             />
-            <div className="flex items-center gap-6 text-small text-matte-500">
+            <div className="flex flex-wrap items-center justify-center gap-6 text-small text-matte-500">
               <Link href="/privacy" className="hover:text-white transition-colors">
                 Privacy Policy
               </Link>
@@ -283,35 +304,17 @@ export default function MarketingPage() {
               </Link>
             </div>
             <div className="flex items-center gap-4">
-              <a
-                href="https://www.facebook.com/haaputv"
-                target="_blank"
-                rel="noopener noreferrer"
-                className="text-matte-600 transition-colors hover:text-white"
-                aria-label="Facebook"
-              >
+              <a href="https://www.facebook.com/haaputv" target="_blank" rel="noopener noreferrer" className="text-matte-600 hover:text-white transition-colors" aria-label="Facebook">
                 <svg className="h-5 w-5" fill="currentColor" viewBox="0 0 24 24">
                   <path d="M22 12c0-5.523-4.477-10-10-10S2 6.477 2 12c0 4.991 3.657 9.128 8.438 9.878v-6.987h-2.54V12h2.54V9.797c0-2.506 1.492-3.89 3.777-3.89 1.094 0 2.238.195 2.238.195v2.46h-1.26c-1.243 0-1.63.771-1.63 1.562V12h2.773l-.443 2.89h-2.33v6.988C18.343 21.128 22 16.991 22 12z" />
                 </svg>
               </a>
-              <a
-                href="https://www.twitter.com/haaputv"
-                target="_blank"
-                rel="noopener noreferrer"
-                className="text-matte-600 transition-colors hover:text-white"
-                aria-label="X / Twitter"
-              >
+              <a href="https://www.twitter.com/haaputv" target="_blank" rel="noopener noreferrer" className="text-matte-600 hover:text-white transition-colors" aria-label="X">
                 <svg className="h-5 w-5" fill="currentColor" viewBox="0 0 24 24">
                   <path d="M18.244 2.25h3.308l-7.227 8.26 8.502 11.24H16.17l-5.214-6.817L4.99 21.75H1.68l7.73-8.835L1.254 2.25H8.08l4.713 6.231zm-1.161 17.52h1.833L7.084 4.126H5.117z" />
                 </svg>
               </a>
-              <a
-                href="https://www.instagram.com/haaputv"
-                target="_blank"
-                rel="noopener noreferrer"
-                className="text-matte-600 transition-colors hover:text-white"
-                aria-label="Instagram"
-              >
+              <a href="https://www.instagram.com/haaputv" target="_blank" rel="noopener noreferrer" className="text-matte-600 hover:text-white transition-colors" aria-label="Instagram">
                 <svg className="h-5 w-5" fill="currentColor" viewBox="0 0 24 24">
                   <path d="M12 2.163c3.204 0 3.584.012 4.85.07 3.252.148 4.771 1.691 4.919 4.919.058 1.265.069 1.645.069 4.849 0 3.205-.012 3.584-.069 4.849-.149 3.225-1.664 4.771-4.919 4.919-1.266.058-1.644.07-4.85.07-3.204 0-3.584-.012-4.849-.07-3.26-.149-4.771-1.699-4.919-4.92-.058-1.265-.07-1.644-.07-4.849 0-3.204.013-3.583.07-4.849.149-3.227 1.664-4.771 4.919-4.919 1.266-.057 1.645-.069 4.849-.069zM12 0C8.741 0 8.333.014 7.053.072 2.695.272.273 2.69.073 7.052.014 8.333 0 8.741 0 12c0 3.259.014 3.668.072 4.948.2 4.358 2.618 6.78 6.98 6.98C8.333 23.986 8.741 24 12 24c3.259 0 3.668-.014 4.948-.072 4.354-.2 6.782-2.618 6.979-6.98.059-1.28.073-1.689.073-4.948 0-3.259-.014-3.667-.072-4.947-.196-4.354-2.617-6.78-6.979-6.98C15.668.014 15.259 0 12 0zm0 5.838a6.162 6.162 0 100 12.324 6.162 6.162 0 000-12.324zM12 16a4 4 0 110-8 4 4 0 010 8zm6.406-11.845a1.44 1.44 0 100 2.881 1.44 1.44 0 000-2.881z" />
                 </svg>
