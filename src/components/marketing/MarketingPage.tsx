@@ -64,8 +64,9 @@ function FAQItem({ q, a }: { q: string; a: string }) {
         <ChevronDown
           size={20}
           className={`flex-shrink-0 transition-transform duration-300 ${
-            open ? "rotate-180 text-crimson" : "text-matte-500"
+            open ? "rotate-180" : ""
           }`}
+          style={{ color: "#D4AF37" }}
         />
       </button>
       <div
@@ -86,43 +87,57 @@ export default function MarketingPage() {
       {/* ── HERO ─────────────────────────────────────────────────── */}
       <section className="relative flex min-h-screen flex-col items-center justify-center overflow-hidden px-4 text-center">
 
-        {/* Ambient glow blobs */}
+        {/* Subtle ambient glow — brand colors, very faint */}
         <div className="pointer-events-none absolute inset-0">
           <div
-            className="absolute left-1/4 top-1/4 h-[600px] w-[600px] rounded-full blur-[160px]"
-            style={{ backgroundColor: "rgba(229,9,20,0.06)" }}
+            className="absolute left-1/3 top-1/3 h-[500px] w-[500px] rounded-full blur-[180px]"
+            style={{ backgroundColor: "rgba(212,175,55,0.05)" }}
           />
           <div
-            className="absolute right-1/4 bottom-1/4 h-[400px] w-[400px] rounded-full blur-[120px]"
-            style={{ backgroundColor: "rgba(212,175,55,0.06)" }}
+            className="absolute right-1/3 bottom-1/3 h-[400px] w-[400px] rounded-full blur-[140px]"
+            style={{ backgroundColor: "rgba(229,9,20,0.04)" }}
           />
         </div>
 
-        {/* Top accent line */}
-        <div className="absolute top-0 left-0 right-0 h-px bg-gradient-to-r from-transparent via-yellow-600/30 to-transparent" />
+        {/* Gold top accent line */}
+        <div
+          className="absolute top-0 left-0 right-0 h-px"
+          style={{
+            background:
+              "linear-gradient(to right, transparent, rgba(212,175,55,0.4), transparent)",
+          }}
+        />
 
         <div className="relative z-10 max-w-4xl">
-          {/* Badge */}
-          <div className="mb-8 inline-flex items-center gap-2 rounded-full border border-yellow-600/30 bg-yellow-600/10 px-4 py-1.5">
-            <span className="h-1.5 w-1.5 animate-pulse rounded-full bg-yellow-500" />
-            <span className="text-small font-medium uppercase tracking-widest text-yellow-400">
-              A Platform where Faith and Entertainment Comes Alive
+
+          {/* Badge — gold throughout, consistent with Covenant section */}
+          <div
+            className="mb-8 inline-flex items-center gap-2 rounded-full border px-4 py-1.5"
+            style={{
+              borderColor: "rgba(212,175,55,0.3)",
+              backgroundColor: "rgba(212,175,55,0.08)",
+            }}
+          >
+            <span
+              className="h-1.5 w-1.5 animate-pulse rounded-full"
+              style={{ backgroundColor: "#D4AF37" }}
+            />
+            <span
+              className="text-small font-medium uppercase tracking-widest"
+              style={{ color: "#D4AF37" }}
+            >
+              Faith and Entertainment Comes Alive
             </span>
           </div>
 
-          {/* Headline — gradient via inline style so it always works */}
+          {/*
+            Headline — "Join the" is white, "Movement" is gold.
+            Gold is our single brand accent. No gradient, no crimson text.
+            Crimson is reserved for buttons only.
+          */}
           <h1 className="font-display text-5xl font-bold leading-tight text-white sm:text-6xl lg:text-8xl">
             Join the{" "}
-            <span
-              style={{
-                background: "linear-gradient(to right, #E50914, #D4AF37)",
-                WebkitBackgroundClip: "text",
-                WebkitTextFillColor: "transparent",
-                backgroundClip: "text",
-              }}
-            >
-              Movement
-            </span>
+            <span style={{ color: "#D4AF37" }}>Movement</span>
           </h1>
 
           <p className="mx-auto mt-6 max-w-2xl text-body-lg leading-relaxed text-matte-300 sm:text-xl">
@@ -142,7 +157,7 @@ export default function MarketingPage() {
             </Link>
             <Link
               href="/sign-in"
-              className="flex w-full items-center justify-center gap-2.5 rounded-lg border border-matte-700 px-8 py-4 text-body font-semibold text-matte-300 transition-all duration-300 hover:border-matte-400 hover:text-white sm:w-auto"
+              className="flex w-full items-center justify-center gap-2.5 rounded-lg border border-matte-700 px-8 py-4 text-body font-semibold text-matte-300 transition-all duration-300 hover:border-matte-500 hover:text-white sm:w-auto"
             >
               Sign In
             </Link>
@@ -152,20 +167,18 @@ export default function MarketingPage() {
             Free forever. No credit card required.
           </p>
         </div>
-
-        {/* Scroll indicator */}
-        <div className="absolute bottom-10 left-1/2 -translate-x-1/2 flex flex-col items-center animate-bounce">
-          <div className="h-8 w-px bg-gradient-to-b from-matte-600 to-transparent" />
-        </div>
       </section>
 
       {/* ── FEATURES ─────────────────────────────────────────────── */}
       <section className="px-4 py-20 sm:py-32">
         <div className="mx-auto max-w-screen-xl">
           <div className="mb-16 text-center">
+            {/*
+              "Everything you need, nothing you don't" — all white.
+              No crimson text accent. Headlines don't need color to be strong.
+            */}
             <h2 className="font-display text-4xl font-bold text-white sm:text-5xl">
-              Everything you need,{" "}
-              <span className="text-crimson">nothing you don't</span>
+              Everything you need, nothing you don't
             </h2>
             <p className="mt-4 text-body-lg text-matte-400">
               Brought to you by our incredible Covenant Members.
@@ -176,13 +189,13 @@ export default function MarketingPage() {
             {FEATURES.map(({ icon: Icon, title, description }) => (
               <div
                 key={title}
-                className="group rounded-2xl border border-matte-800 bg-matte-900 p-6 transition-all duration-300 hover:border-red-900/50 hover:bg-matte-800/50"
+                className="group rounded-2xl border border-matte-800 bg-matte-900 p-6 transition-all duration-300 hover:border-matte-700 hover:bg-matte-800/50"
               >
                 <div
-                  className="mb-4 flex h-12 w-12 items-center justify-center rounded-xl transition-colors duration-300"
-                  style={{ backgroundColor: "rgba(229,9,20,0.12)" }}
+                  className="mb-4 flex h-12 w-12 items-center justify-center rounded-xl"
+                  style={{ backgroundColor: "rgba(212,175,55,0.1)" }}
                 >
-                  <Icon size={22} style={{ color: "#E50914" }} />
+                  <Icon size={22} style={{ color: "#D4AF37" }} />
                 </div>
                 <h3 className="mb-2 font-display text-lg font-semibold text-white">
                   {title}
@@ -202,13 +215,26 @@ export default function MarketingPage() {
           className="absolute inset-0 pointer-events-none"
           style={{
             background:
-              "linear-gradient(to right, rgba(229,9,20,0.04), transparent, rgba(212,175,55,0.04))",
+              "linear-gradient(135deg, rgba(212,175,55,0.04), transparent, rgba(212,175,55,0.02))",
           }}
         />
         <div className="relative mx-auto max-w-3xl text-center">
-          <span className="mb-4 inline-block rounded-full border border-yellow-600/30 bg-yellow-600/10 px-4 py-1.5 text-small font-medium uppercase tracking-widest text-yellow-400">
-            Covenant Members
-          </span>
+          {/* Gold badge — consistent with hero badge */}
+          <div
+            className="mb-6 inline-flex items-center gap-2 rounded-full border px-4 py-1.5"
+            style={{
+              borderColor: "rgba(212,175,55,0.3)",
+              backgroundColor: "rgba(212,175,55,0.08)",
+            }}
+          >
+            <span
+              className="text-small font-medium uppercase tracking-widest"
+              style={{ color: "#D4AF37" }}
+            >
+              Covenant Members
+            </span>
+          </div>
+
           <h2 className="font-display text-4xl font-bold text-white sm:text-5xl">
             Your support keeps it free
           </h2>
@@ -221,14 +247,14 @@ export default function MarketingPage() {
           <div className="mt-10 flex flex-col items-center gap-4 sm:flex-row sm:justify-center">
             <Link
               href="/sign-up"
-              className="w-full rounded-lg px-8 py-4 text-center text-body font-bold text-matte-black transition-all duration-300 hover:opacity-90 hover:scale-105 sm:w-auto"
-              style={{ backgroundColor: "#D4AF37" }}
+              className="w-full rounded-lg px-8 py-4 text-center text-body font-bold transition-all duration-300 hover:opacity-90 hover:scale-105 sm:w-auto"
+              style={{ backgroundColor: "#D4AF37", color: "#0A0A0A" }}
             >
               Become a Covenant Member
             </Link>
             <Link
               href="/sign-up"
-              className="w-full rounded-lg border border-matte-700 px-8 py-4 text-center text-body font-semibold text-matte-300 transition-all duration-300 hover:border-matte-400 hover:text-white sm:w-auto"
+              className="w-full rounded-lg border border-matte-700 px-8 py-4 text-center text-body font-semibold text-matte-300 transition-all duration-300 hover:border-matte-500 hover:text-white sm:w-auto"
             >
               Watch for Free
             </Link>
@@ -256,21 +282,20 @@ export default function MarketingPage() {
       </section>
 
       {/* ── FINAL CTA ────────────────────────────────────────────── */}
-      <section className="px-4 pb-20 sm:pb-32">
+      <section className="px-4 pb-24 sm:pb-32">
         <div
           className="mx-auto max-w-2xl rounded-2xl border p-10 text-center sm:p-16"
           style={{
-            borderColor: "rgba(229,9,20,0.2)",
+            borderColor: "rgba(212,175,55,0.15)",
             background:
-              "linear-gradient(135deg, rgba(229,9,20,0.08), rgba(10,10,10,0.9), rgba(212,175,55,0.04))",
+              "linear-gradient(135deg, rgba(212,175,55,0.05), rgba(10,10,10,0.95), rgba(229,9,20,0.03))",
           }}
         >
           <h2 className="font-display text-3xl font-bold text-white sm:text-4xl">
             Ready to start watching?
           </h2>
           <p className="mt-4 text-body text-matte-300">
-            Join thousands of families already streaming on Haapu TV. Free,
-            forever.
+            Join thousands of families already streaming on Haapu TV. Free, forever.
           </p>
           <Link
             href="/sign-up"
@@ -293,15 +318,9 @@ export default function MarketingPage() {
               className="h-10 w-auto object-contain"
             />
             <div className="flex flex-wrap items-center justify-center gap-6 text-small text-matte-500">
-              <Link href="/privacy" className="hover:text-white transition-colors">
-                Privacy Policy
-              </Link>
-              <Link href="/terms" className="hover:text-white transition-colors">
-                Terms of Use
-              </Link>
-              <Link href="/faq" className="hover:text-white transition-colors">
-                FAQ
-              </Link>
+              <Link href="/privacy" className="hover:text-white transition-colors">Privacy Policy</Link>
+              <Link href="/terms" className="hover:text-white transition-colors">Terms of Use</Link>
+              <Link href="/faq" className="hover:text-white transition-colors">FAQ</Link>
             </div>
             <div className="flex items-center gap-4">
               <a href="https://www.facebook.com/haaputv" target="_blank" rel="noopener noreferrer" className="text-matte-600 hover:text-white transition-colors" aria-label="Facebook">
