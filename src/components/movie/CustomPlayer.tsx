@@ -103,7 +103,7 @@ export default function CustomPlayer({ movie }: CustomPlayerProps) {
   }, [historyLoading, isExternalEmbed]);
 
   useEffect(() => {
-    if (!savedProgress || savedProgress <= 10) return;
+    if (!savedProgress || savedProgress <= 60) return;
     const t = setTimeout(() => setShowResuming(false), 3000);
     return () => clearTimeout(t);
   }, [savedProgress]);
@@ -185,8 +185,15 @@ export default function CustomPlayer({ movie }: CustomPlayerProps) {
     if (videoRef.current) videoRef.current.playbackRate = playbackSpeed;
   }, [playbackSpeed]);
 
-  // window.history.back() is more reliable on mobile than router.back()
-  const goBack = () => window.history.back();
+ // Navigate directly to movie detail page — bypasses Clerk's redirect
+  // history entries that cause the back-button loop on mobile
+  const goBack = () => {
+    if (movie.slug) {
+      router.push(`/movie/${movie.slug}`);
+    } else {
+      router.push("/movies");
+    }
+  };
 
   const togglePlay = () => {
     if (!videoRef.current) return;
@@ -253,8 +260,12 @@ export default function CustomPlayer({ movie }: CustomPlayerProps) {
   };
 
   const formatTimeLabel = (s: number) => {
-    const h = Math.floor(s / 3600), m = Math.floor((s % 3600) / 60);
-    return h > 0 ? `${h}h ${m}m` : `${m}m`;
+    const h = Math.floor(s / 3600);
+    const m = Math.floor((s % 3600) / 60);
+    const sec = Math.floor(s % 60);
+    if (h > 0) return `${h}h ${m}m`;
+    if (m > 0) return `${m}m`;
+    return `${sec}s`;
   };
 
   const progress = duration > 0 ? (currentTime / duration) * 100 : 0;
@@ -310,7 +321,7 @@ export default function CustomPlayer({ movie }: CustomPlayerProps) {
         </div>
 
         {/* Resuming badge — fades after 3 seconds */}
-        {savedProgress > 10 && showResuming && (
+        {savedProgress > 60 && showResuming && (
           <div className="fixed top-16 left-1/2 -translate-x-1/2 z-[9999] rounded-full bg-black/80 px-4 py-2 text-sm text-white backdrop-blur-sm pointer-events-none">
             ▶ Resuming from {formatTimeLabel(savedProgress)}
           </div>
