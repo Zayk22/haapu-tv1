@@ -82,17 +82,11 @@ function FAQItem({ q, a }: { q: string; a: string }) {
         <span className="font-semibold text-white">{q}</span>
         <ChevronDown
           size={18}
-          className={`flex-shrink-0 transition-transform duration-300 ${
-            open ? "rotate-180" : ""
-          }`}
+          className={`flex-shrink-0 transition-transform duration-300 ${open ? "rotate-180" : ""}`}
           style={{ color: "#D4AF37" }}
         />
       </button>
-      <div
-        className={`overflow-hidden transition-all duration-300 ${
-          open ? "max-h-96 pb-5" : "max-h-0"
-        }`}
-      >
+      <div className={`overflow-hidden transition-all duration-300 ${open ? "max-h-96 pb-5" : "max-h-0"}`}>
         <p className="text-body leading-relaxed text-matte-400">{a}</p>
       </div>
     </div>
@@ -127,7 +121,11 @@ export default function FAQPage() {
           </h1>
           <p className="mt-4 text-body text-matte-400">
             Everything you need to know about Haapu TV. Can't find your answer?{" "}
-            <a href="mailto:hello@haapu.tv" className="hover:underline" style={{ color: "#E50914" }}>
+            
+              href="mailto:hello@haapu.tv"
+              className="hover:underline"
+              style={{ color: "#E50914" }}
+            >
               Contact us
             </a>
             .
@@ -168,7 +166,6 @@ export default function FAQPage() {
           </a>
         </div>
 
-        {/* Consistent footer links */}
         <div className="mt-12 border-t border-matte-800 pt-8 flex flex-wrap items-center justify-between gap-4">
           <p className="text-small text-matte-600">
             © {new Date().getFullYear()} Haapu TV. All Rights Reserved.

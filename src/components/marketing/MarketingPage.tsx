@@ -27,26 +27,22 @@ const FEATURES = [
   {
     icon: Tv,
     title: "Stream Amazing Content for Free",
-    description:
-      "Brought to you by our incredible Covenant Members. Access movies, shows, and documentaries — no subscription, no credit card. Just great content.",
+    description: "Brought to you by our incredible Covenant Members. Access movies, shows, and documentaries — no subscription, no credit card. Just great content.",
   },
   {
     icon: Zap,
     title: "Stream Anytime, Anywhere",
-    description:
-      "Watch on your phone, tablet, laptop, or TV. Haapu TV works on every device so your favourite content is always within reach.",
+    description: "Watch on your phone, tablet, laptop, or TV. Haapu TV works on every device so your favourite content is always within reach.",
   },
   {
     icon: Users,
     title: "Community Powered",
-    description:
-      "Covenant Members decide which films and shows are made and distributed. Your voice shapes what you watch.",
+    description: "Covenant Members decide which films and shows are made and distributed. Your voice shapes what you watch.",
   },
   {
     icon: Shield,
     title: "Trusted Family Entertainment",
-    description:
-      "Every title is hand-picked for families. Faith-forward, uplifting, and safe for all ages — always.",
+    description: "Every title is hand-picked for families. Faith-forward, uplifting, and safe for all ages — always.",
   },
 ];
 
@@ -58,9 +54,7 @@ function FAQItem({ q, a }: { q: string; a: string }) {
         onClick={() => setOpen(!open)}
         className="flex w-full items-center justify-between gap-4 py-5 text-left"
       >
-        <span className="font-display text-lg font-semibold text-white sm:text-xl">
-          {q}
-        </span>
+        <span className="font-display text-lg font-semibold text-white sm:text-xl">{q}</span>
         <ChevronDown
           size={20}
           className={`flex-shrink-0 transition-transform duration-300 ${open ? "rotate-180" : ""}`}
@@ -74,7 +68,15 @@ function FAQItem({ q, a }: { q: string; a: string }) {
   );
 }
 
-function SocialIcon({ href, label, children }: { href: string; label: string; children: React.ReactNode }) {
+function SocialIcon({
+  href,
+  label,
+  children,
+}: {
+  href: string;
+  label: string;
+  children: React.ReactNode;
+}) {
   return (
     
       href={href}
@@ -112,8 +114,7 @@ export default function MarketingPage() {
           </div>
 
           <h1 className="font-display text-5xl font-bold leading-tight text-white sm:text-6xl lg:text-8xl">
-            Join the{" "}
-            <span style={{ color: "#D4AF37" }}>Movement</span>
+            Join the <span style={{ color: "#D4AF37" }}>Movement</span>
           </h1>
 
           <p className="mx-auto mt-6 max-w-2xl text-body-lg leading-relaxed text-matte-300 sm:text-xl">
@@ -139,11 +140,8 @@ export default function MarketingPage() {
             </Link>
           </div>
 
-          {/* Partner ask — replaces "Free forever. No credit card required." */}
           <div className="mt-6 flex flex-col items-center gap-1.5">
-            <p className="text-small text-matte-600">
-              Free forever. No credit card required.
-            </p>
+            <p className="text-small text-matte-600">Free forever. No credit card required.</p>
             <p className="flex items-center gap-1.5 text-small text-matte-500">
               <Heart size={12} className="text-red-500" fill="currentColor" />
               Enjoy it free. Help keep it free —{" "}
@@ -172,7 +170,6 @@ export default function MarketingPage() {
               Brought to you by our incredible Covenant Members.
             </p>
           </div>
-
           <div className="grid gap-6 sm:grid-cols-2 lg:grid-cols-4">
             {FEATURES.map(({ icon: Icon, title, description }) => (
               <div
@@ -190,7 +187,7 @@ export default function MarketingPage() {
         </div>
       </section>
 
-      {/* ── COVENANT MEMBERS (typo fixed: Members not Memebers) ──── */}
+      {/* ── COVENANT MEMBERS ─────────────────────────────────────── */}
       <section className="relative overflow-hidden px-4 py-20 sm:py-32">
         <div className="absolute inset-0 pointer-events-none" style={{ background: "linear-gradient(135deg, rgba(212,175,55,0.04), transparent, rgba(212,175,55,0.02))" }} />
         <div className="relative mx-auto max-w-3xl text-center">
@@ -202,7 +199,6 @@ export default function MarketingPage() {
               Covenant Members
             </span>
           </div>
-
           <h2 className="font-display text-4xl font-bold text-white sm:text-5xl">
             Your support keeps it free
           </h2>
@@ -239,9 +235,7 @@ export default function MarketingPage() {
             <h2 className="font-display text-4xl font-bold text-white sm:text-5xl">
               Frequently asked questions
             </h2>
-            <p className="mt-4 text-body text-matte-400">
-              Everything you need to know about Haapu TV.
-            </p>
+            <p className="mt-4 text-body text-matte-400">Everything you need to know about Haapu TV.</p>
           </div>
           <div className="rounded-2xl border border-matte-800 bg-matte-900 px-6 sm:px-8">
             {FAQS.map((faq) => (
@@ -277,7 +271,7 @@ export default function MarketingPage() {
         </div>
       </section>
 
-      {/* ── FOOTER — consistent across all pages ─────────────────── */}
+      {/* ── FOOTER ───────────────────────────────────────────────── */}
       <footer className="border-t border-matte-800 px-4 py-10">
         <div className="mx-auto max-w-screen-xl">
           <div className="flex flex-col items-center gap-6 sm:flex-row sm:justify-between">
