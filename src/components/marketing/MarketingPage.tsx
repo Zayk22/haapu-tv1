@@ -78,7 +78,7 @@ function SocialIcon({
   children: React.ReactNode;
 }) {
   return (
-    
+    <a
       href={href}
       target="_blank"
       rel="noopener noreferrer"
@@ -145,7 +145,7 @@ export default function MarketingPage() {
             <p className="flex items-center gap-1.5 text-small text-matte-500">
               <Heart size={12} className="text-red-500" fill="currentColor" />
               Enjoy it free. Help keep it free —{" "}
-              
+              <a
                 href="https://haapu.tv/give"
                 target="_blank"
                 rel="noopener noreferrer"
@@ -209,7 +209,7 @@ export default function MarketingPage() {
             gets made next.
           </p>
           <div className="mt-10 flex flex-col items-center gap-4 sm:flex-row sm:justify-center">
-            
+            <a
               href="https://haapu.tv/give"
               target="_blank"
               rel="noopener noreferrer"
