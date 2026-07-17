@@ -21,6 +21,12 @@ const playfair = Playfair_Display({
 export const metadata: Metadata = {
   title: "Haapu TV | Stream Movies & TV Shows",
   description: "Watch your favorite movies, videos, and TV shows on Haapu TV.",
+  viewport: {
+    width: "device-width",
+    initialScale: 1,
+    // Pinch zoom enabled — removing the maximumScale:1 that was blocking it
+    userScalable: true,
+  },
 };
 
 export default function RootLayout({

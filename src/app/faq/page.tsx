@@ -52,7 +52,7 @@ const FAQS = [
       },
       {
         q: "How do I become a Covenant Member?",
-        a: "Visit the Covenant Member page from the navigation menu or contact us for more information. Membership options are available to suit different levels of support.",
+        a: "Visit haapu.tv/give to learn about membership options, or contact us at hello@haapu.tv for more information.",
       },
     ],
   },
@@ -65,7 +65,7 @@ const FAQS = [
       },
       {
         q: "I'm having trouble signing in. What should I do?",
-        a: "First, make sure you're using the correct email address and password. If you've forgotten your password, use the 'Forgot password' link on the sign-in page. If you still have trouble, contact us at the email below and we'll help you get back in.",
+        a: "First, make sure you're using the correct email address and password. If you've forgotten your password, use the 'Forgot password' link on the sign-in page. If you still have trouble, contact us at hello@haapu.tv and we'll help you get back in.",
       },
     ],
   },
@@ -82,9 +82,10 @@ function FAQItem({ q, a }: { q: string; a: string }) {
         <span className="font-semibold text-white">{q}</span>
         <ChevronDown
           size={18}
-          className={`flex-shrink-0 text-crimson-DEFAULT transition-transform duration-300 ${
+          className={`flex-shrink-0 transition-transform duration-300 ${
             open ? "rotate-180" : ""
           }`}
+          style={{ color: "#D4AF37" }}
         />
       </button>
       <div
@@ -102,7 +103,6 @@ export default function FAQPage() {
   return (
     <main className="min-h-screen bg-matte-black pb-20 pt-28 px-4">
       <div className="mx-auto max-w-3xl">
-
         <Link
           href="/"
           className="mb-8 inline-flex items-center gap-2 text-caption text-matte-500 transition-colors hover:text-white"
@@ -112,7 +112,14 @@ export default function FAQPage() {
         </Link>
 
         <div className="mb-12">
-          <span className="mb-3 inline-block rounded-full border border-gold-DEFAULT/30 bg-gold-DEFAULT/10 px-3 py-1 text-small font-medium uppercase tracking-widest text-gold-soft">
+          <span
+            className="mb-3 inline-block rounded-full border px-3 py-1 text-small font-medium uppercase tracking-widest"
+            style={{
+              borderColor: "rgba(212,175,55,0.3)",
+              backgroundColor: "rgba(212,175,55,0.08)",
+              color: "#D4AF37",
+            }}
+          >
             Help Centre
           </span>
           <h1 className="font-display text-4xl font-bold text-white sm:text-5xl">
@@ -120,10 +127,7 @@ export default function FAQPage() {
           </h1>
           <p className="mt-4 text-body text-matte-400">
             Everything you need to know about Haapu TV. Can't find your answer?{" "}
-            <a
-              href="mailto:hello@haapu.tv"
-              className="text-crimson-DEFAULT hover:underline"
-            >
+            <a href="mailto:hello@haapu.tv" className="hover:underline" style={{ color: "#E50914" }}>
               Contact us
             </a>
             .
@@ -133,7 +137,10 @@ export default function FAQPage() {
         <div className="space-y-8">
           {FAQS.map((section) => (
             <div key={section.category}>
-              <h2 className="mb-1 text-small font-semibold uppercase tracking-widest text-crimson-DEFAULT">
+              <h2
+                className="mb-1 text-small font-semibold uppercase tracking-widest"
+                style={{ color: "#E50914" }}
+              >
                 {section.category}
               </h2>
               <div className="rounded-xl border border-matte-800 bg-matte-900 px-6">
@@ -152,12 +159,24 @@ export default function FAQPage() {
           <p className="mt-2 text-body text-matte-400">
             We're here to help. Reach out and we'll get back to you as soon as possible.
           </p>
-          <a
+          
             href="mailto:hello@haapu.tv"
-            className="mt-6 inline-flex items-center gap-2 rounded-lg bg-crimson-DEFAULT px-6 py-3 text-body font-semibold text-white transition-colors hover:bg-crimson-dark"
+            className="mt-6 inline-flex items-center gap-2 rounded-lg px-6 py-3 text-body font-semibold text-white transition-colors hover:opacity-90"
+            style={{ backgroundColor: "#E50914" }}
           >
             Contact Us
           </a>
+        </div>
+
+        {/* Consistent footer links */}
+        <div className="mt-12 border-t border-matte-800 pt-8 flex flex-wrap items-center justify-between gap-4">
+          <p className="text-small text-matte-600">
+            © {new Date().getFullYear()} Haapu TV. All Rights Reserved.
+          </p>
+          <div className="flex gap-6 text-small text-matte-500">
+            <Link href="/privacy" className="hover:text-white transition-colors">Privacy Policy</Link>
+            <Link href="/terms" className="hover:text-white transition-colors">Terms of Use</Link>
+          </div>
         </div>
       </div>
     </main>
