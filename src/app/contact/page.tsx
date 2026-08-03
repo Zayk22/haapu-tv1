@@ -26,14 +26,13 @@ export default function ContactPage() {
     setIsSuccess(false);
 
     try {
-      // Using Web3Forms (free, works without backend)
       const response = await fetch("https://api.web3forms.com/submit", {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
         },
         body: JSON.stringify({
-          access_key: "YOUR_WEB3FORMS_ACCESS_KEY", // <-- Replace with your key
+          access_key: "YOUR_WEB3FORMS_ACCESS_KEY",
           name: formData.name,
           email: formData.email,
           subject: formData.subject,
@@ -55,13 +54,6 @@ export default function ContactPage() {
       setIsSubmitting(false);
     }
   };
-
-  const socialLinks = [
-    { name: "Instagram", url: "https://www.instagram.com/haaputv", icon: "📸" },
-    { name: "Facebook", url: "https://www.facebook.com/haaputv", icon: "📘" },
-    { name: "X (Twitter)", url: "https://x.com/haaputv", icon: "🐦" },
-    { name: "TikTok", url: "https://www.tiktok.com/@haaputv", icon: "🎵" },
-  ];
 
   return (
     <main className="min-h-screen bg-matte-black pb-20 pt-28 px-4">
@@ -110,22 +102,6 @@ export default function ContactPage() {
             <h4 className="text-sm font-semibold text-white">Location</h4>
             <p className="mt-1 text-sm text-matte-400">London, UK</p>
           </div>
-        </div>
-
-        {/* Social Icons */}
-        <div className="mb-10 flex justify-center gap-4">
-          {socialLinks.map((social) => (
-            <a
-              key={social.name}
-              href={social.url}
-              target="_blank"
-              rel="noopener noreferrer"
-              className="flex h-12 w-12 items-center justify-center rounded-full border border-matte-700 text-xl transition-colors hover:border-matte-500 hover:bg-matte-800"
-              aria-label={social.name}
-            >
-              {social.icon}
-            </a>
-          ))}
         </div>
 
         {/* Contact Form */}

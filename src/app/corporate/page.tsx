@@ -41,7 +41,7 @@ export default function CorporatePage() {
             <p className="text-matte-400 leading-relaxed">
               Haapu TV
               <br />
-              <span className="text-sm text-matte-500">(Registered name — confirm with boss)</span>
+              <span className="text-sm text-matte-500">(RANDOM RANDOM RANDOM)</span>
             </p>
           </div>
 
@@ -51,7 +51,7 @@ export default function CorporatePage() {
               <h2 className="font-display text-xl font-semibold text-white">Registered Address</h2>
             </div>
             <p className="text-matte-400 leading-relaxed">
-              <span className="text-matte-500">Please confirm with boss for exact address.</span>
+              <span className="text-matte-500">LONDON</span>
             </p>
           </div>
 
@@ -71,7 +71,7 @@ export default function CorporatePage() {
               <h2 className="font-display text-xl font-semibold text-white">Registration Details</h2>
             </div>
             <p className="text-matte-400 leading-relaxed">
-              <span className="text-matte-500">Please confirm with boss for registration number and jurisdiction.</span>
+              <span className="text-matte-500">Random random random random</span>
             </p>
           </div>
         </div>
