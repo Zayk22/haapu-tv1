@@ -83,7 +83,6 @@ export default function AddMoviePage() {
 
   return (
     <div className="mx-auto max-w-2xl">
-      {/* Header */}
       <div className="mb-8 flex items-center gap-4">
         <Link
           href="/admin/movies"
@@ -108,7 +107,6 @@ export default function AddMoviePage() {
       )}
 
       <form onSubmit={handleSubmit} className="space-y-6">
-        {/* Basic info */}
         <div className="rounded-xl border border-matte-800 bg-matte-900 p-6">
           <h2 className="mb-5 font-semibold text-white">Basic Information</h2>
           <div className="space-y-4">
@@ -196,7 +194,6 @@ export default function AddMoviePage() {
           </div>
         </div>
 
-        {/* Media */}
         <div className="rounded-xl border border-matte-800 bg-matte-900 p-6">
           <h2 className="mb-5 font-semibold text-white">Media</h2>
           <div className="space-y-5">
@@ -211,9 +208,10 @@ export default function AddMoviePage() {
               />
             </Field>
 
+            {/* ✅ Updated: Thumbnail (16:9 landscape) */}
             <Field
-              label="Backdrop Image"
-              hint="Landscape (16:9 ratio). Used in the hero carousel and detail page background."
+              label="Thumbnail (16:9 landscape)"
+              hint="Main thumbnail shown on movie cards and hero carousel. Use a 16:9 landscape image for best results."
             >
               <ImageUpload
                 onImageUploaded={(url) => set("backdropUrl", url)}
@@ -237,7 +235,6 @@ export default function AddMoviePage() {
           </div>
         </div>
 
-        {/* Actions */}
         <div className="flex items-center justify-end gap-3 pb-8">
           <Link
             href="/admin/movies"

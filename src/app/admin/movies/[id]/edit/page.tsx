@@ -26,7 +26,6 @@ export default function EditMoviePage() {
     rating: "0",
   });
 
-  // Fetch movie data on load
   useEffect(() => {
     async function fetchMovie() {
       try {
@@ -164,16 +163,15 @@ export default function EditMoviePage() {
           />
         </div>
 
-        {/* Image Upload for Poster */}
         <ImageUpload
           label="Movie Poster"
           onImageUploaded={(url) => setFormData(prev => ({ ...prev, posterUrl: url }))}
           currentImage={formData.posterUrl}
         />
 
-        {/* Image Upload for Backdrop */}
+        {/* ✅ Updated: Thumbnail (16:9 landscape) */}
         <ImageUpload
-          label="Backdrop Image (Optional)"
+          label="Thumbnail (16:9 landscape)"
           onImageUploaded={(url) => setFormData(prev => ({ ...prev, backdropUrl: url }))}
           currentImage={formData.backdropUrl}
         />
