@@ -30,34 +30,25 @@ export default function MovieCard({ movie, index = 0, slug }: MovieCardProps) {
   return (
     <motion.div
       className="group relative cursor-pointer w-full"
-      // Scroll-triggered entrance — fires when card enters viewport, not on page load
       initial={{ opacity: 0, y: 20 }}
       whileInView={{ opacity: 1, y: 0 }}
       viewport={{ once: true, margin: "-30px" }}
       transition={{
         duration: 0.4,
-        // Cap delay at 0.25s so later cards in long rows don't wait forever
         delay: Math.min(index * 0.06, 0.25),
         ease: "easeOut",
       }}
-      // Subtle lift on hover — 3% scale, barely noticeable, very satisfying
       whileHover={{ scale: 1.03, transition: { duration: 0.2, ease: "easeOut" } }}
-      // Physical press feel on tap
       whileTap={{ scale: 0.97, transition: { duration: 0.1 } }}
       onMouseEnter={() => setIsHovered(true)}
       onMouseLeave={() => setIsHovered(false)}
       onClick={handleClick}
     >
-      {/*
-        Glow layer — sits BEHIND the card at -z-10.
-        Uses crimson at 20% opacity + blur-md so it reads as
-        a soft ambient light, not a visible shape.
-        Only appears on hover via group-hover.
-      */}
+      {/* Glow layer */}
       <div className="pointer-events-none absolute -inset-1 -z-10 rounded-xl bg-crimson-DEFAULT/20 opacity-0 blur-md transition-opacity duration-300 group-hover:opacity-100" />
 
-      {/* Poster */}
-      <div className="relative aspect-[2/3] overflow-hidden rounded-lg bg-matte-800">
+      {/* Poster — ✅ LANDSCAPE 16:9 */ }
+      <div className="relative aspect-video overflow-hidden rounded-lg bg-matte-800">
         {!imageLoaded && (
           <div className="absolute inset-0 z-10 animate-pulse bg-matte-800" />
         )}
