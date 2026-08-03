@@ -121,13 +121,14 @@ export default function FAQPage() {
           </h1>
           <p className="mt-4 text-body text-matte-400">
             Everything you need to know about Haapu TV. Can't find your answer?{" "}
-            <a
-              href="mailto:hello@haapu.tv"
+            {/* ✅ FIXED: Now links to /contact page */}
+            <Link
+              href="/contact"
               className="hover:underline"
               style={{ color: "#E50914" }}
             >
               Contact us
-            </a>
+            </Link>
             .
           </p>
         </div>
@@ -157,13 +158,14 @@ export default function FAQPage() {
           <p className="mt-2 text-body text-matte-400">
             We're here to help. Reach out and we'll get back to you as soon as possible.
           </p>
-          <a
-            href="mailto:hello@haapu.tv"
+          {/* ✅ FIXED: Now links to /contact page */}
+          <Link
+            href="/contact"
             className="mt-6 inline-flex items-center gap-2 rounded-lg px-6 py-3 text-body font-semibold text-white transition-colors hover:opacity-90"
             style={{ backgroundColor: "#E50914" }}
           >
             Contact Us
-          </a>
+          </Link>
         </div>
 
         <div className="mt-12 border-t border-matte-800 pt-8 flex flex-wrap items-center justify-between gap-4">

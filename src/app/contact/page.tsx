@@ -1,40 +1,227 @@
-export default function ContactPage() {
-  return (
-    <main className="min-h-screen pt-24">
-      <div className="mx-auto max-w-3xl px-4 sm:px-6 lg:px-12">
-        <h1 className="font-display text-display text-white">Contact Us</h1>
-        <p className="mt-2 text-body-lg text-matte-500">
-          We'd love to hear from you.
-        </p>
+"use client";
 
-        <div className="mt-8 grid gap-8 md:grid-cols-2">
-          <div>
-            <h3 className="font-semibold text-white">General Enquiries</h3>
-            <p className="mt-1 text-matte-400">info@haapu.tv</p>
+import { useState } from "react";
+import Link from "next/link";
+import { ArrowLeft, Mail, Phone, MapPin, Send } from "lucide-react";
+
+export default function ContactPage() {
+  const [formData, setFormData] = useState({
+    name: "",
+    email: "",
+    subject: "",
+    message: "",
+  });
+  const [isSubmitting, setIsSubmitting] = useState(false);
+  const [isSuccess, setIsSuccess] = useState(false);
+  const [error, setError] = useState<string | null>(null);
+
+  const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
+    setFormData({ ...formData, [e.target.name]: e.target.value });
+  };
+
+  const handleSubmit = async (e: React.FormEvent) => {
+    e.preventDefault();
+    setIsSubmitting(true);
+    setError(null);
+    setIsSuccess(false);
+
+    try {
+      // Using Web3Forms (free, works without backend)
+      const response = await fetch("https://api.web3forms.com/submit", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          access_key: "YOUR_WEB3FORMS_ACCESS_KEY", // <-- Replace with your key
+          name: formData.name,
+          email: formData.email,
+          subject: formData.subject,
+          message: formData.message,
+        }),
+      });
+
+      const data = await response.json();
+
+      if (data.success) {
+        setIsSuccess(true);
+        setFormData({ name: "", email: "", subject: "", message: "" });
+      } else {
+        throw new Error(data.message || "Something went wrong");
+      }
+    } catch (err) {
+      setError(err instanceof Error ? err.message : "Failed to send message");
+    } finally {
+      setIsSubmitting(false);
+    }
+  };
+
+  const socialLinks = [
+    { name: "Instagram", url: "https://www.instagram.com/haaputv", icon: "📸" },
+    { name: "Facebook", url: "https://www.facebook.com/haaputv", icon: "📘" },
+    { name: "X (Twitter)", url: "https://x.com/haaputv", icon: "🐦" },
+    { name: "TikTok", url: "https://www.tiktok.com/@haaputv", icon: "🎵" },
+  ];
+
+  return (
+    <main className="min-h-screen bg-matte-black pb-20 pt-28 px-4">
+      <div className="mx-auto max-w-3xl">
+        <Link
+          href="/"
+          className="mb-8 inline-flex items-center gap-2 text-caption text-matte-500 transition-colors hover:text-white"
+        >
+          <ArrowLeft size={16} />
+          Back to Home
+        </Link>
+
+        <div className="mb-12">
+          <span
+            className="mb-3 inline-block rounded-full border px-3 py-1 text-small font-medium uppercase tracking-widest"
+            style={{
+              borderColor: "rgba(212,175,55,0.3)",
+              backgroundColor: "rgba(212,175,55,0.08)",
+              color: "#D4AF37",
+            }}
+          >
+            Get in Touch
+          </span>
+          <h1 className="font-display text-4xl font-bold text-white sm:text-5xl">
+            Contact Us
+          </h1>
+          <p className="mt-4 text-body text-matte-400">
+            We'd love to hear from you. Reach out and we'll get back to you as soon as possible.
+          </p>
+        </div>
+
+        {/* Contact Details */}
+        <div className="grid gap-6 sm:grid-cols-2 lg:grid-cols-3 mb-10">
+          <div className="rounded-xl border border-matte-800 bg-matte-900 p-5 text-center">
+            <Mail size={24} className="mx-auto mb-3" style={{ color: "#D4AF37" }} />
+            <h4 className="text-sm font-semibold text-white">Email</h4>
+            <p className="mt-1 text-sm text-matte-400">hello@haapu.tv</p>
           </div>
-          <div>
-            <h3 className="font-semibold text-white">Partnerships & Licensing</h3>
-            <p className="mt-1 text-matte-400">partnerships@haapu.tv</p>
+          <div className="rounded-xl border border-matte-800 bg-matte-900 p-5 text-center">
+            <Phone size={24} className="mx-auto mb-3" style={{ color: "#D4AF37" }} />
+            <h4 className="text-sm font-semibold text-white">Phone</h4>
+            <p className="mt-1 text-sm text-matte-400">+44 000 000 0000</p>
           </div>
-          <div>
-            <h3 className="font-semibold text-white">Support</h3>
-            <p className="mt-1 text-matte-400">support@haapu.tv</p>
-          </div>
-          <div>
-            <h3 className="font-semibold text-white">Social Media</h3>
-            <div className="mt-1 flex gap-4 text-matte-400">
-              <a href="#" className="hover:text-white">Instagram</a>
-              <a href="#" className="hover:text-white">Facebook</a>
-              <a href="#" className="hover:text-white">X</a>
-              <a href="#" className="hover:text-white">TikTok</a>
-            </div>
+          <div className="rounded-xl border border-matte-800 bg-matte-900 p-5 text-center">
+            <MapPin size={24} className="mx-auto mb-3" style={{ color: "#D4AF37" }} />
+            <h4 className="text-sm font-semibold text-white">Location</h4>
+            <p className="mt-1 text-sm text-matte-400">London, UK</p>
           </div>
         </div>
 
-        <div className="mt-12 rounded-xl border border-matte-800 bg-matte-900 p-6">
-          <h3 className="font-semibold text-white">Send us a message</h3>
-          <p className="mt-1 text-sm text-matte-400">We'll get back to you within 24 hours.</p>
-          {/* Form fields: Name, Email, Subject, Message, Send button */}
+        {/* Social Icons */}
+        <div className="mb-10 flex justify-center gap-4">
+          {socialLinks.map((social) => (
+            <a
+              key={social.name}
+              href={social.url}
+              target="_blank"
+              rel="noopener noreferrer"
+              className="flex h-12 w-12 items-center justify-center rounded-full border border-matte-700 text-xl transition-colors hover:border-matte-500 hover:bg-matte-800"
+              aria-label={social.name}
+            >
+              {social.icon}
+            </a>
+          ))}
+        </div>
+
+        {/* Contact Form */}
+        <div className="rounded-xl border border-matte-800 bg-matte-900 p-6 sm:p-8">
+          <h2 className="font-display text-xl font-semibold text-white mb-2">
+            Send us a message
+          </h2>
+          <p className="text-sm text-matte-400 mb-6">
+            We'll get back to you within 24 hours.
+          </p>
+
+          {isSuccess && (
+            <div className="mb-4 rounded-lg border border-green-500/30 bg-green-500/10 px-4 py-3 text-sm text-green-400">
+              ✅ Message sent successfully! We'll get back to you soon.
+            </div>
+          )}
+
+          {error && (
+            <div className="mb-4 rounded-lg border border-red-500/30 bg-red-500/10 px-4 py-3 text-sm text-red-400">
+              ❌ {error}
+            </div>
+          )}
+
+          <form onSubmit={handleSubmit} className="space-y-4">
+            <div>
+              <label className="mb-1.5 block text-sm font-medium text-matte-300">Your Name *</label>
+              <input
+                type="text"
+                name="name"
+                required
+                value={formData.name}
+                onChange={handleChange}
+                className="w-full rounded-lg border border-matte-700 bg-matte-800 px-4 py-2.5 text-sm text-white placeholder:text-matte-500 focus:border-crimson-DEFAULT focus:outline-none"
+                placeholder="John Doe"
+              />
+            </div>
+
+            <div>
+              <label className="mb-1.5 block text-sm font-medium text-matte-300">Email Address *</label>
+              <input
+                type="email"
+                name="email"
+                required
+                value={formData.email}
+                onChange={handleChange}
+                className="w-full rounded-lg border border-matte-700 bg-matte-800 px-4 py-2.5 text-sm text-white placeholder:text-matte-500 focus:border-crimson-DEFAULT focus:outline-none"
+                placeholder="you@example.com"
+              />
+            </div>
+
+            <div>
+              <label className="mb-1.5 block text-sm font-medium text-matte-300">Subject</label>
+              <input
+                type="text"
+                name="subject"
+                value={formData.subject}
+                onChange={handleChange}
+                className="w-full rounded-lg border border-matte-700 bg-matte-800 px-4 py-2.5 text-sm text-white placeholder:text-matte-500 focus:border-crimson-DEFAULT focus:outline-none"
+                placeholder="How can we help?"
+              />
+            </div>
+
+            <div>
+              <label className="mb-1.5 block text-sm font-medium text-matte-300">Message *</label>
+              <textarea
+                name="message"
+                required
+                rows={5}
+                value={formData.message}
+                onChange={handleChange}
+                className="w-full rounded-lg border border-matte-700 bg-matte-800 px-4 py-2.5 text-sm text-white placeholder:text-matte-500 focus:border-crimson-DEFAULT focus:outline-none"
+                placeholder="Tell us what's on your mind..."
+              />
+            </div>
+
+            <button
+              type="submit"
+              disabled={isSubmitting}
+              className="inline-flex items-center gap-2 rounded-lg px-6 py-3 text-sm font-semibold text-white transition-colors hover:opacity-90 disabled:opacity-60"
+              style={{ backgroundColor: "#E50914" }}
+            >
+              <Send size={16} />
+              {isSubmitting ? "Sending..." : "Send Message"}
+            </button>
+          </form>
+        </div>
+
+        {/* Footer links */}
+        <div className="mt-12 border-t border-matte-800 pt-8 flex flex-wrap items-center justify-between gap-4">
+          <p className="text-small text-matte-600">
+            © {new Date().getFullYear()} Haapu TV. All Rights Reserved.
+          </p>
+          <div className="flex gap-6 text-small text-matte-500">
+            <Link href="/privacy" className="hover:text-white transition-colors">Privacy Policy</Link>
+            <Link href="/terms" className="hover:text-white transition-colors">Terms of Use</Link>
+          </div>
         </div>
       </div>
     </main>
