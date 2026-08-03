@@ -18,7 +18,7 @@ export default function ContinueWatchingRow() {
             {[1, 2, 3, 4].map((i) => (
               <div
                 key={i}
-                className="w-[140px] sm:w-[170px] flex-shrink-0 animate-pulse rounded-lg bg-matte-800 aspect-[2/3]"
+                className="w-[140px] sm:w-[170px] flex-shrink-0 animate-pulse rounded-lg bg-matte-800 aspect-video"
               />
             ))}
           </div>

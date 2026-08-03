@@ -21,7 +21,7 @@ export default function WatchlistPage() {
             {[...Array(6)].map((_, i) => (
               <div
                 key={i}
-                className="aspect-[2/3] animate-pulse rounded-lg bg-matte-800"
+                className="aspect-video animate-pulse rounded-lg bg-matte-800"
               />
             ))}
           </div>
@@ -98,7 +98,7 @@ export default function WatchlistPage() {
             {watchlist.map((item) => (
               <div key={item.id} className="group relative">
                 <Link href={`/movie/${item.movie_slug}`}>
-                  <div className="relative aspect-[2/3] overflow-hidden rounded-lg bg-matte-800 transition-transform duration-300 group-hover:scale-105">
+                  <div className="relative aspect-video overflow-hidden rounded-lg bg-matte-800 transition-transform duration-300 group-hover:scale-105">
                     <img
                       src={item.poster_url}
                       alt={item.movie_title}
