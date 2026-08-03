@@ -1,4 +1,4 @@
-import type { Metadata } from "next";
+import type { Metadata, Viewport } from "next";
 import { Inter, Playfair_Display } from "next/font/google";
 import { ClerkProvider } from "@clerk/nextjs";
 import { ToastProvider } from "@/components/ui/Toast";
@@ -21,12 +21,12 @@ const playfair = Playfair_Display({
 export const metadata: Metadata = {
   title: "Haapu TV | Stream Movies & TV Shows",
   description: "Watch your favorite movies, videos, and TV shows on Haapu TV.",
-  viewport: {
-    width: "device-width",
-    initialScale: 1,
-    // Pinch zoom enabled — removing the maximumScale:1 that was blocking it
-    userScalable: true,
-  },
+};
+
+export const viewport: Viewport = {
+  width: "device-width",
+  initialScale: 1,
+  userScalable: true,
 };
 
 export default function RootLayout({
