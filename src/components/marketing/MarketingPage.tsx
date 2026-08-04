@@ -124,14 +124,15 @@ export default function MarketingPage() {
 
       {/* ── HERO ─────────────────────────────────────────────────── */}
       <section className="relative flex min-h-screen flex-col items-center justify-center overflow-hidden px-4 text-center">
-        {/* Hero background image */}
+        {/* Hero background image - FIXED to show full image */}
         <div className="absolute inset-0 z-0">
           <div
             className="absolute inset-0"
             style={{
               backgroundImage: "url('/images/marketing/hero-background.jpg')",
-              backgroundSize: "cover",
+              backgroundSize: "contain",
               backgroundPosition: "center",
+              backgroundRepeat: "no-repeat",
             }}
           />
           <div className="absolute inset-0 bg-gradient-to-b from-black/30 via-black/20 to-black/50" />
@@ -204,7 +205,7 @@ export default function MarketingPage() {
         </div>
       </section>
 
-      {/* ── FEATURES with Collage Background ────────────────────── */}
+      {/* ── FEATURES with Collage Background - FIXED ────────────── */}
       <section className="relative overflow-hidden px-4 py-20 sm:py-32">
         {/* Features background image */}
         <div className="absolute inset-0 z-0">
@@ -212,8 +213,9 @@ export default function MarketingPage() {
             className="absolute inset-0"
             style={{
               backgroundImage: "url('/images/marketing/features-collage.jpg')",
-              backgroundSize: "cover",
+              backgroundSize: "contain",
               backgroundPosition: "center",
+              backgroundRepeat: "no-repeat",
             }}
           />
           <div className="absolute inset-0 bg-gradient-to-b from-black/40 via-black/30 to-black/50" />
@@ -253,15 +255,15 @@ export default function MarketingPage() {
         </div>
       </section>
 
-      {/* ── COVENANT MEMBERS ─────────────────────────────────────── */}
+      {/* ── COVENANT MEMBERS - FIXED ────────────────────────────── */}
       <section className="relative overflow-hidden px-4 py-20 sm:py-32">
-        {/* Covenant background image - fixed to cover properly */}
+        {/* Covenant background image - fixed to show full image */}
         <div className="absolute inset-0 z-0">
           <div
             className="absolute inset-0"
             style={{
               backgroundImage: "url('/images/marketing/covenant-bg.jpg')",
-              backgroundSize: "cover",
+              backgroundSize: "contain",
               backgroundPosition: "center",
               backgroundRepeat: "no-repeat",
             }}
