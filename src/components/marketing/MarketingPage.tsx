@@ -101,7 +101,7 @@ export default function MarketingPage() {
     <div className="bg-matte-black">
 
       {/* ── MINIMAL NAV (marketing only) ────────────────────────── */}
-      <header className="fixed top-0 left-0 right-0 z-50 flex items-center justify-between px-4 py-3 sm:px-8">
+      <header className="fixed top-0 left-0 right-0 z-50 flex items-center justify-between px-4 py-3 sm:px-8 bg-gradient-to-b from-black/80 to-transparent">
         <Link href="/">
           <img src="/logo.png" alt="Haapu TV" className="h-10 w-auto object-contain" />
         </Link>
@@ -124,7 +124,7 @@ export default function MarketingPage() {
 
       {/* ── HERO ─────────────────────────────────────────────────── */}
       <section className="relative flex min-h-screen flex-col items-center justify-center overflow-hidden px-4 text-center">
-        {/* Hero background image */}
+        {/* Hero background image - MUCH MORE VISIBLE NOW */}
         <div className="absolute inset-0 z-0">
           <div
             className="absolute inset-0"
@@ -134,24 +134,25 @@ export default function MarketingPage() {
               backgroundPosition: "center",
             }}
           />
-          <div className="absolute inset-0 bg-gradient-to-b from-matte-black/70 via-matte-black/50 to-matte-black/90" />
+          {/* Much lighter overlay - only 30% dark instead of 70% */}
+          <div className="absolute inset-0 bg-gradient-to-b from-black/30 via-black/20 to-black/50" />
         </div>
 
         <div className="pointer-events-none absolute inset-0 z-0">
           <div
             className="absolute left-1/3 top-1/3 h-[500px] w-[500px] rounded-full blur-[180px]"
-            style={{ backgroundColor: "rgba(212,175,55,0.05)" }}
+            style={{ backgroundColor: "rgba(212,175,55,0.08)" }}
           />
           <div
             className="absolute right-1/3 bottom-1/3 h-[400px] w-[400px] rounded-full blur-[140px]"
-            style={{ backgroundColor: "rgba(229,9,20,0.04)" }}
+            style={{ backgroundColor: "rgba(229,9,20,0.06)" }}
           />
         </div>
 
         <div
           className="absolute top-0 left-0 right-0 h-px z-0"
           style={{
-            background: "linear-gradient(to right, transparent, rgba(212,175,55,0.4), transparent)",
+            background: "linear-gradient(to right, transparent, rgba(212,175,55,0.6), transparent)",
           }}
         />
 
@@ -159,8 +160,8 @@ export default function MarketingPage() {
           <div
             className="mb-8 inline-flex items-center gap-2 rounded-full border px-4 py-1.5"
             style={{
-              borderColor: "rgba(212,175,55,0.3)",
-              backgroundColor: "rgba(212,175,55,0.08)",
+              borderColor: "rgba(212,175,55,0.4)",
+              backgroundColor: "rgba(212,175,55,0.12)",
             }}
           >
             <span
@@ -179,7 +180,7 @@ export default function MarketingPage() {
             Join the <span style={{ color: "#D4AF37" }}>Movement</span>
           </h1>
 
-          <p className="mx-auto mt-6 max-w-2xl text-body-lg leading-relaxed text-matte-300 sm:text-xl">
+          <p className="mx-auto mt-6 max-w-2xl text-body-lg leading-relaxed text-white/90 sm:text-xl">
             Step into a world where your voice shapes the screen. Discover shows
             and movies powered by you, for your family. Start now — your support
             makes the difference.
@@ -196,17 +197,17 @@ export default function MarketingPage() {
             </Link>
             <Link
               href="/sign-in"
-              className="flex w-full items-center justify-center gap-2.5 rounded-lg border border-matte-700 px-8 py-4 text-body font-semibold text-matte-300 transition-all duration-300 hover:border-matte-500 hover:text-white sm:w-auto"
+              className="flex w-full items-center justify-center gap-2.5 rounded-lg border border-white/30 px-8 py-4 text-body font-semibold text-white transition-all duration-300 hover:border-white/50 hover:text-white sm:w-auto"
             >
               Sign In
             </Link>
           </div>
 
           <div className="mt-6 flex flex-col items-center gap-1.5">
-            <p className="text-small text-matte-600">
+            <p className="text-small text-white/70">
               Free forever. No credit card required.
             </p>
-            <p className="flex items-center gap-1.5 text-small text-matte-500">
+            <p className="flex items-center gap-1.5 text-small text-white/60">
               <Heart size={12} className="text-red-500" fill="currentColor" />
               Enjoy it free. Help keep it free —{" "}
               <a
@@ -224,7 +225,7 @@ export default function MarketingPage() {
       </section>
 
       {/* ── STATS BAR ────────────────────────────────────────────── */}
-      <section className="border-y border-matte-800 bg-matte-900/80 px-4 py-10">
+      <section className="border-y border-white/10 bg-black/60 backdrop-blur-sm px-4 py-10">
         <div className="mx-auto max-w-screen-xl">
           <div className="grid grid-cols-1 gap-8 sm:grid-cols-3">
             {[
@@ -236,14 +237,14 @@ export default function MarketingPage() {
                 <p className="font-display text-2xl font-bold text-white sm:text-3xl">
                   {heading}
                 </p>
-                <p className="mt-1 text-sm text-matte-500">{sub}</p>
+                <p className="mt-1 text-sm text-white/60">{sub}</p>
               </div>
             ))}
           </div>
         </div>
       </section>
 
-      {/* ── FEATURES with Collage Background ──────────────────────── */}
+      {/* ── FEATURES with Collage Background - MUCH MORE VISIBLE ── */}
       <section className="relative overflow-hidden px-4 py-20 sm:py-32">
         {/* Features background image */}
         <div className="absolute inset-0 z-0">
@@ -255,7 +256,8 @@ export default function MarketingPage() {
               backgroundPosition: "center",
             }}
           />
-          <div className="absolute inset-0 bg-gradient-to-b from-matte-black/90 via-matte-black/85 to-matte-black/90" />
+          {/* Lighter overlay - only 40% dark */}
+          <div className="absolute inset-0 bg-gradient-to-b from-black/40 via-black/30 to-black/50" />
         </div>
 
         <div className="relative z-10 mx-auto max-w-screen-xl">
@@ -263,7 +265,7 @@ export default function MarketingPage() {
             <h2 className="font-display text-4xl font-bold text-white sm:text-5xl">
               Everything you need, nothing you don't
             </h2>
-            <p className="mt-4 text-body-lg text-matte-400">
+            <p className="mt-4 text-body-lg text-white/80">
               Brought to you by our incredible Covenant Members.
             </p>
           </div>
@@ -272,18 +274,18 @@ export default function MarketingPage() {
             {FEATURES.map(({ icon: Icon, title, description }) => (
               <div
                 key={title}
-                className="group rounded-2xl border border-matte-800 bg-matte-900/80 p-6 backdrop-blur-sm transition-all duration-300 hover:border-matte-700 hover:bg-matte-800/90"
+                className="group rounded-2xl border border-white/10 bg-black/50 p-6 backdrop-blur-md transition-all duration-300 hover:border-white/20 hover:bg-black/60"
               >
                 <div
                   className="mb-4 flex h-12 w-12 items-center justify-center rounded-xl"
-                  style={{ backgroundColor: "rgba(212,175,55,0.1)" }}
+                  style={{ backgroundColor: "rgba(212,175,55,0.15)" }}
                 >
                   <Icon size={22} style={{ color: "#D4AF37" }} />
                 </div>
                 <h3 className="mb-2 font-display text-lg font-semibold text-white">
                   {title}
                 </h3>
-                <p className="text-caption leading-relaxed text-matte-500">
+                <p className="text-caption leading-relaxed text-white/70">
                   {description}
                 </p>
               </div>
@@ -292,7 +294,7 @@ export default function MarketingPage() {
         </div>
       </section>
 
-      {/* ── COVENANT MEMBERS ─────────────────────────────────────── */}
+      {/* ── COVENANT MEMBERS - MUCH MORE VISIBLE ────────────────── */}
       <section className="relative overflow-hidden px-4 py-20 sm:py-32">
         {/* Covenant background image */}
         <div className="absolute inset-0 z-0">
@@ -304,14 +306,15 @@ export default function MarketingPage() {
               backgroundPosition: "center",
             }}
           />
-          <div className="absolute inset-0 bg-gradient-to-b from-matte-black/80 via-matte-black/70 to-matte-black/90" />
+          {/* Much lighter overlay - only 35% dark */}
+          <div className="absolute inset-0 bg-gradient-to-b from-black/35 via-black/25 to-black/45" />
         </div>
 
         <div
           className="absolute inset-0 pointer-events-none z-0"
           style={{
             background:
-              "linear-gradient(135deg, rgba(212,175,55,0.04), transparent, rgba(212,175,55,0.02))",
+              "linear-gradient(135deg, rgba(212,175,55,0.06), transparent, rgba(212,175,55,0.03))",
           }}
         />
 
@@ -319,8 +322,8 @@ export default function MarketingPage() {
           <div
             className="mb-6 inline-flex items-center gap-2 rounded-full border px-4 py-1.5"
             style={{
-              borderColor: "rgba(212,175,55,0.3)",
-              backgroundColor: "rgba(212,175,55,0.08)",
+              borderColor: "rgba(212,175,55,0.4)",
+              backgroundColor: "rgba(212,175,55,0.12)",
             }}
           >
             <span
@@ -334,7 +337,7 @@ export default function MarketingPage() {
           <h2 className="font-display text-4xl font-bold text-white sm:text-5xl">
             Your support keeps it free
           </h2>
-          <p className="mt-6 text-body-lg leading-relaxed text-matte-300">
+          <p className="mt-6 text-body-lg leading-relaxed text-white/90">
             Haapu TV is powered by our Covenant Members — people who believe in
             free, faith-forward entertainment for every family. Covenant Members
             get exclusive early access to new releases and a vote in shaping what
@@ -352,7 +355,7 @@ export default function MarketingPage() {
             </a>
             <Link
               href="/sign-up"
-              className="w-full rounded-lg border border-matte-700 px-8 py-4 text-center text-body font-semibold text-matte-300 transition-all duration-300 hover:border-matte-500 hover:text-white sm:w-auto"
+              className="w-full rounded-lg border border-white/30 px-8 py-4 text-center text-body font-semibold text-white transition-all duration-300 hover:border-white/50 hover:text-white sm:w-auto"
             >
               Watch for Free
             </Link>
@@ -407,7 +410,7 @@ export default function MarketingPage() {
       </section>
 
       {/* ── FOOTER ───────────────────────────────────────────────── */}
-      <footer className="border-t border-matte-800 px-4 py-10">
+      <footer className="border-t border-white/10 px-4 py-10">
         <div className="mx-auto max-w-screen-xl">
           <div className="flex flex-col items-center gap-6 sm:flex-row sm:justify-between">
             <img
@@ -415,7 +418,7 @@ export default function MarketingPage() {
               alt="Haapu TV"
               className="h-10 w-auto object-contain"
             />
-            <div className="flex flex-wrap items-center justify-center gap-6 text-small text-matte-500">
+            <div className="flex flex-wrap items-center justify-center gap-6 text-small text-white/50">
               <Link href="/privacy" className="hover:text-white transition-colors">Privacy Policy</Link>
               <Link href="/terms" className="hover:text-white transition-colors">Terms of Use</Link>
               <Link href="/faq" className="hover:text-white transition-colors">FAQ</Link>
@@ -440,7 +443,7 @@ export default function MarketingPage() {
               </SocialIcon>
             </div>
           </div>
-          <div className="mt-6 border-t border-matte-800 pt-6 text-center text-small text-matte-600">
+          <div className="mt-6 border-t border-white/10 pt-6 text-center text-small text-white/40">
             © {new Date().getFullYear()} Haapu TV. All Rights Reserved.
           </div>
         </div>
