@@ -124,7 +124,7 @@ export default function MarketingPage() {
 
       {/* ── HERO ─────────────────────────────────────────────────── */}
       <section className="relative flex min-h-screen flex-col items-center justify-center overflow-hidden px-4 text-center">
-        {/* Hero background image - MUCH MORE VISIBLE NOW */}
+        {/* Hero background image */}
         <div className="absolute inset-0 z-0">
           <div
             className="absolute inset-0"
@@ -134,7 +134,6 @@ export default function MarketingPage() {
               backgroundPosition: "center",
             }}
           />
-          {/* Much lighter overlay - only 30% dark instead of 70% */}
           <div className="absolute inset-0 bg-gradient-to-b from-black/30 via-black/20 to-black/50" />
         </div>
 
@@ -202,49 +201,10 @@ export default function MarketingPage() {
               Sign In
             </Link>
           </div>
-
-          <div className="mt-6 flex flex-col items-center gap-1.5">
-            <p className="text-small text-white/70">
-              Free forever. No credit card required.
-            </p>
-            <p className="flex items-center gap-1.5 text-small text-white/60">
-              <Heart size={12} className="text-red-500" fill="currentColor" />
-              Enjoy it free. Help keep it free —{" "}
-              <a
-                href="https://haapu.tv/give"
-                target="_blank"
-                rel="noopener noreferrer"
-                className="underline underline-offset-2 hover:text-white transition-colors"
-                style={{ color: "#D4AF37" }}
-              >
-                become a Covenant Member
-              </a>
-            </p>
-          </div>
         </div>
       </section>
 
-      {/* ── STATS BAR ────────────────────────────────────────────── */}
-      <section className="border-y border-white/10 bg-black/60 backdrop-blur-sm px-4 py-10">
-        <div className="mx-auto max-w-screen-xl">
-          <div className="grid grid-cols-1 gap-8 sm:grid-cols-3">
-            {[
-              { heading: "Free Forever", sub: "No credit card required" },
-              { heading: "Family Friendly", sub: "Trusted by families worldwide" },
-              { heading: "Community Powered", sub: "Shaped by Covenant Members" },
-            ].map(({ heading, sub }) => (
-              <div key={heading} className="text-center">
-                <p className="font-display text-2xl font-bold text-white sm:text-3xl">
-                  {heading}
-                </p>
-                <p className="mt-1 text-sm text-white/60">{sub}</p>
-              </div>
-            ))}
-          </div>
-        </div>
-      </section>
-
-      {/* ── FEATURES with Collage Background - MUCH MORE VISIBLE ── */}
+      {/* ── FEATURES with Collage Background ────────────────────── */}
       <section className="relative overflow-hidden px-4 py-20 sm:py-32">
         {/* Features background image */}
         <div className="absolute inset-0 z-0">
@@ -256,7 +216,6 @@ export default function MarketingPage() {
               backgroundPosition: "center",
             }}
           />
-          {/* Lighter overlay - only 40% dark */}
           <div className="absolute inset-0 bg-gradient-to-b from-black/40 via-black/30 to-black/50" />
         </div>
 
@@ -294,9 +253,9 @@ export default function MarketingPage() {
         </div>
       </section>
 
-      {/* ── COVENANT MEMBERS - MUCH MORE VISIBLE ────────────────── */}
+      {/* ── COVENANT MEMBERS ─────────────────────────────────────── */}
       <section className="relative overflow-hidden px-4 py-20 sm:py-32">
-        {/* Covenant background image */}
+        {/* Covenant background image - fixed to cover properly */}
         <div className="absolute inset-0 z-0">
           <div
             className="absolute inset-0"
@@ -304,9 +263,9 @@ export default function MarketingPage() {
               backgroundImage: "url('/images/marketing/covenant-bg.jpg')",
               backgroundSize: "cover",
               backgroundPosition: "center",
+              backgroundRepeat: "no-repeat",
             }}
           />
-          {/* Much lighter overlay - only 35% dark */}
           <div className="absolute inset-0 bg-gradient-to-b from-black/35 via-black/25 to-black/45" />
         </div>
 
