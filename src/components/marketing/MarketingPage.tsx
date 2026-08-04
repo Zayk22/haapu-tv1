@@ -109,7 +109,6 @@ export default function MarketingPage() {
         <div className="absolute top-0 left-0 right-0 h-px z-0" style={{ background: "linear-gradient(to right, transparent, rgba(212,175,55,0.4), transparent)" }} />
 
         <div className="relative z-10 max-w-4xl">
-          {/* ✅ Updated badge — matches WordPress site */}
           <div
             className="mb-8 inline-flex items-center gap-2 rounded-full border px-4 py-1.5"
             style={{ borderColor: "rgba(212,175,55,0.3)", backgroundColor: "rgba(212,175,55,0.08)" }}
@@ -187,7 +186,6 @@ export default function MarketingPage() {
       {/* ── FEATURES ─────────────────────────────────────────────── */}
       <section className="px-4 py-20 sm:py-32">
         <div className="mx-auto max-w-screen-xl">
-          {/* Feature heading with decorative image */}
           <div className="relative mb-16 text-center">
             <div className="absolute inset-0 flex items-center justify-center opacity-10 pointer-events-none">
               <img
@@ -223,7 +221,6 @@ export default function MarketingPage() {
 
       {/* ── COVENANT MEMBERS ─────────────────────────────────────── */}
       <section className="relative overflow-hidden px-4 py-20 sm:py-32">
-        {/* Background image for Covenant section */}
         <div className="absolute inset-0 z-0">
           <div className="absolute inset-0 bg-[url('/images/marketing/covenant-bg.jpg')] bg-cover bg-center opacity-10" />
           <div className="absolute inset-0 bg-gradient-to-b from-matte-black/95 via-matte-black/80 to-matte-black/95" />
