@@ -96,7 +96,6 @@ export default function MarketingPage() {
 
       {/* ── HERO ─────────────────────────────────────────────────── */}
       <section className="relative flex min-h-screen flex-col items-center justify-center overflow-hidden px-4 text-center">
-        {/* Background image */}
         <div className="absolute inset-0 z-0">
           <div className="absolute inset-0 bg-[url('/images/marketing/hero-background.jpg')] bg-cover bg-center opacity-40" />
           <div className="absolute inset-0 bg-gradient-to-b from-matte-black/80 via-matte-black/60 to-matte-black/90" />
