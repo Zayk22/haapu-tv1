@@ -129,7 +129,7 @@ export default function MarketingPage() {
             className="absolute inset-0"
             style={{
               backgroundImage: "url('/images/marketing/hero-background.jpg')",
-              backgroundSize: "contain",
+              backgroundSize: "cover",
               backgroundPosition: "center",
               backgroundRepeat: "no-repeat",
             }}
@@ -203,13 +203,13 @@ export default function MarketingPage() {
       </section>
 
       {/* ── FEATURES ────────────────────────────────────────────── */}
-      <section className="relative overflow-hidden px-4 py-16 sm:py-32">
+      <section className="relative overflow-hidden px-4 py-20 sm:py-32">
         <div className="absolute inset-0 z-0">
           <div
             className="absolute inset-0"
             style={{
               backgroundImage: "url('/images/marketing/features-collage.jpg')",
-              backgroundSize: "contain",
+              backgroundSize: "cover",
               backgroundPosition: "center",
               backgroundRepeat: "no-repeat",
             }}
@@ -251,71 +251,73 @@ export default function MarketingPage() {
         </div>
       </section>
 
-      {/* ── COVENANT MEMBERS - SIMPLIFIED ───────────────────────── */}
-      <section className="relative overflow-hidden px-4 py-16 sm:py-32">
+      {/* ── COVENANT MEMBERS - BIGGER IMAGE ON MOBILE ───────────── */}
+      <section className="relative min-h-[70vh] overflow-hidden px-4 py-20 sm:py-32">
         <div className="absolute inset-0 z-0">
           <div
             className="absolute inset-0"
             style={{
               backgroundImage: "url('/images/marketing/covenant-bg.jpg')",
-              backgroundSize: "contain",
+              backgroundSize: "cover",
               backgroundPosition: "center",
               backgroundRepeat: "no-repeat",
             }}
           />
-          <div className="absolute inset-0 bg-gradient-to-b from-black/40 via-black/30 to-black/50" />
+          <div className="absolute inset-0 bg-gradient-to-b from-black/30 via-black/20 to-black/50" />
         </div>
 
-        <div className="relative mx-auto max-w-3xl text-center z-10">
-          <div
-            className="mb-4 inline-flex items-center gap-2 rounded-full border px-4 py-1.5 sm:mb-6"
-            style={{
-              borderColor: "rgba(212,175,55,0.4)",
-              backgroundColor: "rgba(212,175,55,0.12)",
-            }}
-          >
-            <span
-              className="text-xs font-medium uppercase tracking-widest sm:text-small"
-              style={{ color: "#D4AF37" }}
+        <div className="relative z-10 flex min-h-[50vh] items-center justify-center">
+          <div className="mx-auto max-w-3xl text-center">
+            <div
+              className="mb-4 inline-flex items-center gap-2 rounded-full border px-4 py-1.5 sm:mb-6"
+              style={{
+                borderColor: "rgba(212,175,55,0.4)",
+                backgroundColor: "rgba(212,175,55,0.12)",
+              }}
             >
-              Covenant Members
-            </span>
-          </div>
+              <span
+                className="text-xs font-medium uppercase tracking-widest sm:text-small"
+                style={{ color: "#D4AF37" }}
+              >
+                Covenant Members
+              </span>
+            </div>
 
-          <h2 className="font-display text-3xl font-bold text-white sm:text-5xl">
-            Your support keeps it free
-          </h2>
-          
-          <p className="mt-4 text-sm leading-relaxed text-white/80 sm:text-body-lg sm:mt-6">
-            Powered by people who believe in free, faith-forward entertainment for every family.
-          </p>
-          
-          <p className="mt-2 text-sm text-white/60 sm:text-base">
-            Get early access and help shape what gets made next.
-          </p>
+            <h2 className="font-display text-4xl font-bold text-white sm:text-5xl">
+              Your support keeps it free
+            </h2>
+            
+            <p className="mt-4 text-base leading-relaxed text-white/80 sm:text-body-lg sm:mt-6">
+              Powered by people who believe in free, faith-forward entertainment for every family.
+            </p>
+            
+            <p className="mt-2 text-sm text-white/60 sm:text-base">
+              Get early access and help shape what gets made next.
+            </p>
 
-          <div className="mt-8 flex flex-col items-center gap-3 sm:mt-10 sm:flex-row sm:justify-center sm:gap-4">
-            <a
-              href="https://haapu.tv/give"
-              target="_blank"
-              rel="noopener noreferrer"
-              className="w-full rounded-lg px-6 py-3 text-center text-sm font-bold transition-all duration-300 hover:opacity-90 hover:scale-105 sm:w-auto sm:px-8 sm:py-4 sm:text-body"
-              style={{ backgroundColor: "#D4AF37", color: "#0A0A0A" }}
-            >
-              Become a Member
-            </a>
-            <Link
-              href="/sign-up"
-              className="w-full rounded-lg border border-white/30 px-6 py-3 text-center text-sm font-semibold text-white transition-all duration-300 hover:border-white/50 hover:text-white sm:w-auto sm:px-8 sm:py-4 sm:text-body"
-            >
-              Watch for Free
-            </Link>
+            <div className="mt-8 flex flex-col items-center gap-3 sm:mt-10 sm:flex-row sm:justify-center sm:gap-4">
+              <a
+                href="https://haapu.tv/give"
+                target="_blank"
+                rel="noopener noreferrer"
+                className="w-full rounded-lg px-6 py-3 text-center text-sm font-bold transition-all duration-300 hover:opacity-90 hover:scale-105 sm:w-auto sm:px-8 sm:py-4 sm:text-body"
+                style={{ backgroundColor: "#D4AF37", color: "#0A0A0A" }}
+              >
+                Become a Member
+              </a>
+              <Link
+                href="/sign-up"
+                className="w-full rounded-lg border border-white/30 px-6 py-3 text-center text-sm font-semibold text-white transition-all duration-300 hover:border-white/50 hover:text-white sm:w-auto sm:px-8 sm:py-4 sm:text-body"
+              >
+                Watch for Free
+              </Link>
+            </div>
           </div>
         </div>
       </section>
 
       {/* ── FAQ ──────────────────────────────────────────────────── */}
-      <section className="px-4 py-16 sm:py-32">
+      <section className="px-4 py-20 sm:py-32">
         <div className="mx-auto max-w-3xl">
           <div className="mb-10 text-center sm:mb-12">
             <h2 className="font-display text-3xl font-bold text-white sm:text-5xl">
@@ -334,7 +336,7 @@ export default function MarketingPage() {
       </section>
 
       {/* ── FINAL CTA ────────────────────────────────────────────── */}
-      <section className="px-4 pb-16 sm:pb-32">
+      <section className="px-4 pb-20 sm:pb-32">
         <div
           className="mx-auto max-w-2xl rounded-2xl border p-8 text-center sm:p-16"
           style={{
