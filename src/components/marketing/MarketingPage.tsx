@@ -124,18 +124,17 @@ export default function MarketingPage() {
 
       {/* ── HERO ─────────────────────────────────────────────────── */}
       <section className="relative flex min-h-screen flex-col items-center justify-center overflow-hidden px-4 text-center">
-
-        {/* Hero background image — inline style bypasses Tailwind JIT purging */}
+        {/* Hero background image */}
         <div className="absolute inset-0 z-0">
           <div
-            className="absolute inset-0 opacity-40"
+            className="absolute inset-0"
             style={{
               backgroundImage: "url('/images/marketing/hero-background.jpg')",
               backgroundSize: "cover",
               backgroundPosition: "center",
             }}
           />
-          <div className="absolute inset-0 bg-gradient-to-b from-matte-black/80 via-matte-black/60 to-matte-black/90" />
+          <div className="absolute inset-0 bg-gradient-to-b from-matte-black/70 via-matte-black/50 to-matte-black/90" />
         </div>
 
         <div className="pointer-events-none absolute inset-0 z-0">
@@ -225,7 +224,7 @@ export default function MarketingPage() {
       </section>
 
       {/* ── STATS BAR ────────────────────────────────────────────── */}
-      <section className="border-y border-matte-800 bg-matte-900 px-4 py-10">
+      <section className="border-y border-matte-800 bg-matte-900/80 px-4 py-10">
         <div className="mx-auto max-w-screen-xl">
           <div className="grid grid-cols-1 gap-8 sm:grid-cols-3">
             {[
@@ -244,9 +243,22 @@ export default function MarketingPage() {
         </div>
       </section>
 
-      {/* ── FEATURES ─────────────────────────────────────────────── */}
-      <section className="px-4 py-20 sm:py-32">
-        <div className="mx-auto max-w-screen-xl">
+      {/* ── FEATURES with Collage Background ──────────────────────── */}
+      <section className="relative overflow-hidden px-4 py-20 sm:py-32">
+        {/* Features background image */}
+        <div className="absolute inset-0 z-0">
+          <div
+            className="absolute inset-0"
+            style={{
+              backgroundImage: "url('/images/marketing/features-collage.jpg')",
+              backgroundSize: "cover",
+              backgroundPosition: "center",
+            }}
+          />
+          <div className="absolute inset-0 bg-gradient-to-b from-matte-black/90 via-matte-black/85 to-matte-black/90" />
+        </div>
+
+        <div className="relative z-10 mx-auto max-w-screen-xl">
           <div className="mb-16 text-center">
             <h2 className="font-display text-4xl font-bold text-white sm:text-5xl">
               Everything you need, nothing you don't
@@ -260,7 +272,7 @@ export default function MarketingPage() {
             {FEATURES.map(({ icon: Icon, title, description }) => (
               <div
                 key={title}
-                className="group rounded-2xl border border-matte-800 bg-matte-900 p-6 transition-all duration-300 hover:border-matte-700 hover:bg-matte-800/50"
+                className="group rounded-2xl border border-matte-800 bg-matte-900/80 p-6 backdrop-blur-sm transition-all duration-300 hover:border-matte-700 hover:bg-matte-800/90"
               >
                 <div
                   className="mb-4 flex h-12 w-12 items-center justify-center rounded-xl"
@@ -282,18 +294,17 @@ export default function MarketingPage() {
 
       {/* ── COVENANT MEMBERS ─────────────────────────────────────── */}
       <section className="relative overflow-hidden px-4 py-20 sm:py-32">
-
-        {/* Covenant background image — inline style, same reason as hero */}
+        {/* Covenant background image */}
         <div className="absolute inset-0 z-0">
           <div
-            className="absolute inset-0 opacity-10"
+            className="absolute inset-0"
             style={{
               backgroundImage: "url('/images/marketing/covenant-bg.jpg')",
               backgroundSize: "cover",
               backgroundPosition: "center",
             }}
           />
-          <div className="absolute inset-0 bg-gradient-to-b from-matte-black/95 via-matte-black/80 to-matte-black/95" />
+          <div className="absolute inset-0 bg-gradient-to-b from-matte-black/80 via-matte-black/70 to-matte-black/90" />
         </div>
 
         <div
