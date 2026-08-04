@@ -2,6 +2,7 @@
 
 import { useState, useEffect } from "react";
 import { usePathname } from "next/navigation";
+import { useAuth } from "@clerk/nextjs";
 import { AnimatePresence, motion } from "framer-motion";
 import Header from "@/components/layout/Header";
 import Footer from "@/components/layout/Footer";
@@ -13,6 +14,7 @@ export default function LayoutWrapper({
   children: React.ReactNode;
 }) {
   const pathname = usePathname();
+  const { userId, isLoaded } = useAuth();
   const [mounted, setMounted] = useState(false);
 
   useEffect(() => {
@@ -21,10 +23,15 @@ export default function LayoutWrapper({
 
   if (!mounted) return <>{children}</>;
 
-  const isWatchPage = pathname?.startsWith("/watch");
-  const isAdminPage = pathname?.startsWith("/admin");
+  const isWatchPage  = pathname?.startsWith("/watch");
+  const isAdminPage  = pathname?.startsWith("/admin");
 
-  if (isWatchPage || isAdminPage) {
+  // Marketing page — unauthenticated users on "/".
+  // MarketingPage renders its own complete layout (header nav, footer, social links).
+  // Don't wrap with the shared chrome to avoid duplicate footer.
+  const isMarketingPage = pathname === "/" && isLoaded && !userId;
+
+  if (isWatchPage || isAdminPage || isMarketingPage) {
     return <>{children}</>;
   }
 
@@ -32,12 +39,6 @@ export default function LayoutWrapper({
     <>
       <Header />
       <div className="pb-16 lg:pb-0">
-        {/*
-          Page transition — 250ms fade + subtle upward rise.
-          key={pathname} triggers exit/enter on every route change.
-          mode="wait" ensures exit completes before next page enters.
-          You feel it, you don't consciously see it — that's the goal.
-        */}
         <AnimatePresence mode="wait">
           <motion.main
             key={pathname}

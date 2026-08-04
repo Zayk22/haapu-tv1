@@ -54,14 +54,20 @@ function FAQItem({ q, a }: { q: string; a: string }) {
         onClick={() => setOpen(!open)}
         className="flex w-full items-center justify-between gap-4 py-5 text-left"
       >
-        <span className="font-display text-lg font-semibold text-white sm:text-xl">{q}</span>
+        <span className="font-display text-lg font-semibold text-white sm:text-xl">
+          {q}
+        </span>
         <ChevronDown
           size={20}
           className={`flex-shrink-0 transition-transform duration-300 ${open ? "rotate-180" : ""}`}
           style={{ color: "#D4AF37" }}
         />
       </button>
-      <div className={`overflow-hidden transition-all duration-300 ${open ? "max-h-96 pb-5" : "max-h-0"}`}>
+      <div
+        className={`overflow-hidden transition-all duration-300 ${
+          open ? "max-h-96 pb-5" : "max-h-0"
+        }`}
+      >
         <p className="text-body leading-relaxed text-matte-400">{a}</p>
       </div>
     </div>
@@ -94,26 +100,78 @@ export default function MarketingPage() {
   return (
     <div className="bg-matte-black">
 
+      {/* ── MINIMAL NAV (marketing only) ────────────────────────── */}
+      <header className="fixed top-0 left-0 right-0 z-50 flex items-center justify-between px-4 py-3 sm:px-8">
+        <Link href="/">
+          <img src="/logo.png" alt="Haapu TV" className="h-10 w-auto object-contain" />
+        </Link>
+        <div className="flex items-center gap-3">
+          <Link
+            href="/sign-in"
+            className="rounded-lg border border-matte-700 px-4 py-2 text-caption font-medium text-matte-300 transition-all hover:border-matte-500 hover:text-white"
+          >
+            Sign In
+          </Link>
+          <Link
+            href="/sign-up"
+            className="rounded-lg px-4 py-2 text-caption font-bold text-white transition-all hover:opacity-90"
+            style={{ backgroundColor: "#E50914" }}
+          >
+            Join Free
+          </Link>
+        </div>
+      </header>
+
       {/* ── HERO ─────────────────────────────────────────────────── */}
       <section className="relative flex min-h-screen flex-col items-center justify-center overflow-hidden px-4 text-center">
+
+        {/* Hero background image — inline style bypasses Tailwind JIT purging */}
         <div className="absolute inset-0 z-0">
-          <div className="absolute inset-0 bg-[url('/images/marketing/hero-background.jpg')] bg-cover bg-center opacity-40" />
+          <div
+            className="absolute inset-0 opacity-40"
+            style={{
+              backgroundImage: "url('/images/marketing/hero-background.jpg')",
+              backgroundSize: "cover",
+              backgroundPosition: "center",
+            }}
+          />
           <div className="absolute inset-0 bg-gradient-to-b from-matte-black/80 via-matte-black/60 to-matte-black/90" />
         </div>
 
         <div className="pointer-events-none absolute inset-0 z-0">
-          <div className="absolute left-1/3 top-1/3 h-[500px] w-[500px] rounded-full blur-[180px]" style={{ backgroundColor: "rgba(212,175,55,0.05)" }} />
-          <div className="absolute right-1/3 bottom-1/3 h-[400px] w-[400px] rounded-full blur-[140px]" style={{ backgroundColor: "rgba(229,9,20,0.04)" }} />
+          <div
+            className="absolute left-1/3 top-1/3 h-[500px] w-[500px] rounded-full blur-[180px]"
+            style={{ backgroundColor: "rgba(212,175,55,0.05)" }}
+          />
+          <div
+            className="absolute right-1/3 bottom-1/3 h-[400px] w-[400px] rounded-full blur-[140px]"
+            style={{ backgroundColor: "rgba(229,9,20,0.04)" }}
+          />
         </div>
-        <div className="absolute top-0 left-0 right-0 h-px z-0" style={{ background: "linear-gradient(to right, transparent, rgba(212,175,55,0.4), transparent)" }} />
+
+        <div
+          className="absolute top-0 left-0 right-0 h-px z-0"
+          style={{
+            background: "linear-gradient(to right, transparent, rgba(212,175,55,0.4), transparent)",
+          }}
+        />
 
         <div className="relative z-10 max-w-4xl">
           <div
             className="mb-8 inline-flex items-center gap-2 rounded-full border px-4 py-1.5"
-            style={{ borderColor: "rgba(212,175,55,0.3)", backgroundColor: "rgba(212,175,55,0.08)" }}
+            style={{
+              borderColor: "rgba(212,175,55,0.3)",
+              backgroundColor: "rgba(212,175,55,0.08)",
+            }}
           >
-            <span className="h-1.5 w-1.5 animate-pulse rounded-full" style={{ backgroundColor: "#D4AF37" }} />
-            <span className="text-small font-medium uppercase tracking-widest" style={{ color: "#D4AF37" }}>
+            <span
+              className="h-1.5 w-1.5 animate-pulse rounded-full"
+              style={{ backgroundColor: "#D4AF37" }}
+            />
+            <span
+              className="text-small font-medium uppercase tracking-widest"
+              style={{ color: "#D4AF37" }}
+            >
               We Are Haapu — A Platform where Faith and Entertainment Comes Alive!
             </span>
           </div>
@@ -146,7 +204,9 @@ export default function MarketingPage() {
           </div>
 
           <div className="mt-6 flex flex-col items-center gap-1.5">
-            <p className="text-small text-matte-600">Free forever. No credit card required.</p>
+            <p className="text-small text-matte-600">
+              Free forever. No credit card required.
+            </p>
             <p className="flex items-center gap-1.5 text-small text-matte-500">
               <Heart size={12} className="text-red-500" fill="currentColor" />
               Enjoy it free. Help keep it free —{" "}
@@ -164,17 +224,19 @@ export default function MarketingPage() {
         </div>
       </section>
 
-      {/* ── STATS BAR ───────────────────────────────────────────── */}
+      {/* ── STATS BAR ────────────────────────────────────────────── */}
       <section className="border-y border-matte-800 bg-matte-900 px-4 py-10">
         <div className="mx-auto max-w-screen-xl">
           <div className="grid grid-cols-1 gap-8 sm:grid-cols-3">
             {[
-              { heading: 'Free Forever', sub: 'No credit card required' },
-              { heading: 'Family Friendly', sub: 'Trusted by families worldwide' },
-              { heading: 'Community Powered', sub: 'Shaped by Covenant Members' },
+              { heading: "Free Forever", sub: "No credit card required" },
+              { heading: "Family Friendly", sub: "Trusted by families worldwide" },
+              { heading: "Community Powered", sub: "Shaped by Covenant Members" },
             ].map(({ heading, sub }) => (
               <div key={heading} className="text-center">
-                <p className="font-display text-2xl font-bold text-white sm:text-3xl">{heading}</p>
+                <p className="font-display text-2xl font-bold text-white sm:text-3xl">
+                  {heading}
+                </p>
                 <p className="mt-1 text-sm text-matte-500">{sub}</p>
               </div>
             ))}
@@ -185,33 +247,33 @@ export default function MarketingPage() {
       {/* ── FEATURES ─────────────────────────────────────────────── */}
       <section className="px-4 py-20 sm:py-32">
         <div className="mx-auto max-w-screen-xl">
-          <div className="relative mb-16 text-center">
-            <div className="absolute inset-0 flex items-center justify-center opacity-10 pointer-events-none">
-              <img
-                src="/images/marketing/features-collage.jpg"
-                alt=""
-                className="max-h-32 w-auto object-contain"
-              />
-            </div>
-            <h2 className="font-display text-4xl font-bold text-white sm:text-5xl relative z-10">
+          <div className="mb-16 text-center">
+            <h2 className="font-display text-4xl font-bold text-white sm:text-5xl">
               Everything you need, nothing you don't
             </h2>
-            <p className="mt-4 text-body-lg text-matte-400 relative z-10">
+            <p className="mt-4 text-body-lg text-matte-400">
               Brought to you by our incredible Covenant Members.
             </p>
           </div>
 
-          <div className="grid gap-6 sm:grid-cols-2 lg:grid-cols-4 relative z-10">
+          <div className="grid gap-6 sm:grid-cols-2 lg:grid-cols-4">
             {FEATURES.map(({ icon: Icon, title, description }) => (
               <div
                 key={title}
                 className="group rounded-2xl border border-matte-800 bg-matte-900 p-6 transition-all duration-300 hover:border-matte-700 hover:bg-matte-800/50"
               >
-                <div className="mb-4 flex h-12 w-12 items-center justify-center rounded-xl" style={{ backgroundColor: "rgba(212,175,55,0.1)" }}>
+                <div
+                  className="mb-4 flex h-12 w-12 items-center justify-center rounded-xl"
+                  style={{ backgroundColor: "rgba(212,175,55,0.1)" }}
+                >
                   <Icon size={22} style={{ color: "#D4AF37" }} />
                 </div>
-                <h3 className="mb-2 font-display text-lg font-semibold text-white">{title}</h3>
-                <p className="text-caption leading-relaxed text-matte-500">{description}</p>
+                <h3 className="mb-2 font-display text-lg font-semibold text-white">
+                  {title}
+                </h3>
+                <p className="text-caption leading-relaxed text-matte-500">
+                  {description}
+                </p>
               </div>
             ))}
           </div>
@@ -220,21 +282,44 @@ export default function MarketingPage() {
 
       {/* ── COVENANT MEMBERS ─────────────────────────────────────── */}
       <section className="relative overflow-hidden px-4 py-20 sm:py-32">
+
+        {/* Covenant background image — inline style, same reason as hero */}
         <div className="absolute inset-0 z-0">
-          <div className="absolute inset-0 bg-[url('/images/marketing/covenant-bg.jpg')] bg-cover bg-center opacity-10" />
+          <div
+            className="absolute inset-0 opacity-10"
+            style={{
+              backgroundImage: "url('/images/marketing/covenant-bg.jpg')",
+              backgroundSize: "cover",
+              backgroundPosition: "center",
+            }}
+          />
           <div className="absolute inset-0 bg-gradient-to-b from-matte-black/95 via-matte-black/80 to-matte-black/95" />
         </div>
 
-        <div className="absolute inset-0 pointer-events-none z-0" style={{ background: "linear-gradient(135deg, rgba(212,175,55,0.04), transparent, rgba(212,175,55,0.02))" }} />
+        <div
+          className="absolute inset-0 pointer-events-none z-0"
+          style={{
+            background:
+              "linear-gradient(135deg, rgba(212,175,55,0.04), transparent, rgba(212,175,55,0.02))",
+          }}
+        />
+
         <div className="relative mx-auto max-w-3xl text-center z-10">
           <div
             className="mb-6 inline-flex items-center gap-2 rounded-full border px-4 py-1.5"
-            style={{ borderColor: "rgba(212,175,55,0.3)", backgroundColor: "rgba(212,175,55,0.08)" }}
+            style={{
+              borderColor: "rgba(212,175,55,0.3)",
+              backgroundColor: "rgba(212,175,55,0.08)",
+            }}
           >
-            <span className="text-small font-medium uppercase tracking-widest" style={{ color: "#D4AF37" }}>
+            <span
+              className="text-small font-medium uppercase tracking-widest"
+              style={{ color: "#D4AF37" }}
+            >
               Covenant Members
             </span>
           </div>
+
           <h2 className="font-display text-4xl font-bold text-white sm:text-5xl">
             Your support keeps it free
           </h2>
@@ -271,7 +356,9 @@ export default function MarketingPage() {
             <h2 className="font-display text-4xl font-bold text-white sm:text-5xl">
               Frequently asked questions
             </h2>
-            <p className="mt-4 text-body text-matte-400">Everything you need to know about Haapu TV.</p>
+            <p className="mt-4 text-body text-matte-400">
+              Everything you need to know about Haapu TV.
+            </p>
           </div>
           <div className="rounded-2xl border border-matte-800 bg-matte-900 px-6 sm:px-8">
             {FAQS.map((faq) => (
@@ -287,7 +374,8 @@ export default function MarketingPage() {
           className="mx-auto max-w-2xl rounded-2xl border p-10 text-center sm:p-16"
           style={{
             borderColor: "rgba(212,175,55,0.15)",
-            background: "linear-gradient(135deg, rgba(212,175,55,0.05), rgba(10,10,10,0.95), rgba(229,9,20,0.03))",
+            background:
+              "linear-gradient(135deg, rgba(212,175,55,0.05), rgba(10,10,10,0.95), rgba(229,9,20,0.03))",
           }}
         >
           <h2 className="font-display text-3xl font-bold text-white sm:text-4xl">
@@ -311,7 +399,11 @@ export default function MarketingPage() {
       <footer className="border-t border-matte-800 px-4 py-10">
         <div className="mx-auto max-w-screen-xl">
           <div className="flex flex-col items-center gap-6 sm:flex-row sm:justify-between">
-            <img src="/logo.png" alt="Haapu TV" className="h-10 w-auto object-contain" />
+            <img
+              src="/logo.png"
+              alt="Haapu TV"
+              className="h-10 w-auto object-contain"
+            />
             <div className="flex flex-wrap items-center justify-center gap-6 text-small text-matte-500">
               <Link href="/privacy" className="hover:text-white transition-colors">Privacy Policy</Link>
               <Link href="/terms" className="hover:text-white transition-colors">Terms of Use</Link>
