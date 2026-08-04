@@ -96,20 +96,27 @@ export default function MarketingPage() {
 
       {/* ── HERO ─────────────────────────────────────────────────── */}
       <section className="relative flex min-h-screen flex-col items-center justify-center overflow-hidden px-4 text-center">
-        <div className="pointer-events-none absolute inset-0">
+        {/* Background image */}
+        <div className="absolute inset-0 z-0">
+          <div className="absolute inset-0 bg-[url('/images/marketing/hero-background.jpg')] bg-cover bg-center opacity-40" />
+          <div className="absolute inset-0 bg-gradient-to-b from-matte-black/80 via-matte-black/60 to-matte-black/90" />
+        </div>
+
+        <div className="pointer-events-none absolute inset-0 z-0">
           <div className="absolute left-1/3 top-1/3 h-[500px] w-[500px] rounded-full blur-[180px]" style={{ backgroundColor: "rgba(212,175,55,0.05)" }} />
           <div className="absolute right-1/3 bottom-1/3 h-[400px] w-[400px] rounded-full blur-[140px]" style={{ backgroundColor: "rgba(229,9,20,0.04)" }} />
         </div>
-        <div className="absolute top-0 left-0 right-0 h-px" style={{ background: "linear-gradient(to right, transparent, rgba(212,175,55,0.4), transparent)" }} />
+        <div className="absolute top-0 left-0 right-0 h-px z-0" style={{ background: "linear-gradient(to right, transparent, rgba(212,175,55,0.4), transparent)" }} />
 
         <div className="relative z-10 max-w-4xl">
+          {/* ✅ Updated badge — matches WordPress site */}
           <div
             className="mb-8 inline-flex items-center gap-2 rounded-full border px-4 py-1.5"
             style={{ borderColor: "rgba(212,175,55,0.3)", backgroundColor: "rgba(212,175,55,0.08)" }}
           >
             <span className="h-1.5 w-1.5 animate-pulse rounded-full" style={{ backgroundColor: "#D4AF37" }} />
             <span className="text-small font-medium uppercase tracking-widest" style={{ color: "#D4AF37" }}>
-              Faith and Entertainment Comes Alive
+              We Are Haapu — A Platform where Faith and Entertainment Comes Alive!
             </span>
           </div>
 
@@ -130,7 +137,7 @@ export default function MarketingPage() {
               style={{ backgroundColor: "#E50914" }}
             >
               <Play size={18} fill="currentColor" />
-              Start Watching Free
+              WATCH NOW
             </Link>
             <Link
               href="/sign-in"
@@ -159,18 +166,45 @@ export default function MarketingPage() {
         </div>
       </section>
 
+      {/* ── STATS BAR ───────────────────────────────────────────── */}
+      <section className="border-y border-matte-800 bg-matte-900 px-4 py-10">
+        <div className="mx-auto max-w-screen-xl">
+          <div className="grid grid-cols-1 gap-8 sm:grid-cols-3">
+            {[
+              { heading: 'Free Forever', sub: 'No credit card required' },
+              { heading: 'Family Friendly', sub: 'Trusted by families worldwide' },
+              { heading: 'Community Powered', sub: 'Shaped by Covenant Members' },
+            ].map(({ heading, sub }) => (
+              <div key={heading} className="text-center">
+                <p className="font-display text-2xl font-bold text-white sm:text-3xl">{heading}</p>
+                <p className="mt-1 text-sm text-matte-500">{sub}</p>
+              </div>
+            ))}
+          </div>
+        </div>
+      </section>
+
       {/* ── FEATURES ─────────────────────────────────────────────── */}
       <section className="px-4 py-20 sm:py-32">
         <div className="mx-auto max-w-screen-xl">
-          <div className="mb-16 text-center">
-            <h2 className="font-display text-4xl font-bold text-white sm:text-5xl">
+          {/* Feature heading with decorative image */}
+          <div className="relative mb-16 text-center">
+            <div className="absolute inset-0 flex items-center justify-center opacity-10 pointer-events-none">
+              <img
+                src="/images/marketing/features-collage.jpg"
+                alt=""
+                className="max-h-32 w-auto object-contain"
+              />
+            </div>
+            <h2 className="font-display text-4xl font-bold text-white sm:text-5xl relative z-10">
               Everything you need, nothing you don't
             </h2>
-            <p className="mt-4 text-body-lg text-matte-400">
+            <p className="mt-4 text-body-lg text-matte-400 relative z-10">
               Brought to you by our incredible Covenant Members.
             </p>
           </div>
-          <div className="grid gap-6 sm:grid-cols-2 lg:grid-cols-4">
+
+          <div className="grid gap-6 sm:grid-cols-2 lg:grid-cols-4 relative z-10">
             {FEATURES.map(({ icon: Icon, title, description }) => (
               <div
                 key={title}
@@ -189,8 +223,14 @@ export default function MarketingPage() {
 
       {/* ── COVENANT MEMBERS ─────────────────────────────────────── */}
       <section className="relative overflow-hidden px-4 py-20 sm:py-32">
-        <div className="absolute inset-0 pointer-events-none" style={{ background: "linear-gradient(135deg, rgba(212,175,55,0.04), transparent, rgba(212,175,55,0.02))" }} />
-        <div className="relative mx-auto max-w-3xl text-center">
+        {/* Background image for Covenant section */}
+        <div className="absolute inset-0 z-0">
+          <div className="absolute inset-0 bg-[url('/images/marketing/covenant-bg.jpg')] bg-cover bg-center opacity-10" />
+          <div className="absolute inset-0 bg-gradient-to-b from-matte-black/95 via-matte-black/80 to-matte-black/95" />
+        </div>
+
+        <div className="absolute inset-0 pointer-events-none z-0" style={{ background: "linear-gradient(135deg, rgba(212,175,55,0.04), transparent, rgba(212,175,55,0.02))" }} />
+        <div className="relative mx-auto max-w-3xl text-center z-10">
           <div
             className="mb-6 inline-flex items-center gap-2 rounded-full border px-4 py-1.5"
             style={{ borderColor: "rgba(212,175,55,0.3)", backgroundColor: "rgba(212,175,55,0.08)" }}
@@ -280,6 +320,8 @@ export default function MarketingPage() {
               <Link href="/privacy" className="hover:text-white transition-colors">Privacy Policy</Link>
               <Link href="/terms" className="hover:text-white transition-colors">Terms of Use</Link>
               <Link href="/faq" className="hover:text-white transition-colors">FAQ</Link>
+              <Link href="/cookie-preferences" className="hover:text-white transition-colors">Cookie Preferences</Link>
+              <Link href="/corporate" className="hover:text-white transition-colors">Corporate</Link>
             </div>
             <div className="flex items-center gap-4">
               <SocialIcon href="https://www.facebook.com/haaputv" label="Facebook">
