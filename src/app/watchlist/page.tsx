@@ -21,7 +21,7 @@ export default function WatchlistPage() {
             {[...Array(6)].map((_, i) => (
               <div
                 key={i}
-                className="aspect-video animate-pulse rounded-lg bg-matte-800"
+                className="aspect-[2/3] animate-pulse rounded-lg bg-matte-800"
               />
             ))}
           </div>
@@ -80,7 +80,7 @@ export default function WatchlistPage() {
             <div className="flex flex-col sm:flex-row gap-3">
               <Link
                 href="/movies"
-                className="rounded-lg bg-crimson-DEFAULT px-8 py-3 text-body font-semibold text-white transition-colors hover:bg-crimson-dark"
+                className="rounded-lg bg-crimson px-8 py-3 text-body font-semibold text-white transition-colors hover:bg-crimson-dark"
               >
                 Browse Movies
               </Link>
@@ -98,7 +98,7 @@ export default function WatchlistPage() {
             {watchlist.map((item) => (
               <div key={item.id} className="group relative">
                 <Link href={`/movie/${item.movie_slug}`}>
-                  <div className="relative aspect-video overflow-hidden rounded-lg bg-matte-800 transition-transform duration-300 group-hover:scale-105">
+                  <div className="relative aspect-[2/3] overflow-hidden rounded-lg bg-matte-800 transition-transform duration-300 group-hover:scale-105">
                     <img
                       src={item.poster_url}
                       alt={item.movie_title}
@@ -123,7 +123,7 @@ export default function WatchlistPage() {
                 {/* Remove button — visible on hover */}
                 <button
                   onClick={() => remove(item.movie_id)}
-                  className="absolute right-1.5 top-1.5 rounded-full bg-black/70 p-1.5 text-white opacity-0 transition-all duration-200 hover:bg-crimson-DEFAULT group-hover:opacity-100"
+                  className="absolute right-1.5 top-1.5 rounded-full bg-black/70 p-1.5 text-white opacity-0 transition-all duration-200 hover:bg-crimson group-hover:opacity-100"
                   aria-label="Remove from list"
                 >
                   <Trash2 size={13} />

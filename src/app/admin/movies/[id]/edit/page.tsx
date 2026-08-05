@@ -93,7 +93,7 @@ export default function EditMoviePage() {
   if (isLoading) {
     return (
       <div className="flex h-64 items-center justify-center">
-        <div className="h-8 w-8 animate-spin rounded-full border-4 border-matte-700 border-t-crimson-DEFAULT" />
+        <div className="h-8 w-8 animate-spin rounded-full border-4 border-matte-700 border-t-crimson" />
       </div>
     );
   }
@@ -128,7 +128,7 @@ export default function EditMoviePage() {
             value={formData.title}
             onChange={(e) => setFormData({ ...formData, title: e.target.value })}
             onBlur={generateSlug}
-            className="w-full rounded-lg border border-matte-800 bg-matte-900 px-4 py-2 text-white focus:border-crimson-DEFAULT focus:outline-none"
+            className="w-full rounded-lg border border-matte-800 bg-matte-900 px-4 py-2 text-white focus:border-crimson focus:outline-none"
           />
         </div>
 
@@ -140,7 +140,7 @@ export default function EditMoviePage() {
               required
               value={formData.slug}
               onChange={(e) => setFormData({ ...formData, slug: e.target.value })}
-              className="flex-1 rounded-lg border border-matte-800 bg-matte-900 px-4 py-2 text-white focus:border-crimson-DEFAULT focus:outline-none"
+              className="flex-1 rounded-lg border border-matte-800 bg-matte-900 px-4 py-2 text-white focus:border-crimson focus:outline-none"
             />
             <button
               type="button"
@@ -159,19 +159,18 @@ export default function EditMoviePage() {
             rows={4}
             value={formData.description}
             onChange={(e) => setFormData({ ...formData, description: e.target.value })}
-            className="w-full rounded-lg border border-matte-800 bg-matte-900 px-4 py-2 text-white focus:border-crimson-DEFAULT focus:outline-none"
+            className="w-full rounded-lg border border-matte-800 bg-matte-900 px-4 py-2 text-white focus:border-crimson focus:outline-none"
           />
         </div>
 
         <ImageUpload
-          label="Movie Poster"
+          label="Poster Image (Portrait 2:3)"
           onImageUploaded={(url) => setFormData(prev => ({ ...prev, posterUrl: url }))}
           currentImage={formData.posterUrl}
         />
 
-        {/* ✅ Updated: Thumbnail (16:9 landscape) */}
         <ImageUpload
-          label="Thumbnail (16:9 landscape)"
+          label="Backdrop Image (16:9 landscape)"
           onImageUploaded={(url) => setFormData(prev => ({ ...prev, backdropUrl: url }))}
           currentImage={formData.backdropUrl}
         />
@@ -184,7 +183,7 @@ export default function EditMoviePage() {
             value={formData.videoEmbedUrl}
             onChange={(e) => setFormData({ ...formData, videoEmbedUrl: e.target.value })}
             placeholder="https://fast.wistia.net/embed/iframe/xxxxx"
-            className="w-full rounded-lg border border-matte-800 bg-matte-900 px-4 py-2 text-white focus:border-crimson-DEFAULT focus:outline-none"
+            className="w-full rounded-lg border border-matte-800 bg-matte-900 px-4 py-2 text-white focus:border-crimson focus:outline-none"
           />
         </div>
 
@@ -196,7 +195,7 @@ export default function EditMoviePage() {
               value={formData.duration}
               onChange={(e) => setFormData({ ...formData, duration: e.target.value })}
               placeholder="2h 30min"
-              className="w-full rounded-lg border border-matte-800 bg-matte-900 px-4 py-2 text-white focus:border-crimson-DEFAULT focus:outline-none"
+              className="w-full rounded-lg border border-matte-800 bg-matte-900 px-4 py-2 text-white focus:border-crimson focus:outline-none"
             />
           </div>
           <div>
@@ -206,7 +205,7 @@ export default function EditMoviePage() {
               value={formData.genres}
               onChange={(e) => setFormData({ ...formData, genres: e.target.value })}
               placeholder="Drama, Music, Gospel"
-              className="w-full rounded-lg border border-matte-800 bg-matte-900 px-4 py-2 text-white focus:border-crimson-DEFAULT focus:outline-none"
+              className="w-full rounded-lg border border-matte-800 bg-matte-900 px-4 py-2 text-white focus:border-crimson focus:outline-none"
             />
           </div>
         </div>
@@ -220,7 +219,7 @@ export default function EditMoviePage() {
             max="10"
             value={formData.rating}
             onChange={(e) => setFormData({ ...formData, rating: e.target.value })}
-            className="w-32 rounded-lg border border-matte-800 bg-matte-900 px-4 py-2 text-white focus:border-crimson-DEFAULT focus:outline-none"
+            className="w-32 rounded-lg border border-matte-800 bg-matte-900 px-4 py-2 text-white focus:border-crimson focus:outline-none"
           />
         </div>
 
@@ -228,7 +227,7 @@ export default function EditMoviePage() {
           <button
             type="submit"
             disabled={isSubmitting}
-            className="rounded-lg bg-crimson-DEFAULT px-6 py-2 font-medium text-white transition-colors hover:bg-crimson-dark disabled:opacity-50"
+            className="rounded-lg bg-crimson px-6 py-2 font-medium text-white transition-colors hover:bg-crimson-dark disabled:opacity-50"
           >
             {isSubmitting ? "Saving..." : "Save Changes"}
           </button>

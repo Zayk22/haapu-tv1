@@ -21,7 +21,7 @@ function Field({
     <div>
       <label className="mb-1.5 block text-sm font-medium text-matte-300">
         {label}
-        {required && <span className="ml-1 text-crimson-DEFAULT">*</span>}
+        {required && <span className="ml-1 text-crimson">*</span>}
       </label>
       {children}
       {hint && <p className="mt-1 text-xs text-matte-500">{hint}</p>}
@@ -30,7 +30,7 @@ function Field({
 }
 
 const inputClass =
-  "w-full rounded-lg border border-matte-700 bg-matte-800 px-4 py-2.5 text-sm text-white placeholder:text-matte-500 focus:border-crimson-DEFAULT focus:outline-none transition-colors";
+  "w-full rounded-lg border border-matte-700 bg-matte-800 px-4 py-2.5 text-sm text-white placeholder:text-matte-500 focus:border-crimson focus:outline-none transition-colors";
 
 export default function AddMoviePage() {
   const router = useRouter();
@@ -198,8 +198,8 @@ export default function AddMoviePage() {
           <h2 className="mb-5 font-semibold text-white">Media</h2>
           <div className="space-y-5">
             <Field
-              label="Poster Image"
-              hint="Portrait (2:3 ratio). Shown on movie cards throughout the site."
+              label="Poster Image (Portrait 2:3)"
+              hint="Main thumbnail shown on movie cards. Use a portrait image (e.g. 600x900px) for best results."
             >
               <ImageUpload
                 onImageUploaded={(url) => set("posterUrl", url)}
@@ -208,10 +208,9 @@ export default function AddMoviePage() {
               />
             </Field>
 
-            {/* ✅ Updated: Thumbnail (16:9 landscape) */}
             <Field
-              label="Thumbnail (16:9 landscape)"
-              hint="Main thumbnail shown on movie cards and hero carousel. Use a 16:9 landscape image for best results."
+              label="Backdrop Image (16:9 landscape)"
+              hint="Used for the hero carousel background. Use a 16:9 landscape image for best results."
             >
               <ImageUpload
                 onImageUploaded={(url) => set("backdropUrl", url)}
@@ -222,7 +221,7 @@ export default function AddMoviePage() {
 
             <Field
               label="Video Embed URL"
-              hint="Paste the Wistia iframe URL: https://fast.wistia.net/embed/iframe/..."
+              hint='Paste the Wistia embed URL: https://fast.wistia.net/embed/iframe/XXXXX'
             >
               <input
                 type="url"
@@ -245,7 +244,7 @@ export default function AddMoviePage() {
           <button
             type="submit"
             disabled={isSubmitting}
-            className="flex items-center gap-2 rounded-lg bg-crimson-DEFAULT px-6 py-2.5 text-sm font-semibold text-white transition-colors hover:bg-crimson-dark disabled:opacity-60"
+            className="flex items-center gap-2 rounded-lg bg-crimson px-6 py-2.5 text-sm font-semibold text-white transition-colors hover:bg-crimson-dark disabled:opacity-60"
           >
             {isSubmitting && <Loader2 size={15} className="animate-spin" />}
             {isSubmitting ? "Saving..." : "Add Movie"}

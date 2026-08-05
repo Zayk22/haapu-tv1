@@ -6,7 +6,6 @@ import MovieCard from "@/components/movie/MovieCard";
 export default function ContinueWatchingRow() {
   const { items, loading } = useContinueWatching();
 
-  // ✅ FIXED: Show any movie that has been watched (progress >= 0) and has a title
   const watchedMovies = items.filter((item) => item.progress >= 0 && item.movieTitle);
 
   if (loading) {
@@ -18,7 +17,7 @@ export default function ContinueWatchingRow() {
             {[1, 2, 3, 4].map((i) => (
               <div
                 key={i}
-                className="w-[140px] sm:w-[170px] flex-shrink-0 animate-pulse rounded-lg bg-matte-800 aspect-video"
+                className="w-[140px] sm:w-[170px] flex-shrink-0 animate-pulse rounded-lg bg-matte-800 aspect-[2/3]"
               />
             ))}
           </div>
@@ -69,7 +68,7 @@ export default function ContinueWatchingRow() {
                 <MovieCard movie={movie} index={index} slug={movie.slug} />
                 <div className="absolute bottom-[2.25rem] sm:bottom-[2.5rem] left-0 right-0 h-1 bg-matte-700 overflow-hidden rounded-b">
                   <div
-                    className="h-full bg-crimson-DEFAULT transition-all duration-300"
+                    className="h-full bg-crimson transition-all duration-300"
                     style={{ width: `${progressPct}%` }}
                   />
                 </div>

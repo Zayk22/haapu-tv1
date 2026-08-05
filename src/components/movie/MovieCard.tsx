@@ -45,10 +45,10 @@ export default function MovieCard({ movie, index = 0, slug }: MovieCardProps) {
       onClick={handleClick}
     >
       {/* Glow layer */}
-      <div className="pointer-events-none absolute -inset-1 -z-10 rounded-xl bg-crimson-DEFAULT/20 opacity-0 blur-md transition-opacity duration-300 group-hover:opacity-100" />
+      <div className="pointer-events-none absolute -inset-1 -z-10 rounded-xl bg-crimson/20 opacity-0 blur-md transition-opacity duration-300 group-hover:opacity-100" />
 
-      {/* Poster — ✅ LANDSCAPE 16:9 */ }
-      <div className="relative aspect-video overflow-hidden rounded-lg bg-matte-800">
+      {/* Poster — ✅ PORTRAIT 2:3 */}
+      <div className="relative aspect-[2/3] overflow-hidden rounded-lg bg-matte-800">
         {!imageLoaded && (
           <div className="absolute inset-0 z-10 animate-pulse bg-matte-800" />
         )}
@@ -86,7 +86,7 @@ export default function MovieCard({ movie, index = 0, slug }: MovieCardProps) {
             <div className="mt-1 flex items-center justify-center gap-2 text-[10px] text-matte-300">
               {showRating && (
                 <span className="flex items-center gap-0.5">
-                  <Star size={9} className="text-gold-DEFAULT" fill="currentColor" />
+                  <Star size={9} className="text-gold" fill="currentColor" />
                   {movie.rating}
                 </span>
               )}
@@ -108,7 +108,7 @@ export default function MovieCard({ movie, index = 0, slug }: MovieCardProps) {
             {showYear && showRating && <span>•</span>}
             {showRating && (
               <span className="flex items-center gap-1">
-                <Star size={8} className="text-gold-DEFAULT" fill="currentColor" />
+                <Star size={8} className="text-gold" fill="currentColor" />
                 {movie.rating}
               </span>
             )}
