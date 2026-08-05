@@ -1,20 +1,15 @@
 "use client";
 
 import { ClerkProvider } from "@clerk/nextjs";
-import { Geist, Geist_Mono } from "next/font/google";
+import { Inter } from "next/font/google";
 import "./globals.css";
 import { useState, useEffect } from "react";
 import { FullScreenLoader } from "@/components/ui/FullScreenLoader";
 import { PageLoader } from "@/components/ui/PageLoader";
 
-const geistSans = Geist({
-  variable: "--font-geist-sans",
+const inter = Inter({
   subsets: ["latin"],
-});
-
-const geistMono = Geist_Mono({
-  variable: "--font-geist-mono",
-  subsets: ["latin"],
+  display: "swap",
 });
 
 export default function RootLayout({
@@ -26,7 +21,6 @@ export default function RootLayout({
   const [showLoader, setShowLoader] = useState(true);
 
   useEffect(() => {
-    // Check if this is the first visit
     const hasVisited = sessionStorage.getItem("hasVisited");
     if (hasVisited) {
       setIsFirstVisit(false);
@@ -42,13 +36,11 @@ export default function RootLayout({
   return (
     <ClerkProvider>
       <html lang="en">
-        <body className={`${geistSans.variable} ${geistMono.variable} antialiased bg-black`}>
-          {/* Full-screen loader on first visit */}
+        <body className={`${inter.className} antialiased bg-black`}>
           {isFirstVisit && showLoader && (
             <FullScreenLoader onLoadingComplete={handleLoadingComplete} />
           )}
           
-          {/* Page loader for subsequent visits */}
           {!showLoader && (
             <PageLoader>
               {children}
