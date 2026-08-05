@@ -54,17 +54,23 @@ export default function CustomPlayer({ movie }: CustomPlayerProps) {
   const buildEmbedUrl = useCallback(() => {
     if (!videoUrl) return "";
     if (isWistia) {
-      const match = videoUrl.match(/embed\/iframe\/([a-zA-Z0-9]+)/);
+      // Support multiple Wistia URL formats:
+      // - https://fast.wistia.net/embed/iframe/xxxxx
+      // - https://fast.wistia.com/embed/medias/xxxxx
+      // - https://haapu-tv1.wistia.com/medias/xxxxx
+      const match = videoUrl.match(/(?:embed\/iframe\/|embed\/medias\/|medias\/)([a-zA-Z0-9]+)/);
       const videoId = match?.[1];
       if (!videoId) return videoUrl;
       const base = `https://fast.wistia.net/embed/iframe/${videoId}`;
       const params = new URLSearchParams({ autoPlay: "true" });
-      if (savedProgress > 10) params.set("time", String(Math.floor(savedProgress)));
+      if (savedProgress > 60) {
+        params.set("time", String(Math.floor(savedProgress)));
+      }
       return `${base}?${params.toString()}`;
     }
     if (isYouTube) {
       const sep = videoUrl.includes("?") ? "&" : "?";
-      return `${videoUrl}${sep}autoplay=1${savedProgress > 10 ? `&start=${Math.floor(savedProgress)}` : ""}`;
+      return `${videoUrl}${sep}autoplay=1${savedProgress > 60 ? `&start=${Math.floor(savedProgress)}` : ""}`;
     }
     return videoUrl;
   }, [videoUrl, isWistia, isYouTube, savedProgress]);
@@ -185,8 +191,6 @@ export default function CustomPlayer({ movie }: CustomPlayerProps) {
     if (videoRef.current) videoRef.current.playbackRate = playbackSpeed;
   }, [playbackSpeed]);
 
- // Navigate directly to movie detail page — bypasses Clerk's redirect
-  // history entries that cause the back-button loop on mobile
   const goBack = () => {
     if (movie.slug) {
       router.push(`/movie/${movie.slug}`);
@@ -274,7 +278,7 @@ export default function CustomPlayer({ movie }: CustomPlayerProps) {
   if (historyLoading) {
     return (
       <div className="flex h-screen items-center justify-center bg-black">
-        <div className="h-12 w-12 animate-spin rounded-full border-4 border-white/20 border-t-crimson-DEFAULT" />
+        <div className="h-12 w-12 animate-spin rounded-full border-4 border-white/20 border-t-crimson" />
       </div>
     );
   }
@@ -283,7 +287,6 @@ export default function CustomPlayer({ movie }: CustomPlayerProps) {
   if (isExternalEmbed) {
     const embedUrl = buildEmbedUrl();
     return (
-      // Wrapper — relative so iframe fills it
       <div className="relative h-screen w-screen bg-black" ref={containerRef}>
 
         <iframe
@@ -296,15 +299,10 @@ export default function CustomPlayer({ movie }: CustomPlayerProps) {
 
         {isLoading && (
           <div className="absolute inset-0 z-30 flex items-center justify-center bg-black pointer-events-none">
-            <div className="h-12 w-12 animate-spin rounded-full border-4 border-white/20 border-t-crimson-DEFAULT" />
+            <div className="h-12 w-12 animate-spin rounded-full border-4 border-white/20 border-t-crimson" />
           </div>
         )}
 
-        {/*
-          Back button is position:fixed — this puts it in the VIEWPORT
-          layer, completely outside the iframe's event capture zone.
-          z-index:9999 ensures it sits above everything.
-        */}
         <button
           onClick={goBack}
           className="fixed top-4 left-4 z-[9999] flex items-center gap-2 rounded-lg bg-black/80 px-4 py-2.5 text-white backdrop-blur-md transition-colors hover:bg-black active:bg-black"
@@ -314,13 +312,11 @@ export default function CustomPlayer({ movie }: CustomPlayerProps) {
           <span className="text-sm font-medium">Back</span>
         </button>
 
-        {/* Title — fixed, top right, truncates so it never overlaps Back */}
         <div className="fixed top-4 right-4 z-[9999] text-right pointer-events-none max-w-[55%]">
           <p className="text-[10px] uppercase tracking-wider text-white/40">Now Playing</p>
           <h2 className="truncate text-sm font-semibold text-white">{movie.title}</h2>
         </div>
 
-        {/* Resuming badge — fades after 3 seconds */}
         {savedProgress > 60 && showResuming && (
           <div className="fixed top-16 left-1/2 -translate-x-1/2 z-[9999] rounded-full bg-black/80 px-4 py-2 text-sm text-white backdrop-blur-sm pointer-events-none">
             ▶ Resuming from {formatTimeLabel(savedProgress)}
@@ -346,7 +342,7 @@ export default function CustomPlayer({ movie }: CustomPlayerProps) {
           <div className="text-center px-6">
             <p className="font-display text-heading-1 text-white mb-4">{movie.title}</p>
             <p className="text-body text-matte-400 mb-8">Video failed to load.</p>
-            <button onClick={goBack} className="flex items-center gap-2 mx-auto rounded-lg bg-crimson-DEFAULT px-6 py-3 font-semibold text-white">
+            <button onClick={goBack} className="flex items-center gap-2 mx-auto rounded-lg bg-crimson px-6 py-3 font-semibold text-white">
               <ArrowLeft size={18} /> Go Back
             </button>
           </div>
@@ -372,7 +368,7 @@ export default function CustomPlayer({ movie }: CustomPlayerProps) {
 
       {isLoading && !hasError && (
         <div className="absolute inset-0 z-30 flex items-center justify-center bg-black/50 pointer-events-none">
-          <div className="h-14 w-14 animate-spin rounded-full border-4 border-white/20 border-t-crimson-DEFAULT" />
+          <div className="h-14 w-14 animate-spin rounded-full border-4 border-white/20 border-t-crimson" />
         </div>
       )}
 
@@ -387,7 +383,7 @@ export default function CustomPlayer({ movie }: CustomPlayerProps) {
                 setIsPlaying(true);
               }
             }}
-            className="rounded-lg bg-crimson-DEFAULT px-6 py-3 font-semibold text-white hover:bg-crimson-dark"
+            className="rounded-lg bg-crimson px-6 py-3 font-semibold text-white hover:bg-crimson-dark"
           >
             Resume
           </button>
@@ -401,7 +397,7 @@ export default function CustomPlayer({ movie }: CustomPlayerProps) {
             className="absolute top-0 left-0 right-0 z-20 bg-gradient-to-b from-black/80 to-transparent px-4 sm:px-8 pt-4 pb-12"
           >
             <div className="flex items-center justify-between">
-              <button onClick={goBack} className="flex items-center gap-2 text-white hover:text-crimson-DEFAULT transition-colors">
+              <button onClick={goBack} className="flex items-center gap-2 text-white hover:text-crimson transition-colors">
                 <ArrowLeft size={20} />
                 <span className="text-caption font-medium">Back</span>
               </button>
@@ -419,7 +415,7 @@ export default function CustomPlayer({ movie }: CustomPlayerProps) {
           <motion.button
             initial={{ opacity: 0, scale: 0.5 }} animate={{ opacity: 1, scale: 1 }} exit={{ opacity: 0, scale: 0.5 }}
             onClick={(e) => { e.stopPropagation(); togglePlay(); }}
-            className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 z-20 flex h-20 w-20 items-center justify-center rounded-full bg-crimson-DEFAULT/90 text-white shadow-glow-lg hover:scale-110 transition-transform"
+            className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 z-20 flex h-20 w-20 items-center justify-center rounded-full bg-crimson/90 text-white shadow-glow-lg hover:scale-110 transition-transform"
           >
             <Play size={32} fill="white" className="ml-1" />
           </motion.button>
@@ -440,7 +436,7 @@ export default function CustomPlayer({ movie }: CustomPlayerProps) {
               className="group relative mb-3 h-1.5 w-full cursor-pointer rounded-full bg-white/20 hover:h-2.5 transition-all"
             >
               <div className="absolute top-0 left-0 h-full w-full rounded-full bg-white/20" />
-              <div className="absolute top-0 left-0 h-full rounded-full bg-crimson-DEFAULT" style={{ width: `${progress}%` }} />
+              <div className="absolute top-0 left-0 h-full rounded-full bg-crimson" style={{ width: `${progress}%` }} />
               <div
                 className="absolute top-1/2 -translate-y-1/2 h-4 w-4 rounded-full bg-white opacity-0 group-hover:opacity-100 transition-opacity"
                 style={{ left: `${progress}%`, marginLeft: "-8px" }}
@@ -490,7 +486,7 @@ export default function CustomPlayer({ movie }: CustomPlayerProps) {
                     <div className="absolute bottom-full right-0 mb-2 rounded-lg border border-white/10 bg-black/90 backdrop-blur-md py-1">
                       {speeds.map((s) => (
                         <button key={s} onClick={(e) => { e.stopPropagation(); setPlaybackSpeed(s); setShowSpeedMenu(false); }}
-                          className={`block w-full px-4 py-2 text-left text-caption hover:bg-white/10 ${playbackSpeed === s ? "text-crimson-DEFAULT" : "text-white"}`}>
+                          className={`block w-full px-4 py-2 text-left text-caption hover:bg-white/10 ${playbackSpeed === s ? "text-crimson" : "text-white"}`}>
                           {s}x
                         </button>
                       ))}
