@@ -11,6 +11,8 @@ const isPublicRoute = createRouteMatcher([
   "/faq",
   "/privacy",
   "/terms",
+  "/covenant", // ← ADDED: Covenant Member page
+  "/covenant/(.*)", // ← ADDED: Any sub-pages if they exist
   "/api/(.*)",
   "/sign-in(.*)",
   "/sign-up(.*)",
