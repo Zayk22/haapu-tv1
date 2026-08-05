@@ -3,6 +3,7 @@
 import { useState, useEffect } from "react";
 import Link from "next/link";
 import { Play, ChevronDown, Heart, Tv, Smartphone, Laptop, Monitor } from "lucide-react";
+import { PageLoader } from "@/components/ui/PageLoader";
 
 const FAQS = [
   {
@@ -75,6 +76,7 @@ function SocialIcon({
 
 export default function MarketingPage() {
   const [scrolled, setScrolled] = useState(false);
+  const [isLoading, setIsLoading] = useState(true);
 
   useEffect(() => {
     const handleScroll = () => {
@@ -83,6 +85,18 @@ export default function MarketingPage() {
     window.addEventListener('scroll', handleScroll);
     return () => window.removeEventListener('scroll', handleScroll);
   }, []);
+
+  useEffect(() => {
+    // Simulate content loading
+    const timer = setTimeout(() => {
+      setIsLoading(false);
+    }, 500);
+    return () => clearTimeout(timer);
+  }, []);
+
+  if (isLoading) {
+    return <PageLoader><div /></PageLoader>;
+  }
 
   return (
     <div className="bg-black">

@@ -1,48 +1,59 @@
-import type { Metadata, Viewport } from "next";
-import { Inter, Playfair_Display } from "next/font/google";
+"use client";
+
 import { ClerkProvider } from "@clerk/nextjs";
-import { ToastProvider } from "@/components/ui/Toast";
-import LayoutWrapper from "@/components/layout/LayoutWrapper";
+import { Geist, Geist_Mono } from "next/font/google";
 import "./globals.css";
+import { useState, useEffect } from "react";
+import { FullScreenLoader } from "@/components/ui/FullScreenLoader";
+import { PageLoader } from "@/components/ui/PageLoader";
 
-const inter = Inter({
+const geistSans = Geist({
+  variable: "--font-geist-sans",
   subsets: ["latin"],
-  variable: "--font-inter",
-  display: "swap",
 });
 
-const playfair = Playfair_Display({
+const geistMono = Geist_Mono({
+  variable: "--font-geist-mono",
   subsets: ["latin"],
-  variable: "--font-playfair",
-  display: "swap",
-  weight: ["400", "500", "600", "700", "800", "900"],
 });
-
-export const metadata: Metadata = {
-  title: "Haapu TV | Stream Movies & TV Shows",
-  description: "Watch your favorite movies, videos, and TV shows on Haapu TV.",
-};
-
-export const viewport: Viewport = {
-  width: "device-width",
-  initialScale: 1,
-  userScalable: true,
-};
 
 export default function RootLayout({
   children,
 }: Readonly<{
   children: React.ReactNode;
 }>) {
+  const [isFirstVisit, setIsFirstVisit] = useState(true);
+  const [showLoader, setShowLoader] = useState(true);
+
+  useEffect(() => {
+    // Check if this is the first visit
+    const hasVisited = sessionStorage.getItem("hasVisited");
+    if (hasVisited) {
+      setIsFirstVisit(false);
+      setShowLoader(false);
+    }
+  }, []);
+
+  const handleLoadingComplete = () => {
+    sessionStorage.setItem("hasVisited", "true");
+    setShowLoader(false);
+  };
+
   return (
     <ClerkProvider>
-      <html lang="en" className="dark">
-        <body
-          className={`${inter.variable} ${playfair.variable} font-sans bg-matte-950 text-white antialiased`}
-        >
-          <ToastProvider>
-            <LayoutWrapper>{children}</LayoutWrapper>
-          </ToastProvider>
+      <html lang="en">
+        <body className={`${geistSans.variable} ${geistMono.variable} antialiased bg-black`}>
+          {/* Full-screen loader on first visit */}
+          {isFirstVisit && showLoader && (
+            <FullScreenLoader onLoadingComplete={handleLoadingComplete} />
+          )}
+          
+          {/* Page loader for subsequent visits */}
+          {!showLoader && (
+            <PageLoader>
+              {children}
+            </PageLoader>
+          )}
         </body>
       </html>
     </ClerkProvider>
