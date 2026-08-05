@@ -76,7 +76,6 @@ function SocialIcon({
 export default function MarketingPage() {
   const [scrolled, setScrolled] = useState(false);
 
-  // Handle scroll for navbar background - FIXED
   useEffect(() => {
     const handleScroll = () => {
       setScrolled(window.scrollY > 50);
@@ -88,7 +87,7 @@ export default function MarketingPage() {
   return (
     <div className="bg-black">
 
-      {/* ── NAVBAR - EXACT WORDPRESS MENU ───────────────────────── */}
+      {/* ── NAVBAR ──────────────────────────────────────────────── */}
       <header 
         className={`fixed top-0 left-0 right-0 z-50 transition-all duration-300 ${
           scrolled ? 'bg-black/95 backdrop-blur-sm' : 'bg-gradient-to-b from-black/60 to-transparent'
@@ -99,7 +98,6 @@ export default function MarketingPage() {
             <img src="/logo.png" alt="Haapu TV" className="h-10 w-auto object-contain sm:h-12" />
           </Link>
           
-          {/* Navigation Links - Left to Right */}
           <div className="hidden md:flex items-center gap-8">
             <Link href="/" className="text-sm font-medium text-white/80 hover:text-white transition-colors">
               Home
@@ -118,7 +116,6 @@ export default function MarketingPage() {
             </Link>
           </div>
 
-          {/* Right CTA - Watch TV */}
           <Link
             href="/sign-up"
             className="rounded-lg px-5 py-2.5 text-sm font-bold text-white transition-all hover:opacity-90 hover:scale-105"
@@ -131,12 +128,11 @@ export default function MarketingPage() {
 
       {/* ── SECTION 1: HERO ────────────────────────────────────── */}
       <section className="relative flex min-h-screen items-center justify-center overflow-hidden px-6 text-center sm:px-12">
-        {/* Hero Background - haapu-tv.png */}
         <div className="absolute inset-0 z-0">
           <div
             className="absolute inset-0"
             style={{
-              backgroundImage: "url('/images/hero/haapu-tv.png')",
+              backgroundImage: "url('/images/marketing/haapu-tv.png')",
               backgroundSize: "cover",
               backgroundPosition: "center",
               backgroundRepeat: "no-repeat",
@@ -166,7 +162,6 @@ export default function MarketingPage() {
           </div>
         </div>
 
-        {/* Scroll indicator */}
         <div className="absolute bottom-8 left-1/2 z-10 -translate-x-1/2 animate-bounce">
           <div className="h-10 w-6 rounded-full border-2 border-white/30 flex items-start justify-center p-1">
             <div className="h-2 w-1 rounded-full bg-white/50" />
@@ -176,12 +171,11 @@ export default function MarketingPage() {
 
       {/* ── SECTION 2: JOIN THE MOVEMENT ───────────────────────── */}
       <section className="relative overflow-hidden px-6 py-24 sm:px-12 sm:py-32">
-        {/* Background - hero-background.jpg */}
         <div className="absolute inset-0 z-0">
           <div
             className="absolute inset-0"
             style={{
-              backgroundImage: "url('/images/hero/hero-background.jpg')",
+              backgroundImage: "url('/images/marketing/hero-background.jpg')",
               backgroundSize: "cover",
               backgroundPosition: "center",
               backgroundRepeat: "no-repeat",
@@ -229,12 +223,11 @@ export default function MarketingPage() {
 
       {/* ── SECTION 3: STREAM AMAZING CONTENT FOR FREE ────────── */}
       <section className="relative overflow-hidden px-6 py-24 sm:px-12 sm:py-32">
-        {/* Background - features-collage.jpg */}
         <div className="absolute inset-0 z-0">
           <div
             className="absolute inset-0"
             style={{
-              backgroundImage: "url('/images/features/features-collage.jpg')",
+              backgroundImage: "url('/images/marketing/features-collage.jpg')",
               backgroundSize: "cover",
               backgroundPosition: "center",
               backgroundRepeat: "no-repeat",
@@ -292,12 +285,11 @@ export default function MarketingPage() {
 
       {/* ── SECTION 4: STREAM ANYTIME, ANYWHERE ────────────────── */}
       <section className="relative overflow-hidden px-6 py-24 sm:px-12 sm:py-32">
-        {/* Background - covenant-bg.jpg */}
         <div className="absolute inset-0 z-0">
           <div
             className="absolute inset-0"
             style={{
-              backgroundImage: "url('/images/covenant/covenant-bg.jpg')",
+              backgroundImage: "url('/images/marketing/covenant-bg.jpg')",
               backgroundSize: "cover",
               backgroundPosition: "center",
               backgroundRepeat: "no-repeat",
