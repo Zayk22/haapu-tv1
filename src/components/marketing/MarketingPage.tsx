@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import Link from "next/link";
 import { Play, ChevronDown, Heart, Tv, Smartphone, Laptop, Monitor } from "lucide-react";
 
@@ -76,8 +76,8 @@ function SocialIcon({
 export default function MarketingPage() {
   const [scrolled, setScrolled] = useState(false);
 
-  // Handle scroll for navbar background
-  useState(() => {
+  // Handle scroll for navbar background - FIXED
+  useEffect(() => {
     const handleScroll = () => {
       setScrolled(window.scrollY > 50);
     };
