@@ -2,7 +2,7 @@
 
 import { useState } from "react";
 import Link from "next/link";
-import { Play, ChevronDown, Tv, Shield, Users, Zap, Heart, Star } from "lucide-react";
+import { Play, ChevronDown, Heart, Tv, Smartphone, Laptop, Monitor } from "lucide-react";
 
 const FAQS = [
   {
@@ -74,103 +74,94 @@ function SocialIcon({
 }
 
 export default function MarketingPage() {
+  const [scrolled, setScrolled] = useState(false);
+
+  // Handle scroll for navbar background
+  useState(() => {
+    const handleScroll = () => {
+      setScrolled(window.scrollY > 50);
+    };
+    window.addEventListener('scroll', handleScroll);
+    return () => window.removeEventListener('scroll', handleScroll);
+  }, []);
+
   return (
     <div className="bg-black">
 
-      {/* ── NAVBAR - TRANSPARENT, TALLER ───────────────────────── */}
-      <header className="fixed top-0 left-0 right-0 z-50 flex items-center justify-between px-6 py-4 sm:px-12 sm:py-6 bg-gradient-to-b from-black/60 to-transparent">
-        <Link href="/">
-          <img src="/logo.png" alt="Haapu TV" className="h-12 w-auto object-contain sm:h-14" />
-        </Link>
-        <div className="flex items-center gap-4 sm:gap-6">
-          <Link
-            href="/sign-in"
-            className="text-sm font-medium text-white/70 transition-all hover:text-white sm:text-base"
-          >
-            Sign In
+      {/* ── NAVBAR - EXACT WORDPRESS MENU ───────────────────────── */}
+      <header 
+        className={`fixed top-0 left-0 right-0 z-50 transition-all duration-300 ${
+          scrolled ? 'bg-black/95 backdrop-blur-sm' : 'bg-gradient-to-b from-black/60 to-transparent'
+        }`}
+      >
+        <div className="mx-auto flex max-w-screen-xl items-center justify-between px-6 py-4 sm:px-12">
+          <Link href="/">
+            <img src="/logo.png" alt="Haapu TV" className="h-10 w-auto object-contain sm:h-12" />
           </Link>
+          
+          {/* Navigation Links - Left to Right */}
+          <div className="hidden md:flex items-center gap-8">
+            <Link href="/" className="text-sm font-medium text-white/80 hover:text-white transition-colors">
+              Home
+            </Link>
+            <Link href="/covenant" className="text-sm font-medium text-white/80 hover:text-white transition-colors">
+              Covenant Member
+            </Link>
+            <Link href="/watch" className="text-sm font-medium text-white/80 hover:text-white transition-colors">
+              Watch
+            </Link>
+            <Link href="/faq" className="text-sm font-medium text-white/80 hover:text-white transition-colors">
+              FAQs
+            </Link>
+            <Link href="/sign-up" className="text-sm font-medium text-white/80 hover:text-white transition-colors">
+              Sign Up
+            </Link>
+          </div>
+
+          {/* Right CTA - Watch TV */}
           <Link
             href="/sign-up"
-            className="rounded-lg px-5 py-2.5 text-sm font-bold text-white transition-all hover:opacity-90 hover:scale-105 sm:px-6 sm:py-3 sm:text-base"
+            className="rounded-lg px-5 py-2.5 text-sm font-bold text-white transition-all hover:opacity-90 hover:scale-105"
             style={{ backgroundColor: "#E50914" }}
           >
-            Join Free
+            Watch TV
           </Link>
         </div>
       </header>
 
-      {/* ── HERO - CINEMATIC, FULL VIEWPORT ────────────────────── */}
+      {/* ── SECTION 1: HERO ────────────────────────────────────── */}
       <section className="relative flex min-h-screen items-center justify-center overflow-hidden px-6 text-center sm:px-12">
-        {/* Hero Background */}
+        {/* Hero Background - haapu-tv.png */}
         <div className="absolute inset-0 z-0">
           <div
             className="absolute inset-0"
             style={{
-              backgroundImage: "url('/images/marketing/hero-background.jpg')",
+              backgroundImage: "url('/images/hero/haapu-tv.png')",
               backgroundSize: "cover",
               backgroundPosition: "center",
               backgroundRepeat: "no-repeat",
             }}
           />
-          {/* Darker overlay for readability */}
-          <div className="absolute inset-0 bg-gradient-to-b from-black/60 via-black/40 to-black/70" />
-        </div>
-
-        {/* Subtle glow effects */}
-        <div className="pointer-events-none absolute inset-0 z-0">
-          <div
-            className="absolute left-1/2 top-1/2 h-[600px] w-[600px] -translate-x-1/2 -translate-y-1/2 rounded-full blur-[180px]"
-            style={{ backgroundColor: "rgba(212,175,55,0.06)" }}
-          />
+          <div className="absolute inset-0 bg-gradient-to-b from-black/50 via-black/30 to-black/60" />
         </div>
 
         <div className="relative z-10 max-w-5xl">
-          {/* Badge */}
-          <div
-            className="mb-8 inline-flex items-center gap-2 rounded-full border px-5 py-2"
-            style={{
-              borderColor: "rgba(212,175,55,0.4)",
-              backgroundColor: "rgba(212,175,55,0.1)",
-            }}
-          >
-            <span
-              className="h-2 w-2 animate-pulse rounded-full"
-              style={{ backgroundColor: "#D4AF37" }}
-            />
-            <span
-              className="text-xs font-medium uppercase tracking-[0.2em] sm:text-sm"
-              style={{ color: "#D4AF37" }}
-            >
-              We Are Haapu
-            </span>
-          </div>
-
-          {/* Main Headline - 40% bigger */}
-          <h1 className="font-display text-6xl font-bold leading-tight text-white sm:text-7xl lg:text-8xl xl:text-9xl">
-            Join the <span style={{ color: "#D4AF37" }}>Movement</span>
+          <h1 className="font-display text-5xl font-bold leading-tight text-white sm:text-6xl lg:text-7xl xl:text-8xl">
+            We Are <span style={{ color: "#D4AF37" }}>Haapu TV</span>
           </h1>
 
-          {/* Description - more spacing */}
-          <p className="mx-auto mt-8 max-w-3xl text-lg leading-relaxed text-white/80 sm:text-xl lg:text-2xl">
-            Discover shows and movies powered by you, for your family. 
-            Free forever. Powered by Covenant Members.
+          <p className="mx-auto mt-6 max-w-3xl text-lg leading-relaxed text-white/80 sm:text-xl lg:text-2xl">
+            A Platform where Faith and Entertainment Comes Alive.
           </p>
 
-          {/* CTA Buttons - larger, more prominent, more spacing */}
-          <div className="mt-12 flex flex-col items-center gap-5 sm:flex-row sm:justify-center sm:gap-6">
+          <div className="mt-10 flex flex-col items-center gap-4 sm:flex-row sm:justify-center">
             <Link
               href="/sign-up"
-              className="flex w-full items-center justify-center gap-3 rounded-lg px-10 py-5 text-lg font-bold text-white transition-all duration-300 hover:opacity-90 hover:scale-105 active:scale-95 sm:w-auto sm:px-12 sm:py-6 sm:text-xl"
+              className="flex w-full items-center justify-center gap-2.5 rounded-lg px-8 py-4 text-base font-bold text-white transition-all duration-300 hover:opacity-90 hover:scale-105 active:scale-95 sm:w-auto sm:px-10 sm:py-4 sm:text-lg"
               style={{ backgroundColor: "#E50914" }}
             >
-              <Play size={24} fill="currentColor" />
-              WATCH NOW
-            </Link>
-            <Link
-              href="/sign-in"
-              className="flex w-full items-center justify-center gap-3 rounded-lg border-2 border-white/30 px-10 py-5 text-lg font-semibold text-white transition-all duration-300 hover:border-white/60 hover:text-white sm:w-auto sm:px-12 sm:py-6 sm:text-xl"
-            >
-              Sign In
+              <Play size={20} fill="currentColor" />
+              Watch Now
             </Link>
           </div>
         </div>
@@ -183,14 +174,67 @@ export default function MarketingPage() {
         </div>
       </section>
 
-      {/* ── JOIN THE MOVEMENT - CINEMATIC BANNER ──────────────── */}
+      {/* ── SECTION 2: JOIN THE MOVEMENT ───────────────────────── */}
       <section className="relative overflow-hidden px-6 py-24 sm:px-12 sm:py-32">
-        {/* Background Image */}
+        {/* Background - hero-background.jpg */}
         <div className="absolute inset-0 z-0">
           <div
             className="absolute inset-0"
             style={{
-              backgroundImage: "url('/images/marketing/features-collage.jpg')",
+              backgroundImage: "url('/images/hero/hero-background.jpg')",
+              backgroundSize: "cover",
+              backgroundPosition: "center",
+              backgroundRepeat: "no-repeat",
+            }}
+          />
+          <div className="absolute inset-0 bg-gradient-to-b from-black/60 via-black/40 to-black/70" />
+        </div>
+
+        <div className="relative z-10 mx-auto max-w-4xl text-center">
+          <div
+            className="mb-6 inline-flex items-center gap-2 rounded-full border px-4 py-1.5"
+            style={{
+              borderColor: "rgba(212,175,55,0.3)",
+              backgroundColor: "rgba(212,175,55,0.08)",
+            }}
+          >
+            <span
+              className="text-xs font-medium uppercase tracking-widest"
+              style={{ color: "#D4AF37" }}
+            >
+              Join the Movement
+            </span>
+          </div>
+
+          <h2 className="font-display text-4xl font-bold text-white sm:text-5xl lg:text-6xl">
+            JOIN THE <span style={{ color: "#D4AF37" }}>MOVEMENT</span>
+          </h2>
+
+          <p className="mx-auto mt-6 max-w-2xl text-lg leading-relaxed text-white/80 sm:text-xl">
+            Step into a world where your voice shapes the screen. Discover shows 
+            and movies powered by you, for your family. Start now. Your support 
+            makes the difference.
+          </p>
+
+          <Link
+            href="/covenant"
+            className="mt-10 inline-flex items-center gap-3 rounded-lg px-8 py-4 text-base font-bold transition-all duration-300 hover:opacity-90 hover:scale-105 sm:px-10 sm:py-4 sm:text-lg"
+            style={{ backgroundColor: "#D4AF37", color: "#0A0A0A" }}
+          >
+            <Heart size={20} fill="currentColor" />
+            Covenant Member
+          </Link>
+        </div>
+      </section>
+
+      {/* ── SECTION 3: STREAM AMAZING CONTENT FOR FREE ────────── */}
+      <section className="relative overflow-hidden px-6 py-24 sm:px-12 sm:py-32">
+        {/* Background - features-collage.jpg */}
+        <div className="absolute inset-0 z-0">
+          <div
+            className="absolute inset-0"
+            style={{
+              backgroundImage: "url('/images/features/features-collage.jpg')",
               backgroundSize: "cover",
               backgroundPosition: "center",
               backgroundRepeat: "no-repeat",
@@ -211,39 +255,49 @@ export default function MarketingPage() {
               className="text-xs font-medium uppercase tracking-widest"
               style={{ color: "#D4AF37" }}
             >
-              Join the Movement
+              Stream Amazing Content
             </span>
           </div>
 
           <h2 className="font-display text-4xl font-bold text-white sm:text-5xl lg:text-6xl">
-            Everything you need, <br />
-            <span style={{ color: "#D4AF37" }}>nothing you don't</span>
+            STREAM AMAZING <br />
+            <span style={{ color: "#D4AF37" }}>CONTENT FOR FREE!</span>
           </h2>
 
           <p className="mx-auto mt-6 max-w-2xl text-lg leading-relaxed text-white/80 sm:text-xl">
-            Brought to you by our incredible Covenant Members. Access movies, 
-            shows, and documentaries — no subscription, no credit card. Just great content.
+            Brought to you by our incredible Covenant Members.
           </p>
 
-          <Link
-            href="/sign-up"
-            className="mt-10 inline-flex items-center gap-3 rounded-lg px-10 py-4 text-lg font-bold text-white transition-all duration-300 hover:opacity-90 hover:scale-105 sm:px-12 sm:py-5"
-            style={{ backgroundColor: "#E50914" }}
-          >
-            <Play size={20} fill="currentColor" />
-            Start Watching Free
-          </Link>
+          <p className="mt-3 text-base text-white/60">
+            Not a member yet! Start now and Join us in this journey.
+          </p>
+
+          <div className="mt-10 flex flex-col items-center gap-4 sm:flex-row sm:justify-center sm:gap-5">
+            <Link
+              href="/covenant"
+              className="w-full rounded-lg px-8 py-4 text-center text-base font-bold transition-all duration-300 hover:opacity-90 hover:scale-105 sm:w-auto sm:px-10 sm:py-4 sm:text-lg"
+              style={{ backgroundColor: "#D4AF37", color: "#0A0A0A" }}
+            >
+              Covenant Member
+            </Link>
+            <Link
+              href="/sign-up"
+              className="w-full rounded-lg border-2 border-white/30 px-8 py-4 text-center text-base font-semibold text-white transition-all duration-300 hover:border-white/60 hover:text-white sm:w-auto sm:px-10 sm:py-4 sm:text-lg"
+            >
+              Sign Up For Free
+            </Link>
+          </div>
         </div>
       </section>
 
-      {/* ── COVENANT MEMBERS - CINEMATIC ───────────────────────── */}
+      {/* ── SECTION 4: STREAM ANYTIME, ANYWHERE ────────────────── */}
       <section className="relative overflow-hidden px-6 py-24 sm:px-12 sm:py-32">
-        {/* Background Image */}
+        {/* Background - covenant-bg.jpg */}
         <div className="absolute inset-0 z-0">
           <div
             className="absolute inset-0"
             style={{
-              backgroundImage: "url('/images/marketing/covenant-bg.jpg')",
+              backgroundImage: "url('/images/covenant/covenant-bg.jpg')",
               backgroundSize: "cover",
               backgroundPosition: "center",
               backgroundRepeat: "no-repeat",
@@ -252,52 +306,45 @@ export default function MarketingPage() {
           <div className="absolute inset-0 bg-gradient-to-b from-black/60 via-black/40 to-black/70" />
         </div>
 
-        <div className="relative mx-auto max-w-3xl text-center z-10">
+        <div className="relative z-10 mx-auto max-w-4xl text-center">
           <div
             className="mb-6 inline-flex items-center gap-2 rounded-full border px-4 py-1.5"
             style={{
-              borderColor: "rgba(212,175,55,0.4)",
-              backgroundColor: "rgba(212,175,55,0.1)",
+              borderColor: "rgba(212,175,55,0.3)",
+              backgroundColor: "rgba(212,175,55,0.08)",
             }}
           >
             <span
               className="text-xs font-medium uppercase tracking-widest"
               style={{ color: "#D4AF37" }}
             >
-              Covenant Members
+              Stream Anytime, Anywhere
             </span>
           </div>
 
           <h2 className="font-display text-4xl font-bold text-white sm:text-5xl lg:text-6xl">
-            Your support <br />
-            <span style={{ color: "#D4AF37" }}>keeps it free</span>
+            STREAM ANYTIME, <br />
+            <span style={{ color: "#D4AF37" }}>ANYWHERE!</span>
           </h2>
 
-          <p className="mt-6 text-lg leading-relaxed text-white/80 sm:text-xl">
-            Powered by people who believe in free, faith-forward entertainment 
-            for every family.
+          <p className="mx-auto mt-6 max-w-2xl text-lg leading-relaxed text-white/80 sm:text-xl">
+            Watch on your phone, tablet, laptop, or TV. Haapu TV works on every 
+            device so your favourite content is always within reach.
           </p>
 
-          <p className="mt-3 text-base text-white/60">
-            Get early access and help shape what gets made next.
-          </p>
-
-          <div className="mt-10 flex flex-col items-center gap-4 sm:flex-row sm:justify-center sm:gap-5">
-            <a
-              href="https://haapu.tv/give"
-              target="_blank"
-              rel="noopener noreferrer"
-              className="w-full rounded-lg px-8 py-4 text-center text-base font-bold transition-all duration-300 hover:opacity-90 hover:scale-105 sm:w-auto sm:px-10 sm:py-4 sm:text-lg"
-              style={{ backgroundColor: "#D4AF37", color: "#0A0A0A" }}
-            >
-              Become a Member
-            </a>
-            <Link
-              href="/sign-up"
-              className="w-full rounded-lg border-2 border-white/30 px-8 py-4 text-center text-base font-semibold text-white transition-all duration-300 hover:border-white/60 hover:text-white sm:w-auto sm:px-10 sm:py-4 sm:text-lg"
-            >
-              Watch for Free
-            </Link>
+          <div className="mt-10 flex justify-center gap-8 text-white/60">
+            <div className="flex flex-col items-center gap-2">
+              <Smartphone size={32} />
+              <span className="text-sm">Phone</span>
+            </div>
+            <div className="flex flex-col items-center gap-2">
+              <Laptop size={32} />
+              <span className="text-sm">Laptop</span>
+            </div>
+            <div className="flex flex-col items-center gap-2">
+              <Tv size={32} />
+              <span className="text-sm">TV</span>
+            </div>
           </div>
         </div>
       </section>
@@ -318,33 +365,6 @@ export default function MarketingPage() {
               <FAQItem key={faq.q} q={faq.q} a={faq.a} />
             ))}
           </div>
-        </div>
-      </section>
-
-      {/* ── FINAL CTA ────────────────────────────────────────────── */}
-      <section className="px-6 pb-24 sm:px-12 sm:pb-32">
-        <div
-          className="mx-auto max-w-2xl rounded-2xl border p-10 text-center sm:p-16"
-          style={{
-            borderColor: "rgba(212,175,55,0.15)",
-            background:
-              "linear-gradient(135deg, rgba(212,175,55,0.05), rgba(10,10,10,0.95), rgba(229,9,20,0.03))",
-          }}
-        >
-          <h2 className="font-display text-3xl font-bold text-white sm:text-4xl">
-            Ready to start watching?
-          </h2>
-          <p className="mt-4 text-lg text-white/60">
-            Join thousands of families already streaming on Haapu TV.
-          </p>
-          <Link
-            href="/sign-up"
-            className="mt-8 inline-flex items-center gap-3 rounded-lg px-10 py-4 text-lg font-bold text-white transition-all duration-300 hover:opacity-90 hover:scale-105 sm:px-12 sm:py-5"
-            style={{ backgroundColor: "#E50914" }}
-          >
-            <Play size={20} fill="currentColor" />
-            Get Started Free
-          </Link>
         </div>
       </section>
 
