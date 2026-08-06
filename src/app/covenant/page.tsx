@@ -190,7 +190,7 @@ export default function CovenantPage() {
               backgroundRepeat: "no-repeat",
             }}
           />
-          <div className="absolute inset-0 bg-gradient-to-b from-black/70 via-black/60 to-black/80" />
+          <div className="absolute inset-0 bg-gradient-to-b from-black/60 via-black/40 to-black/70" />
         </div>
 
         <motion.div
@@ -220,12 +220,12 @@ export default function CovenantPage() {
             <span style={{ color: "#D4AF37" }}>YOUR TERMS</span>
           </h2>
 
-          <p className="mx-auto mt-6 max-w-2xl text-lg leading-relaxed text-white/80 sm:text-xl">
+          <p className="mx-auto mt-6 max-w-2xl text-base leading-relaxed text-white/80 sm:text-lg">
             Take charge of the stories that shape us. Watch, celebrate, and support 
             authentic voices on your terms.
           </p>
 
-          <p className="mt-4 text-base text-white/60">
+          <p className="mt-4 text-sm text-white/60 sm:text-base">
             Watch. Vote. Support. Share the Power.
           </p>
 
@@ -233,10 +233,9 @@ export default function CovenantPage() {
             href="https://haapu.tv/give"
             target="_blank"
             rel="noopener noreferrer"
-            className="mt-10 inline-flex items-center gap-3 rounded-lg px-10 py-4 text-lg font-bold transition-all duration-300 hover:opacity-90 hover:scale-105"
+            className="mt-8 inline-flex items-center gap-3 rounded-lg px-8 py-3 text-sm font-bold transition-all duration-300 hover:opacity-90 hover:scale-105 sm:text-base"
             style={{ backgroundColor: "#D4AF37", color: "#0A0A0A" }}
           >
-            <Heart size={20} fill="currentColor" />
             JOIN US NOW
           </Link>
         </motion.div>
@@ -335,7 +334,6 @@ export default function CovenantPage() {
             viewport={{ once: true }}
             transition={{ duration: 0.6 }}
           >
-            {/* Centered Button */}
             <div className="text-center mb-12">
               <Link
                 href="https://haapu.tv/give"
