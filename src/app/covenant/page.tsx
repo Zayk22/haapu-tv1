@@ -2,7 +2,7 @@
 
 import { useState, useEffect } from "react";
 import Link from "next/link";
-import { motion } from "framer-motion";
+import { motion, AnimatePresence } from "framer-motion";
 import { ChevronDown, Heart, ArrowUp } from "lucide-react";
 import FeaturedMovie from "@/components/covenant/FeaturedMovie";
 
@@ -69,6 +69,7 @@ function SocialIcon({
 
 export default function CovenantPage() {
   const [scrolled, setScrolled] = useState(false);
+  const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
 
   useEffect(() => {
     const handleScroll = () => {
@@ -87,12 +88,13 @@ export default function CovenantPage() {
           scrolled ? 'bg-black/95 backdrop-blur-sm' : 'bg-gradient-to-b from-black/60 to-transparent'
         }`}
       >
-        <div className="mx-auto flex max-w-screen-xl items-center justify-between px-6 py-4 sm:px-12">
+        <div className="mx-auto flex max-w-screen-xl items-center justify-between px-4 py-3 sm:px-6 sm:py-4">
           <Link href="/">
-            <img src="/logo.png" alt="Haapu TV" className="h-10 w-auto object-contain sm:h-12" />
+            <img src="/logo.png" alt="Haapu TV" className="h-8 w-auto object-contain sm:h-10 md:h-12" />
           </Link>
           
-          <div className="hidden md:flex items-center gap-8">
+          {/* Desktop Navigation - Hidden on mobile */}
+          <div className="hidden md:flex items-center gap-6 lg:gap-8">
             <Link href="/" className="text-sm font-medium text-white/80 hover:text-white transition-colors">
               Home
             </Link>
@@ -110,14 +112,80 @@ export default function CovenantPage() {
             </Link>
           </div>
 
-          <Link
-            href="/sign-up"
-            className="rounded-lg px-5 py-2.5 text-sm font-bold text-white transition-all hover:opacity-90 hover:scale-105"
-            style={{ backgroundColor: "#E50914" }}
-          >
-            Watch TV
-          </Link>
+          {/* Right side - Watch TV button + Mobile Menu Toggle */}
+          <div className="flex items-center gap-3">
+            <Link
+              href="/sign-up"
+              className="rounded-lg px-4 py-2 text-xs font-bold text-white transition-all hover:opacity-90 hover:scale-105 sm:px-5 sm:py-2.5 sm:text-sm"
+              style={{ backgroundColor: "#E50914" }}
+            >
+              Watch TV
+            </Link>
+            
+            {/* Mobile Hamburger Menu */}
+            <button
+              onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)}
+              className="md:hidden flex flex-col gap-1.5 p-1 text-white transition-colors hover:text-[#D4AF37]"
+              aria-label="Toggle menu"
+            >
+              <span className={`block h-0.5 w-6 bg-current transition-all duration-300 ${isMobileMenuOpen ? 'rotate-45 translate-y-2' : ''}`} />
+              <span className={`block h-0.5 w-6 bg-current transition-all duration-300 ${isMobileMenuOpen ? 'opacity-0' : ''}`} />
+              <span className={`block h-0.5 w-6 bg-current transition-all duration-300 ${isMobileMenuOpen ? '-rotate-45 -translate-y-2' : ''}`} />
+            </button>
+          </div>
         </div>
+
+        {/* Mobile Menu Dropdown */}
+        <AnimatePresence>
+          {isMobileMenuOpen && (
+            <motion.div
+              initial={{ opacity: 0, y: -20 }}
+              animate={{ opacity: 1, y: 0 }}
+              exit={{ opacity: 0, y: -20 }}
+              transition={{ duration: 0.2 }}
+              className="md:hidden bg-black/95 backdrop-blur-sm border-b border-white/10"
+            >
+              <div className="flex flex-col space-y-1 px-4 py-4">
+                <Link
+                  href="/"
+                  className="px-3 py-2.5 text-sm font-medium text-white/80 hover:text-white hover:bg-white/5 rounded-lg transition-colors"
+                  onClick={() => setIsMobileMenuOpen(false)}
+                >
+                  Home
+                </Link>
+                <Link
+                  href="/covenant"
+                  className="px-3 py-2.5 text-sm font-medium text-white hover:bg-white/5 rounded-lg transition-colors"
+                  style={{ color: "#D4AF37" }}
+                  onClick={() => setIsMobileMenuOpen(false)}
+                >
+                  Covenant Member
+                </Link>
+                <Link
+                  href="/watch"
+                  className="px-3 py-2.5 text-sm font-medium text-white/80 hover:text-white hover:bg-white/5 rounded-lg transition-colors"
+                  onClick={() => setIsMobileMenuOpen(false)}
+                >
+                  Watch
+                </Link>
+                <Link
+                  href="/faq"
+                  className="px-3 py-2.5 text-sm font-medium text-white/80 hover:text-white hover:bg-white/5 rounded-lg transition-colors"
+                  onClick={() => setIsMobileMenuOpen(false)}
+                >
+                  FAQs
+                </Link>
+                <Link
+                  href="/sign-up"
+                  className="px-3 py-2.5 text-sm font-medium text-white/80 hover:text-white hover:bg-white/5 rounded-lg transition-colors"
+                  onClick={() => setIsMobileMenuOpen(false)}
+                >
+                  Sign Up
+                </Link>
+              </div>
+            </motion.div>
+          )}
+        </AnimatePresence>
       </header>
 
       {/* ── SECTION 1: HERO ────────────────────────────────────── */}
@@ -179,67 +247,67 @@ export default function CovenantPage() {
       </section>
 
       {/* ── SECTION 2: YOUR STORIES, YOUR TERMS ────────────────── */}
-<section className="relative overflow-hidden px-6 py-24 sm:px-12 sm:py-32 min-h-[75vh] flex items-center">
-  <div className="absolute inset-0 z-0">
-    <div
-      className="absolute inset-0"
-      style={{
-        backgroundImage: "url('/images/african-rhapsody.jpg')",
-        backgroundSize: "cover",
-        backgroundPosition: "top center",
-        backgroundRepeat: "no-repeat",
-      }}
-    />
-    <div className="absolute inset-0 bg-gradient-to-r from-black/75 via-black/30 to-black/10" />
-  </div>
+      <section className="relative overflow-hidden px-6 py-24 sm:px-12 sm:py-32 min-h-[75vh] flex items-center">
+        <div className="absolute inset-0 z-0">
+          <div
+            className="absolute inset-0"
+            style={{
+              backgroundImage: "url('/images/african-rhapsody.jpg')",
+              backgroundSize: "cover",
+              backgroundPosition: "top center",
+              backgroundRepeat: "no-repeat",
+            }}
+          />
+          <div className="absolute inset-0 bg-gradient-to-r from-black/75 via-black/30 to-black/10" />
+        </div>
 
-  <motion.div
-    initial={{ opacity: 0, y: 30 }}
-    whileInView={{ opacity: 1, y: 0 }}
-    viewport={{ once: true }}
-    transition={{ duration: 0.6 }}
-    className="relative z-10 mx-auto max-w-4xl text-center"
-  >
-    <div
-      className="mb-6 inline-flex items-center gap-2 rounded-full border px-4 py-1.5"
-      style={{
-        borderColor: "rgba(212,175,55,0.3)",
-        backgroundColor: "rgba(212,175,55,0.08)",
-      }}
-    >
-      <span
-        className="text-xs font-medium uppercase tracking-widest"
-        style={{ color: "#D4AF37" }}
-      >
-        Your Stories, Your Terms
-      </span>
-    </div>
+        <motion.div
+          initial={{ opacity: 0, y: 30 }}
+          whileInView={{ opacity: 1, y: 0 }}
+          viewport={{ once: true }}
+          transition={{ duration: 0.6 }}
+          className="relative z-10 mx-auto max-w-4xl text-center"
+        >
+          <div
+            className="mb-6 inline-flex items-center gap-2 rounded-full border px-4 py-1.5"
+            style={{
+              borderColor: "rgba(212,175,55,0.3)",
+              backgroundColor: "rgba(212,175,55,0.08)",
+            }}
+          >
+            <span
+              className="text-xs font-medium uppercase tracking-widest"
+              style={{ color: "#D4AF37" }}
+            >
+              Your Stories, Your Terms
+            </span>
+          </div>
 
-    <h2 className="font-display text-4xl font-bold text-white sm:text-5xl lg:text-6xl">
-      YOUR STORIES, <br />
-      <span style={{ color: "#D4AF37" }}>YOUR TERMS</span>
-    </h2>
+          <h2 className="font-display text-4xl font-bold text-white sm:text-5xl lg:text-6xl">
+            YOUR STORIES, <br />
+            <span style={{ color: "#D4AF37" }}>YOUR TERMS</span>
+          </h2>
 
-    <p className="mx-auto mt-6 max-w-2xl text-base leading-relaxed text-white/80 sm:text-lg">
-      Take charge of the stories that shape us. Watch, celebrate, and support 
-      authentic voices on your terms.
-    </p>
+          <p className="mx-auto mt-6 max-w-2xl text-base leading-relaxed text-white/80 sm:text-lg">
+            Take charge of the stories that shape us. Watch, celebrate, and support 
+            authentic voices on your terms.
+          </p>
 
-    <p className="mt-4 text-sm text-white/60 sm:text-base">
-      Watch. Vote. Support. Share the Power.
-    </p>
+          <p className="mt-4 text-sm text-white/60 sm:text-base">
+            Watch. Vote. Support. Share the Power.
+          </p>
 
-    <Link
-      href="https://haapu.tv/give"
-      target="_blank"
-      rel="noopener noreferrer"
-      className="mt-8 inline-flex items-center gap-3 rounded-lg px-8 py-3 text-sm font-bold transition-all duration-300 hover:opacity-90 hover:scale-105 sm:text-base"
-      style={{ backgroundColor: "#D4AF37", color: "#0A0A0A" }}
-    >
-      JOIN US NOW
-    </Link>
-  </motion.div>
-</section>
+          <Link
+            href="https://haapu.tv/give"
+            target="_blank"
+            rel="noopener noreferrer"
+            className="mt-8 inline-flex items-center gap-3 rounded-lg px-8 py-3 text-sm font-bold transition-all duration-300 hover:opacity-90 hover:scale-105 sm:text-base"
+            style={{ backgroundColor: "#D4AF37", color: "#0A0A0A" }}
+          >
+            JOIN US NOW
+          </Link>
+        </motion.div>
+      </section>
 
       {/* ── SECTION 3: AFRICAN RHAPSODY VIDEO ──────────────────── */}
       <FeaturedMovie
