@@ -2,8 +2,9 @@
 
 import { useState, useEffect } from "react";
 import Link from "next/link";
-import { Play, ChevronDown, Heart, Tv, Smartphone, Laptop, Monitor } from "lucide-react";
-import { PageLoader } from "@/components/ui/PageLoader";
+import Image from "next/image";
+import { motion } from "framer-motion";
+import { Play, ChevronDown, Heart, Smartphone, Laptop, Tv } from "lucide-react";
 
 const FAQS = [
   {
@@ -76,7 +77,6 @@ function SocialIcon({
 
 export default function MarketingPage() {
   const [scrolled, setScrolled] = useState(false);
-  const [isLoading, setIsLoading] = useState(true);
 
   useEffect(() => {
     const handleScroll = () => {
@@ -85,18 +85,6 @@ export default function MarketingPage() {
     window.addEventListener('scroll', handleScroll);
     return () => window.removeEventListener('scroll', handleScroll);
   }, []);
-
-  useEffect(() => {
-    // Simulate content loading
-    const timer = setTimeout(() => {
-      setIsLoading(false);
-    }, 500);
-    return () => clearTimeout(timer);
-  }, []);
-
-  if (isLoading) {
-    return <PageLoader><div /></PageLoader>;
-  }
 
   return (
     <div className="bg-black">
@@ -155,9 +143,23 @@ export default function MarketingPage() {
           <div className="absolute inset-0 bg-gradient-to-b from-black/50 via-black/30 to-black/60" />
         </div>
 
-        <div className="relative z-10 max-w-5xl">
-          <h1 className="font-display text-5xl font-bold leading-tight text-white sm:text-6xl lg:text-7xl xl:text-8xl">
-            We Are <span style={{ color: "#D4AF37" }}>Haapu TV</span>
+        <motion.div 
+          initial={{ opacity: 0, y: 30 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.8 }}
+          className="relative z-10 max-w-4xl"
+        >
+          {/* Brand Logo instead of text */}
+          <div className="mb-6 flex justify-center">
+            <img
+              src="/logo.png"
+              alt="Haapu TV"
+              className="h-16 w-auto object-contain sm:h-20 md:h-24"
+            />
+          </div>
+
+          <h1 className="font-display text-4xl font-bold text-white sm:text-5xl lg:text-6xl xl:text-7xl">
+            We Are <span style={{ color: "#D4AF37" }}>Haapu</span>
           </h1>
 
           <p className="mx-auto mt-6 max-w-3xl text-lg leading-relaxed text-white/80 sm:text-xl lg:text-2xl">
@@ -174,31 +176,30 @@ export default function MarketingPage() {
               Watch Now
             </Link>
           </div>
-        </div>
-
-        <div className="absolute bottom-8 left-1/2 z-10 -translate-x-1/2 animate-bounce">
-          <div className="h-10 w-6 rounded-full border-2 border-white/30 flex items-start justify-center p-1">
-            <div className="h-2 w-1 rounded-full bg-white/50" />
-          </div>
-        </div>
+        </motion.div>
       </section>
 
       {/* ── SECTION 2: JOIN THE MOVEMENT ───────────────────────── */}
       <section className="relative overflow-hidden px-6 py-24 sm:px-12 sm:py-32">
+        {/* Background as responsive image */}
         <div className="absolute inset-0 z-0">
-          <div
-            className="absolute inset-0"
-            style={{
-              backgroundImage: "url('/images/marketing/hero-background.jpg')",
-              backgroundSize: "cover",
-              backgroundPosition: "center",
-              backgroundRepeat: "no-repeat",
-            }}
-          />
-          <div className="absolute inset-0 bg-gradient-to-b from-black/60 via-black/40 to-black/70" />
+          <div className="relative h-full w-full">
+            <img
+              src="/images/marketing/hero-background.jpg"
+              alt="Join the Movement"
+              className="h-full w-full object-contain object-center"
+            />
+            <div className="absolute inset-0 bg-gradient-to-b from-black/60 via-black/40 to-black/70" />
+          </div>
         </div>
 
-        <div className="relative z-10 mx-auto max-w-4xl text-center">
+        <motion.div
+          initial={{ opacity: 0, y: 30 }}
+          whileInView={{ opacity: 1, y: 0 }}
+          viewport={{ once: true }}
+          transition={{ duration: 0.6 }}
+          className="relative z-10 mx-auto max-w-4xl text-center"
+        >
           <div
             className="mb-6 inline-flex items-center gap-2 rounded-full border px-4 py-1.5"
             style={{
@@ -232,7 +233,7 @@ export default function MarketingPage() {
             <Heart size={20} fill="currentColor" />
             Covenant Member
           </Link>
-        </div>
+        </motion.div>
       </section>
 
       {/* ── SECTION 3: STREAM AMAZING CONTENT FOR FREE ────────── */}
@@ -250,7 +251,13 @@ export default function MarketingPage() {
           <div className="absolute inset-0 bg-gradient-to-b from-black/70 via-black/50 to-black/80" />
         </div>
 
-        <div className="relative z-10 mx-auto max-w-4xl text-center">
+        <motion.div
+          initial={{ opacity: 0, y: 30 }}
+          whileInView={{ opacity: 1, y: 0 }}
+          viewport={{ once: true }}
+          transition={{ duration: 0.6 }}
+          className="relative z-10 mx-auto max-w-4xl text-center"
+        >
           <div
             className="mb-6 inline-flex items-center gap-2 rounded-full border px-4 py-1.5"
             style={{
@@ -294,25 +301,30 @@ export default function MarketingPage() {
               Sign Up For Free
             </Link>
           </div>
-        </div>
+        </motion.div>
       </section>
 
       {/* ── SECTION 4: STREAM ANYTIME, ANYWHERE ────────────────── */}
       <section className="relative overflow-hidden px-6 py-24 sm:px-12 sm:py-32">
+        {/* Background as responsive image - with object-contain to show full artwork */}
         <div className="absolute inset-0 z-0">
-          <div
-            className="absolute inset-0"
-            style={{
-              backgroundImage: "url('/images/marketing/covenant-bg.jpg')",
-              backgroundSize: "cover",
-              backgroundPosition: "center",
-              backgroundRepeat: "no-repeat",
-            }}
-          />
-          <div className="absolute inset-0 bg-gradient-to-b from-black/60 via-black/40 to-black/70" />
+          <div className="relative h-full w-full">
+            <img
+              src="/images/marketing/covenant-bg.jpg"
+              alt="Stream Anytime, Anywhere"
+              className="h-full w-full object-contain object-center"
+            />
+            <div className="absolute inset-0 bg-gradient-to-b from-black/60 via-black/40 to-black/70" />
+          </div>
         </div>
 
-        <div className="relative z-10 mx-auto max-w-4xl text-center">
+        <motion.div
+          initial={{ opacity: 0, y: 30 }}
+          whileInView={{ opacity: 1, y: 0 }}
+          viewport={{ once: true }}
+          transition={{ duration: 0.6 }}
+          className="relative z-10 mx-auto max-w-4xl text-center"
+        >
           <div
             className="mb-6 inline-flex items-center gap-2 rounded-full border px-4 py-1.5"
             style={{
@@ -352,26 +364,64 @@ export default function MarketingPage() {
               <span className="text-sm">TV</span>
             </div>
           </div>
-        </div>
+        </motion.div>
       </section>
 
       {/* ── FAQ ──────────────────────────────────────────────────── */}
       <section className="px-6 py-24 sm:px-12 sm:py-32">
         <div className="mx-auto max-w-3xl">
-          <div className="mb-12 text-center">
-            <h2 className="font-display text-4xl font-bold text-white sm:text-5xl">
-              Frequently asked questions
-            </h2>
-            <p className="mt-4 text-lg text-white/50">
-              Everything you need to know
-            </p>
-          </div>
-          <div className="rounded-2xl border border-white/10 bg-white/5 backdrop-blur-sm px-6 sm:px-8">
-            {FAQS.map((faq) => (
-              <FAQItem key={faq.q} q={faq.q} a={faq.a} />
-            ))}
-          </div>
+          <motion.div
+            initial={{ opacity: 0, y: 30 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            viewport={{ once: true }}
+            transition={{ duration: 0.6 }}
+          >
+            <div className="mb-12 text-center">
+              <h2 className="font-display text-4xl font-bold text-white sm:text-5xl">
+                Frequently asked questions
+              </h2>
+              <p className="mt-4 text-lg text-white/50">
+                Everything you need to know
+              </p>
+            </div>
+            <div className="rounded-2xl border border-white/10 bg-white/5 backdrop-blur-sm px-6 sm:px-8">
+              {FAQS.map((faq) => (
+                <FAQItem key={faq.q} q={faq.q} a={faq.a} />
+              ))}
+            </div>
+          </motion.div>
         </div>
+      </section>
+
+      {/* ── FINAL CTA ────────────────────────────────────────────── */}
+      <section className="px-6 pb-24 sm:px-12 sm:pb-32">
+        <motion.div
+          initial={{ opacity: 0, y: 30 }}
+          whileInView={{ opacity: 1, y: 0 }}
+          viewport={{ once: true }}
+          transition={{ duration: 0.6 }}
+          className="mx-auto max-w-2xl rounded-2xl border p-10 text-center sm:p-16"
+          style={{
+            borderColor: "rgba(212,175,55,0.15)",
+            background:
+              "linear-gradient(135deg, rgba(212,175,55,0.05), rgba(10,10,10,0.95), rgba(229,9,20,0.03))",
+          }}
+        >
+          <h2 className="font-display text-3xl font-bold text-white sm:text-4xl">
+            Ready to start watching?
+          </h2>
+          <p className="mt-4 text-lg text-white/60">
+            Join thousands of families already streaming on Haapu TV.
+          </p>
+          <Link
+            href="/sign-up"
+            className="mt-8 inline-flex items-center gap-3 rounded-lg px-10 py-4 text-lg font-bold text-white transition-all duration-300 hover:opacity-90 hover:scale-105 sm:px-12 sm:py-5"
+            style={{ backgroundColor: "#E50914" }}
+          >
+            <Play size={20} fill="currentColor" />
+            Get Started Free
+          </Link>
+        </motion.div>
       </section>
 
       {/* ── FOOTER ───────────────────────────────────────────────── */}
