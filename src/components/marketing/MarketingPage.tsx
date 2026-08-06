@@ -303,77 +303,79 @@ export default function MarketingPage() {
 
       {/* ── SECTION 4: STREAM ANYTIME, ANYWHERE ────────────────── */}
       <section className="relative overflow-hidden px-6 py-32 sm:px-12 sm:py-40">
-        <div className="mx-auto max-w-7xl">
-          <div className="flex flex-col lg:flex-row items-center gap-12 lg:gap-16">
-            
-            {/* Left - Image/Artwork - 65% */}
-            <div className="w-full lg:w-[65%] flex-shrink-0">
-              <motion.div
-                initial={{ opacity: 0, x: -30 }}
-                whileInView={{ opacity: 1, x: 0 }}
-                viewport={{ once: true }}
-                transition={{ duration: 0.6 }}
-                className="w-full"
-              >
-                <div className="relative w-full">
-                  <img
-                    src="/images/marketing/covenant-bg.jpg"
-                    alt="Stream Anytime, Anywhere"
-                    className="w-full h-auto object-contain"
-                  />
-                </div>
-              </motion.div>
-            </div>
-
-            {/* Right - Text Content - 35% */}
-            <div className="w-full lg:w-[35%] flex-shrink-0">
-              <motion.div
-                initial={{ opacity: 0, x: 30 }}
-                whileInView={{ opacity: 1, x: 0 }}
-                viewport={{ once: true }}
-                transition={{ duration: 0.6 }}
-                className="w-full"
-              >
-                <div
-                  className="mb-6 inline-flex items-center gap-2 rounded-full border px-4 py-1.5"
-                  style={{
-                    borderColor: "rgba(212,175,55,0.3)",
-                    backgroundColor: "rgba(212,175,55,0.08)",
-                  }}
+        <div className="w-full">
+          <div className="mx-auto max-w-7xl">
+            <div className="flex flex-col lg:flex-row items-center gap-8 lg:gap-20">
+              
+              {/* Left - Image/Artwork - 70% */}
+              <div className="w-full lg:w-[70%] flex-shrink-0">
+                <motion.div
+                  initial={{ opacity: 0, x: -30 }}
+                  whileInView={{ opacity: 1, x: 0 }}
+                  viewport={{ once: true }}
+                  transition={{ duration: 0.6 }}
+                  className="w-full"
                 >
-                  <span
-                    className="text-xs font-medium uppercase tracking-widest"
-                    style={{ color: "#D4AF37" }}
+                  <div className="relative w-full">
+                    <img
+                      src="/images/marketing/covenant-bg.jpg"
+                      alt="Stream Anytime, Anywhere"
+                      className="w-full h-auto object-contain"
+                    />
+                  </div>
+                </motion.div>
+              </div>
+
+              {/* Right - Text Content - 30% */}
+              <div className="w-full lg:w-[30%] flex-shrink-0">
+                <motion.div
+                  initial={{ opacity: 0, x: 30 }}
+                  whileInView={{ opacity: 1, x: 0 }}
+                  viewport={{ once: true }}
+                  transition={{ duration: 0.6 }}
+                  className="w-full"
+                >
+                  <div
+                    className="mb-6 inline-flex items-center gap-2 rounded-full border px-4 py-1.5"
+                    style={{
+                      borderColor: "rgba(212,175,55,0.3)",
+                      backgroundColor: "rgba(212,175,55,0.08)",
+                    }}
                   >
-                    Stream Anytime, Anywhere
-                  </span>
-                </div>
-
-                <h2 className="font-display text-4xl font-bold text-white sm:text-5xl lg:text-6xl">
-                  STREAM ANYTIME, <br />
-                  <span style={{ color: "#D4AF37" }}>ANYWHERE!</span>
-                </h2>
-
-                <p className="mt-6 text-lg leading-relaxed text-white/80 sm:text-xl">
-                  Watch on your phone, tablet, laptop, or TV. Haapu TV works on every 
-                  device so your favourite content is always within reach.
-                </p>
-
-                <div className="mt-8 flex gap-8 text-white/60">
-                  <div className="flex flex-col items-center gap-2">
-                    <Smartphone size={32} />
-                    <span className="text-sm">Phone</span>
+                    <span
+                      className="text-xs font-medium uppercase tracking-widest"
+                      style={{ color: "#D4AF37" }}
+                    >
+                      Stream Anytime, Anywhere
+                    </span>
                   </div>
-                  <div className="flex flex-col items-center gap-2">
-                    <Laptop size={32} />
-                    <span className="text-sm">Laptop</span>
+
+                  <h2 className="font-display text-4xl font-bold text-white sm:text-5xl lg:text-6xl">
+                    STREAM ANYTIME, <br />
+                    <span style={{ color: "#D4AF37" }}>ANYWHERE!</span>
+                  </h2>
+
+                  <p className="mt-6 text-lg leading-relaxed text-white/80 sm:text-xl">
+                    Watch on your phone, tablet, laptop, or TV. Haapu TV works on every 
+                    device so your favourite content is always within reach.
+                  </p>
+
+                  <div className="mt-8 flex gap-8 text-white/60">
+                    <div className="flex flex-col items-center gap-2">
+                      <Smartphone size={32} />
+                      <span className="text-sm">Phone</span>
+                    </div>
+                    <div className="flex flex-col items-center gap-2">
+                      <Laptop size={32} />
+                      <span className="text-sm">Laptop</span>
+                    </div>
+                    <div className="flex flex-col items-center gap-2">
+                      <Tv size={32} />
+                      <span className="text-sm">TV</span>
+                    </div>
                   </div>
-                  <div className="flex flex-col items-center gap-2">
-                    <Tv size={32} />
-                    <span className="text-sm">TV</span>
-                  </div>
-                </div>
-              </motion.div>
+                </motion.div>
+              </div>
             </div>
           </div>
         </div>
