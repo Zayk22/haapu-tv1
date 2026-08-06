@@ -6,7 +6,57 @@ import { motion } from "framer-motion";
 import { ChevronDown, Heart } from "lucide-react";
 import FeaturedMovie from "@/components/covenant/FeaturedMovie";
 
-// ... FAQItem, SocialIcon, etc. (keep as is)
+// ── FAQ ITEM COMPONENT ──────────────────────────────────────────────
+function FAQItem({ q, a }: { q: string; a: string }) {
+  const [open, setOpen] = useState(false);
+  return (
+    <div className="border-b border-white/10 last:border-0">
+      <button
+        onClick={() => setOpen(!open)}
+        className="flex w-full items-center justify-between gap-4 py-6 text-left"
+      >
+        <span className="font-display text-lg font-semibold text-white sm:text-xl">
+          {q}
+        </span>
+        <ChevronDown
+          size={20}
+          className={`flex-shrink-0 transition-transform duration-300 ${open ? "rotate-180" : ""}`}
+          style={{ color: "#D4AF37" }}
+        />
+      </button>
+      <div
+        className={`overflow-hidden transition-all duration-300 ${
+          open ? "max-h-96 pb-6" : "max-h-0"
+        }`}
+      >
+        <p className="text-body leading-relaxed text-white/70">{a}</p>
+      </div>
+    </div>
+  );
+}
+
+// ── SOCIAL ICON COMPONENT ───────────────────────────────────────────
+function SocialIcon({
+  href,
+  label,
+  children,
+}: {
+  href: string;
+  label: string;
+  children: React.ReactNode;
+}) {
+  return (
+    <a
+      href={href}
+      target="_blank"
+      rel="noopener noreferrer"
+      aria-label={label}
+      className="text-white/40 hover:text-white transition-colors duration-200"
+    >
+      {children}
+    </a>
+  );
+}
 
 export default function CovenantPage() {
   const [scrolled, setScrolled] = useState(false);
@@ -149,7 +199,7 @@ export default function CovenantPage() {
       <FeaturedMovie
         title="African Rhapsody"
         description="Experience the rhythm of faith and culture in this powerful cinematic journey. African Rhapsody celebrates the beauty of worship, community, and the unbreakable spirit of a people united in faith."
-        videoId="4kvvngejl9" // Your Wistia video ID
+        videoId="4kvvngejl9"
         posterUrl="/images/marketing/african-rhapsody.jpg"
         backdropUrl="/images/marketing/hero-background.jpg"
         year={2024}
