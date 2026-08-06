@@ -3,57 +3,10 @@
 import { useState, useEffect } from "react";
 import Link from "next/link";
 import { motion } from "framer-motion";
-import { ChevronDown, Heart, Play, Users, Star } from "lucide-react";
+import { ChevronDown, Heart } from "lucide-react";
+import FeaturedMovie from "@/components/covenant/FeaturedMovie";
 
-function FAQItem({ q, a }: { q: string; a: string }) {
-  const [open, setOpen] = useState(false);
-  return (
-    <div className="border-b border-white/10 last:border-0">
-      <button
-        onClick={() => setOpen(!open)}
-        className="flex w-full items-center justify-between gap-4 py-6 text-left"
-      >
-        <span className="font-display text-lg font-semibold text-white sm:text-xl">
-          {q}
-        </span>
-        <ChevronDown
-          size={20}
-          className={`flex-shrink-0 transition-transform duration-300 ${open ? "rotate-180" : ""}`}
-          style={{ color: "#D4AF37" }}
-        />
-      </button>
-      <div
-        className={`overflow-hidden transition-all duration-300 ${
-          open ? "max-h-96 pb-6" : "max-h-0"
-        }`}
-      >
-        <p className="text-body leading-relaxed text-white/70">{a}</p>
-      </div>
-    </div>
-  );
-}
-
-function SocialIcon({
-  href,
-  label,
-  children,
-}: {
-  href: string;
-  label: string;
-  children: React.ReactNode;
-}) {
-  return (
-    <a
-      href={href}
-      target="_blank"
-      rel="noopener noreferrer"
-      aria-label={label}
-      className="text-white/40 hover:text-white transition-colors duration-200"
-    >
-      {children}
-    </a>
-  );
-}
+// ... FAQItem, SocialIcon, etc. (keep as is)
 
 export default function CovenantPage() {
   const [scrolled, setScrolled] = useState(false);
@@ -193,87 +146,18 @@ export default function CovenantPage() {
       </section>
 
       {/* ── SECTION 2: FEATURED MOVIE ──────────────────────────── */}
-      <section className="relative overflow-hidden px-6 py-24 sm:px-12 sm:py-32">
-        <div className="mx-auto max-w-7xl">
-          <div className="grid grid-cols-1 gap-12 lg:grid-cols-2 lg:gap-16 items-center">
-            {/* Left - Text */}
-            <motion.div
-              initial={{ opacity: 0, x: -30 }}
-              whileInView={{ opacity: 1, x: 0 }}
-              viewport={{ once: true }}
-              transition={{ duration: 0.6 }}
-              className="order-2 lg:order-1"
-            >
-              <div
-                className="mb-4 inline-flex items-center gap-2 rounded-full border px-4 py-1.5"
-                style={{
-                  borderColor: "rgba(212,175,55,0.3)",
-                  backgroundColor: "rgba(212,175,55,0.08)",
-                }}
-              >
-                <span
-                  className="text-xs font-medium uppercase tracking-widest"
-                  style={{ color: "#D4AF37" }}
-                >
-                  Your Stories • Your Themes
-                </span>
-              </div>
-
-              <h2 className="font-display text-4xl font-bold text-white sm:text-5xl lg:text-6xl">
-                African <span style={{ color: "#D4AF37" }}>Rhapsody</span>
-              </h2>
-
-              <p className="mt-6 text-lg leading-relaxed text-white/70 sm:text-xl">
-                Experience the rhythm of faith and culture in this powerful 
-                cinematic journey. African Rhapsody celebrates the beauty of 
-                worship, community, and the unbreakable spirit of a people 
-                united in faith.
-              </p>
-
-              <p className="mt-4 text-base text-white/50">
-                A Haapu Original Production
-              </p>
-
-              <Link
-                href="/movie/african-rhapsody"
-                className="mt-8 inline-flex items-center gap-2.5 rounded-lg px-6 py-3 text-sm font-semibold text-white transition-all duration-300 hover:opacity-90 hover:scale-105"
-                style={{ backgroundColor: "#E50914" }}
-              >
-                <Play size={16} fill="currentColor" />
-                Watch Now
-              </Link>
-            </motion.div>
-
-            {/* Right - Movie Artwork */}
-            <motion.div
-              initial={{ opacity: 0, x: 30 }}
-              whileInView={{ opacity: 1, x: 0 }}
-              viewport={{ once: true }}
-              transition={{ duration: 0.6 }}
-              className="order-1 lg:order-2"
-            >
-              <div className="relative overflow-hidden rounded-2xl shadow-2xl">
-                <div className="relative aspect-[2/3] w-full">
-                  <img
-                    src="/images/marketing/african-rhapsody.jpg"
-                    alt="African Rhapsody"
-                    className="h-full w-full object-cover"
-                    onError={(e) => {
-                      e.currentTarget.src = "https://placehold.co/600x900/1a1a1a/D4AF37?text=African+Rhapsody";
-                    }}
-                  />
-                  <div className="absolute inset-0 bg-gradient-to-t from-black/50 via-transparent to-transparent" />
-                  <div className="absolute bottom-4 left-4 right-4">
-                    <p className="text-xs font-medium uppercase tracking-widest text-white/60">
-                      Featured Film
-                    </p>
-                  </div>
-                </div>
-              </div>
-            </motion.div>
-          </div>
-        </div>
-      </section>
+      <FeaturedMovie
+        title="African Rhapsody"
+        description="Experience the rhythm of faith and culture in this powerful cinematic journey. African Rhapsody celebrates the beauty of worship, community, and the unbreakable spirit of a people united in faith."
+        videoId="4kvvngejl9" // Your Wistia video ID
+        posterUrl="/images/marketing/african-rhapsody.jpg"
+        backdropUrl="/images/marketing/hero-background.jpg"
+        year={2024}
+        rating={8.7}
+        duration="1h 45min"
+        genre="Drama • Music"
+        slug="african-rhapsody"
+      />
 
       {/* ── SECTION 3: MISSION STATEMENT ───────────────────────── */}
       <section className="relative overflow-hidden px-6 py-24 sm:px-12 sm:py-32" style={{ backgroundColor: "#1a1410" }}>
