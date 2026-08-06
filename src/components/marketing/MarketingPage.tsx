@@ -306,8 +306,8 @@ export default function MarketingPage() {
         <div className="mx-auto max-w-7xl">
           <div className="flex flex-col lg:flex-row items-center gap-12 lg:gap-16">
             
-            {/* Left - Image/Artwork - 60% */}
-            <div className="w-full lg:w-[60%] flex-shrink-0">
+            {/* Left - Image/Artwork - 65% */}
+            <div className="w-full lg:w-[65%] flex-shrink-0">
               <motion.div
                 initial={{ opacity: 0, x: -30 }}
                 whileInView={{ opacity: 1, x: 0 }}
@@ -315,20 +315,18 @@ export default function MarketingPage() {
                 transition={{ duration: 0.6 }}
                 className="w-full"
               >
-                <div className="relative w-full overflow-hidden rounded-2xl shadow-2xl">
-                  <div className="relative w-full" style={{ paddingBottom: '65%' }}>
-                    <img
-                      src="/images/marketing/covenant-bg.jpg"
-                      alt="Stream Anytime, Anywhere"
-                      className="absolute inset-0 h-full w-full object-cover"
-                    />
-                  </div>
+                <div className="relative w-full">
+                  <img
+                    src="/images/marketing/covenant-bg.jpg"
+                    alt="Stream Anytime, Anywhere"
+                    className="w-full h-auto object-contain"
+                  />
                 </div>
               </motion.div>
             </div>
 
-            {/* Right - Text Content - 40% */}
-            <div className="w-full lg:w-[40%] flex-shrink-0">
+            {/* Right - Text Content - 35% */}
+            <div className="w-full lg:w-[35%] flex-shrink-0">
               <motion.div
                 initial={{ opacity: 0, x: 30 }}
                 whileInView={{ opacity: 1, x: 0 }}
