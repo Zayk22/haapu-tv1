@@ -179,67 +179,67 @@ export default function CovenantPage() {
       </section>
 
       {/* ── SECTION 2: YOUR STORIES, YOUR TERMS ────────────────── */}
-      <section className="relative overflow-hidden px-6 py-24 sm:px-12 sm:py-32">
-        <div className="absolute inset-0 z-0">
-          <div
-            className="absolute inset-0"
-            style={{
-              backgroundImage: "url('/images/african-rhapsody.jpg')",
-              backgroundSize: "cover",
-              backgroundPosition: "center",
-              backgroundRepeat: "no-repeat",
-            }}
-          />
-          <div className="absolute inset-0 bg-gradient-to-b from-black/60 via-black/40 to-black/70" />
-        </div>
+<section className="relative overflow-hidden px-6 py-24 sm:px-12 sm:py-32 min-h-[75vh] flex items-center">
+  <div className="absolute inset-0 z-0">
+    <div
+      className="absolute inset-0"
+      style={{
+        backgroundImage: "url('/images/african-rhapsody.jpg')",
+        backgroundSize: "cover",
+        backgroundPosition: "top center",
+        backgroundRepeat: "no-repeat",
+      }}
+    />
+    <div className="absolute inset-0 bg-gradient-to-r from-black/75 via-black/30 to-black/10" />
+  </div>
 
-        <motion.div
-          initial={{ opacity: 0, y: 30 }}
-          whileInView={{ opacity: 1, y: 0 }}
-          viewport={{ once: true }}
-          transition={{ duration: 0.6 }}
-          className="relative z-10 mx-auto max-w-4xl text-center"
-        >
-          <div
-            className="mb-6 inline-flex items-center gap-2 rounded-full border px-4 py-1.5"
-            style={{
-              borderColor: "rgba(212,175,55,0.3)",
-              backgroundColor: "rgba(212,175,55,0.08)",
-            }}
-          >
-            <span
-              className="text-xs font-medium uppercase tracking-widest"
-              style={{ color: "#D4AF37" }}
-            >
-              Your Stories, Your Terms
-            </span>
-          </div>
+  <motion.div
+    initial={{ opacity: 0, y: 30 }}
+    whileInView={{ opacity: 1, y: 0 }}
+    viewport={{ once: true }}
+    transition={{ duration: 0.6 }}
+    className="relative z-10 mx-auto max-w-4xl text-center"
+  >
+    <div
+      className="mb-6 inline-flex items-center gap-2 rounded-full border px-4 py-1.5"
+      style={{
+        borderColor: "rgba(212,175,55,0.3)",
+        backgroundColor: "rgba(212,175,55,0.08)",
+      }}
+    >
+      <span
+        className="text-xs font-medium uppercase tracking-widest"
+        style={{ color: "#D4AF37" }}
+      >
+        Your Stories, Your Terms
+      </span>
+    </div>
 
-          <h2 className="font-display text-4xl font-bold text-white sm:text-5xl lg:text-6xl">
-            YOUR STORIES, <br />
-            <span style={{ color: "#D4AF37" }}>YOUR TERMS</span>
-          </h2>
+    <h2 className="font-display text-4xl font-bold text-white sm:text-5xl lg:text-6xl">
+      YOUR STORIES, <br />
+      <span style={{ color: "#D4AF37" }}>YOUR TERMS</span>
+    </h2>
 
-          <p className="mx-auto mt-6 max-w-2xl text-base leading-relaxed text-white/80 sm:text-lg">
-            Take charge of the stories that shape us. Watch, celebrate, and support 
-            authentic voices on your terms.
-          </p>
+    <p className="mx-auto mt-6 max-w-2xl text-base leading-relaxed text-white/80 sm:text-lg">
+      Take charge of the stories that shape us. Watch, celebrate, and support 
+      authentic voices on your terms.
+    </p>
 
-          <p className="mt-4 text-sm text-white/60 sm:text-base">
-            Watch. Vote. Support. Share the Power.
-          </p>
+    <p className="mt-4 text-sm text-white/60 sm:text-base">
+      Watch. Vote. Support. Share the Power.
+    </p>
 
-          <Link
-            href="https://haapu.tv/give"
-            target="_blank"
-            rel="noopener noreferrer"
-            className="mt-8 inline-flex items-center gap-3 rounded-lg px-8 py-3 text-sm font-bold transition-all duration-300 hover:opacity-90 hover:scale-105 sm:text-base"
-            style={{ backgroundColor: "#D4AF37", color: "#0A0A0A" }}
-          >
-            JOIN US NOW
-          </Link>
-        </motion.div>
-      </section>
+    <Link
+      href="https://haapu.tv/give"
+      target="_blank"
+      rel="noopener noreferrer"
+      className="mt-8 inline-flex items-center gap-3 rounded-lg px-8 py-3 text-sm font-bold transition-all duration-300 hover:opacity-90 hover:scale-105 sm:text-base"
+      style={{ backgroundColor: "#D4AF37", color: "#0A0A0A" }}
+    >
+      JOIN US NOW
+    </Link>
+  </motion.div>
+</section>
 
       {/* ── SECTION 3: AFRICAN RHAPSODY VIDEO ──────────────────── */}
       <FeaturedMovie
