@@ -178,60 +178,70 @@ export default function MarketingPage() {
       </section>
 
       {/* ── SECTION 2: JOIN THE MOVEMENT ───────────────────────── */}
-      <section className="relative overflow-hidden px-6 py-32 sm:px-12 sm:py-40">
-        <div className="absolute inset-0 z-0">
-          <div className="relative h-full w-full">
-            <img
-              src="/images/marketing/hero-background.jpg"
-              alt="Join the Movement"
-              className="h-full w-full object-cover object-center"
-            />
-            <div className="absolute inset-0 bg-gradient-to-b from-black/60 via-black/40 to-black/70" />
-          </div>
-        </div>
+<section className="relative overflow-hidden px-6 py-0 sm:px-0">
+  <div className="w-full">
+    <div className="relative w-full min-h-[80vh] lg:min-h-[90vh]">
+      
+      {/* Image - Full width, no cropping */}
+      <div className="absolute inset-0 w-full h-full">
+        <img
+          src="/images/marketing/hero-background.jpg"
+          alt="Join the Movement"
+          className="w-full h-full object-contain object-center"
+        />
+        {/* Subtle overlay for text readability - only at the bottom */}
+        <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/30 to-transparent" />
+      </div>
 
-        <motion.div
-          initial={{ opacity: 0, y: 30 }}
-          whileInView={{ opacity: 1, y: 0 }}
-          viewport={{ once: true }}
-          transition={{ duration: 0.6 }}
-          className="relative z-10 mx-auto max-w-4xl text-center"
-        >
-          <div
-            className="mb-6 inline-flex items-center gap-2 rounded-full border px-4 py-1.5"
-            style={{
-              borderColor: "rgba(212,175,55,0.3)",
-              backgroundColor: "rgba(212,175,55,0.08)",
-            }}
+      {/* Content - Bottom-left aligned */}
+      <div className="relative z-10 flex items-end h-full min-h-[80vh] lg:min-h-[90vh]">
+        <div className="w-full max-w-4xl px-6 pb-16 sm:px-12 sm:pb-20 lg:pb-24">
+          <motion.div
+            initial={{ opacity: 0, y: 30 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            viewport={{ once: true }}
+            transition={{ duration: 0.6 }}
+            className="text-left"
           >
-            <span
-              className="text-xs font-medium uppercase tracking-widest"
-              style={{ color: "#D4AF37" }}
+            <div
+              className="mb-4 inline-flex items-center gap-2 rounded-full border px-4 py-1.5"
+              style={{
+                borderColor: "rgba(212,175,55,0.3)",
+                backgroundColor: "rgba(212,175,55,0.08)",
+              }}
             >
-              Join the Movement
-            </span>
-          </div>
+              <span
+                className="text-xs font-medium uppercase tracking-widest"
+                style={{ color: "#D4AF37" }}
+              >
+                Join the Movement
+              </span>
+            </div>
 
-          <h2 className="font-display text-4xl font-bold text-white sm:text-5xl lg:text-6xl">
-            JOIN THE <span style={{ color: "#D4AF37" }}>MOVEMENT</span>
-          </h2>
+            <h2 className="font-display text-4xl font-bold text-white sm:text-5xl lg:text-6xl leading-tight max-w-3xl">
+              JOIN THE <span style={{ color: "#D4AF37" }}>MOVEMENT</span>
+            </h2>
 
-          <p className="mx-auto mt-6 max-w-2xl text-lg leading-relaxed text-white/80 sm:text-xl">
-            Step into a world where your voice shapes the screen. Discover shows 
-            and movies powered by you, for your family. Start now. Your support 
-            makes the difference.
-          </p>
+            <p className="mt-4 max-w-2xl text-base leading-relaxed text-white/80 sm:text-lg">
+              Step into a world where your voice shapes the screen. Discover shows 
+              and movies powered by you, for your family. Start now. Your support 
+              makes the difference.
+            </p>
 
-          <Link
-            href="/covenant"
-            className="mt-10 inline-flex items-center gap-3 rounded-lg px-8 py-4 text-base font-bold transition-all duration-300 hover:opacity-90 hover:scale-105 sm:px-10 sm:py-4 sm:text-lg"
-            style={{ backgroundColor: "#D4AF37", color: "#0A0A0A" }}
-          >
-            <Heart size={20} fill="currentColor" />
-            COVENANT MEMBER
-          </Link>
-        </motion.div>
-      </section>
+            <Link
+              href="/covenant"
+              className="mt-8 inline-flex items-center gap-3 rounded-lg px-8 py-4 text-base font-bold transition-all duration-300 hover:opacity-90 hover:scale-105"
+              style={{ backgroundColor: "#D4AF37", color: "#0A0A0A" }}
+            >
+              <Heart size={20} fill="currentColor" />
+              COVENANT MEMBER
+            </Link>
+          </motion.div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
 
       {/* ── SECTION 3: STREAM AMAZING CONTENT FOR FREE ────────── */}
       <section className="relative overflow-hidden px-6 py-24 sm:px-12 sm:py-32">
