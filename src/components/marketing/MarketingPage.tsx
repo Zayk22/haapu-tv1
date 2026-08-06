@@ -148,7 +148,6 @@ export default function MarketingPage() {
           transition={{ duration: 0.8 }}
           className="relative z-10 max-w-4xl"
         >
-          {/* Large Logo - bigger than text */}
           <div className="mb-8 flex justify-center">
             <img
               src="/logo.png"
@@ -304,66 +303,78 @@ export default function MarketingPage() {
 
       {/* ── SECTION 4: STREAM ANYTIME, ANYWHERE ────────────────── */}
       <section className="relative overflow-hidden px-6 py-24 sm:px-12 sm:py-32">
-        <div className="absolute inset-0 z-0">
-          <div className="relative h-full w-full">
-            <img
-              src="/images/marketing/covenant-bg.jpg"
-              alt="Stream Anytime, Anywhere"
-              className="h-full w-full object-cover object-center"
-            />
-            <div className="absolute inset-0 bg-gradient-to-r from-black/70 via-black/40 to-black/30" />
+        <div className="mx-auto max-w-7xl">
+          <div className="grid grid-cols-1 gap-12 lg:grid-cols-2 lg:gap-16 items-center">
+            
+            {/* Left - Image/Artwork */}
+            <motion.div
+              initial={{ opacity: 0, x: -30 }}
+              whileInView={{ opacity: 1, x: 0 }}
+              viewport={{ once: true }}
+              transition={{ duration: 0.6 }}
+              className="order-2 lg:order-1"
+            >
+              <div className="relative overflow-hidden rounded-2xl shadow-2xl">
+                <div className="relative aspect-[4/3] w-full">
+                  <img
+                    src="/images/marketing/covenant-bg.jpg"
+                    alt="Stream Anytime, Anywhere"
+                    className="h-full w-full object-cover"
+                  />
+                </div>
+              </div>
+            </motion.div>
+
+            {/* Right - Text Content */}
+            <motion.div
+              initial={{ opacity: 0, x: 30 }}
+              whileInView={{ opacity: 1, x: 0 }}
+              viewport={{ once: true }}
+              transition={{ duration: 0.6 }}
+              className="order-1 lg:order-2"
+            >
+              <div
+                className="mb-6 inline-flex items-center gap-2 rounded-full border px-4 py-1.5"
+                style={{
+                  borderColor: "rgba(212,175,55,0.3)",
+                  backgroundColor: "rgba(212,175,55,0.08)",
+                }}
+              >
+                <span
+                  className="text-xs font-medium uppercase tracking-widest"
+                  style={{ color: "#D4AF37" }}
+                >
+                  Stream Anytime, Anywhere
+                </span>
+              </div>
+
+              <h2 className="font-display text-4xl font-bold text-white sm:text-5xl lg:text-6xl">
+                STREAM ANYTIME, <br />
+                <span style={{ color: "#D4AF37" }}>ANYWHERE!</span>
+              </h2>
+
+              <p className="mt-6 max-w-2xl text-lg leading-relaxed text-white/80 sm:text-xl">
+                Watch on your phone, tablet, laptop, or TV. Haapu TV works on every 
+                device so your favourite content is always within reach.
+              </p>
+
+              <div className="mt-8 flex gap-8 text-white/60">
+                <div className="flex flex-col items-center gap-2">
+                  <Smartphone size={32} />
+                  <span className="text-sm">Phone</span>
+                </div>
+                <div className="flex flex-col items-center gap-2">
+                  <Laptop size={32} />
+                  <span className="text-sm">Laptop</span>
+                </div>
+                <div className="flex flex-col items-center gap-2">
+                  <Tv size={32} />
+                  <span className="text-sm">TV</span>
+                </div>
+              </div>
+            </motion.div>
           </div>
         </div>
-
-        <motion.div
-          initial={{ opacity: 0, x: 30 }}
-          whileInView={{ opacity: 1, x: 0 }}
-          viewport={{ once: true }}
-          transition={{ duration: 0.6 }}
-          className="relative z-10 mx-auto max-w-7xl flex justify-end"
-        >
-          <div className="max-w-2xl text-left">
-            <div
-              className="mb-6 inline-flex items-center gap-2 rounded-full border px-4 py-1.5"
-              style={{
-                borderColor: "rgba(212,175,55,0.3)",
-                backgroundColor: "rgba(212,175,55,0.08)",
-              }}
-            >
-              <span
-                className="text-xs font-medium uppercase tracking-widest"
-                style={{ color: "#D4AF37" }}
-              >
-                Stream Anytime, Anywhere
-              </span>
-            </div>
-
-            <h2 className="font-display text-4xl font-bold text-white sm:text-5xl lg:text-6xl">
-              STREAM ANYTIME, <br />
-              <span style={{ color: "#D4AF37" }}>ANYWHERE!</span>
-            </h2>
-
-            <p className="mt-6 max-w-2xl text-lg leading-relaxed text-white/80 sm:text-xl">
-              Watch on your phone, tablet, laptop, or TV. Haapu TV works on every 
-              device so your favourite content is always within reach.
-            </p>
-
-            <div className="mt-8 flex gap-8 text-white/60">
-              <div className="flex flex-col items-center gap-2">
-                <Smartphone size={32} />
-                <span className="text-sm">Phone</span>
-              </div>
-              <div className="flex flex-col items-center gap-2">
-                <Laptop size={32} />
-                <span className="text-sm">Laptop</span>
-              </div>
-              <div className="flex flex-col items-center gap-2">
-                <Tv size={32} />
-                <span className="text-sm">TV</span>
-              </div>
-            </div>
-          </div>
-        </motion.div>
       </section>
 
       {/* ── FAQ ──────────────────────────────────────────────────── */}
