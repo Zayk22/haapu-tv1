@@ -1,5 +1,5 @@
 "use client";
-
+import { motion, AnimatePresence } from "framer-motion";
 import { useState, useEffect } from "react";
 import Link from "next/link";
 import { motion } from "framer-motion";
@@ -114,6 +114,7 @@ function BackToTopButton() {
 
 export default function MarketingPage() {
   const [scrolled, setScrolled] = useState(false);
+  const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
 
   useEffect(() => {
     const handleScroll = () => {
