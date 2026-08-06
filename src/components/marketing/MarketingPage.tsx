@@ -149,30 +149,31 @@ export default function MarketingPage() {
           transition={{ duration: 0.8 }}
           className="relative z-10 max-w-4xl"
         >
-          <div className="mb-6 flex justify-center">
+          {/* Large Logo - bigger than text */}
+          <div className="mb-8 flex justify-center">
             <img
               src="/logo.png"
               alt="Haapu TV"
-              className="h-16 w-auto object-contain sm:h-20 md:h-24"
+              className="h-24 w-auto object-contain sm:h-32 md:h-40 lg:h-48"
             />
           </div>
 
           <h1 className="font-display text-4xl font-bold text-white sm:text-5xl lg:text-6xl xl:text-7xl">
-            We Are <span style={{ color: "#D4AF37" }}>Haapu</span>
+            We Are Haapu
           </h1>
 
-          <p className="mx-auto mt-6 max-w-3xl text-lg leading-relaxed text-white/80 sm:text-xl lg:text-2xl">
-            A Platform where Faith and Entertainment Comes Alive.
+          <p className="mx-auto mt-4 max-w-3xl text-base leading-relaxed text-white/80 sm:text-lg lg:text-xl">
+            A Platform Where Faith and Entertainment Comes Alive!
           </p>
 
-          <div className="mt-10 flex flex-col items-center gap-4 sm:flex-row sm:justify-center">
+          <div className="mt-8 flex flex-col items-center gap-4 sm:flex-row sm:justify-center">
             <Link
               href="/sign-up"
               className="flex w-full items-center justify-center gap-2.5 rounded-lg px-8 py-4 text-base font-bold text-white transition-all duration-300 hover:opacity-90 hover:scale-105 active:scale-95 sm:w-auto sm:px-10 sm:py-4 sm:text-lg"
               style={{ backgroundColor: "#E50914" }}
             >
               <Play size={20} fill="currentColor" />
-              Watch Now
+              WATCH NOW
             </Link>
           </div>
         </motion.div>
@@ -180,7 +181,6 @@ export default function MarketingPage() {
 
       {/* ── SECTION 2: JOIN THE MOVEMENT ───────────────────────── */}
       <section className="relative overflow-hidden px-6 py-24 sm:px-12 sm:py-32">
-        {/* Background as responsive image - FULL CONTAINER */}
         <div className="absolute inset-0 z-0">
           <div className="relative h-full w-full">
             <img
@@ -305,7 +305,6 @@ export default function MarketingPage() {
 
       {/* ── SECTION 4: STREAM ANYTIME, ANYWHERE ────────────────── */}
       <section className="relative overflow-hidden px-6 py-24 sm:px-12 sm:py-32">
-        {/* Background image - FULL CONTAINER */}
         <div className="absolute inset-0 z-0">
           <div className="relative h-full w-full">
             <img
@@ -317,7 +316,6 @@ export default function MarketingPage() {
           </div>
         </div>
 
-        {/* Content - RIGHT ALIGNED */}
         <motion.div
           initial={{ opacity: 0, x: 30 }}
           whileInView={{ opacity: 1, x: 0 }}
