@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useEffect } from "react";
+import { useState } from "react";
 import { motion } from "framer-motion";
 import Link from "next/link";
 import { Play, Clock, Calendar, Star } from "lucide-react";
@@ -16,6 +16,7 @@ interface FeaturedMovieProps {
   duration?: string;
   genre?: string;
   slug?: string;
+  showLabel?: boolean;
 }
 
 export default function FeaturedMovie({
@@ -29,17 +30,17 @@ export default function FeaturedMovie({
   duration,
   genre,
   slug,
+  showLabel = true,
 }: FeaturedMovieProps) {
   const [isPlaying, setIsPlaying] = useState(false);
   const [isLoading, setIsLoading] = useState(true);
 
-  // Build the Wistia embed URL
   const embedUrl = `https://fast.wistia.net/embed/iframe/${videoId}?autoPlay=true`;
 
   return (
-    <section className="relative overflow-hidden px-6 py-16 sm:px-12 sm:py-24">
+    <section className="relative overflow-hidden px-6 py-24 sm:px-12 sm:py-32">
       <div className="mx-auto max-w-7xl">
-        <div className="grid grid-cols-1 gap-8 lg:grid-cols-2 lg:gap-12 xl:gap-16 items-stretch">
+        <div className="grid grid-cols-1 gap-12 lg:grid-cols-2 lg:gap-16 xl:gap-20 items-stretch">
           
           {/* Left - Text Content */}
           <motion.div
@@ -49,21 +50,23 @@ export default function FeaturedMovie({
             transition={{ duration: 0.6 }}
             className="flex flex-col justify-center order-2 lg:order-1"
           >
-            {/* Label */}
-            <div
-              className="mb-4 inline-flex items-center gap-2 rounded-full border px-4 py-1.5 w-fit"
-              style={{
-                borderColor: "rgba(212,175,55,0.3)",
-                backgroundColor: "rgba(212,175,55,0.08)",
-              }}
-            >
-              <span
-                className="text-xs font-medium uppercase tracking-widest"
-                style={{ color: "#D4AF37" }}
+            {/* Label - Conditionally shown */}
+            {showLabel && (
+              <div
+                className="mb-4 inline-flex items-center gap-2 rounded-full border px-4 py-1.5 w-fit"
+                style={{
+                  borderColor: "rgba(212,175,55,0.3)",
+                  backgroundColor: "rgba(212,175,55,0.08)",
+                }}
               >
-                Featured Film
-              </span>
-            </div>
+                <span
+                  className="text-xs font-medium uppercase tracking-widest"
+                  style={{ color: "#D4AF37" }}
+                >
+                  Featured Film
+                </span>
+              </div>
+            )}
 
             {/* Title */}
             <h2 className="font-display text-4xl font-bold text-white sm:text-5xl lg:text-6xl">
@@ -142,10 +145,8 @@ export default function FeaturedMovie({
                       e.currentTarget.src = "https://placehold.co/1280x720/1a1a1a/D4AF37?text=African+Rhapsody";
                     }}
                   />
-                  {/* Dark overlay */}
                   <div className="absolute inset-0 bg-gradient-to-t from-black/60 via-black/20 to-transparent" />
                   
-                  {/* Centered Play Button */}
                   <div className="absolute inset-0 flex items-center justify-center">
                     <div 
                       className="flex h-20 w-20 items-center justify-center rounded-full bg-crimson/90 text-white shadow-2xl transition-transform duration-300 hover:scale-110"
@@ -155,7 +156,6 @@ export default function FeaturedMovie({
                     </div>
                   </div>
 
-                  {/* Bottom gradient with title */}
                   <div className="absolute bottom-0 left-0 right-0 p-6 bg-gradient-to-t from-black/80 via-black/40 to-transparent">
                     <p className="text-sm font-medium text-white/80">▶ Click to play</p>
                     <p className="text-xs text-white/40">{title}</p>

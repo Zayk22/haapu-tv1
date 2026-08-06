@@ -3,35 +3,44 @@
 import { useState, useEffect } from "react";
 import Link from "next/link";
 import { motion } from "framer-motion";
-import { ChevronDown, Heart } from "lucide-react";
+import { ChevronDown, Heart, ArrowUp } from "lucide-react";
 import FeaturedMovie from "@/components/covenant/FeaturedMovie";
 
-// ── FAQ ITEM COMPONENT ──────────────────────────────────────────────
-function FAQItem({ q, a }: { q: string; a: string }) {
-  const [open, setOpen] = useState(false);
+// ── BACK TO TOP BUTTON ──────────────────────────────────────────────
+function BackToTopButton() {
+  const [isVisible, setIsVisible] = useState(false);
+
+  useEffect(() => {
+    const toggleVisibility = () => {
+      if (window.scrollY > 500) {
+        setIsVisible(true);
+      } else {
+        setIsVisible(false);
+      }
+    };
+
+    window.addEventListener('scroll', toggleVisibility);
+    return () => window.removeEventListener('scroll', toggleVisibility);
+  }, []);
+
+  const scrollToTop = () => {
+    window.scrollTo({
+      top: 0,
+      behavior: 'smooth',
+    });
+  };
+
   return (
-    <div className="border-b border-white/10 last:border-0">
-      <button
-        onClick={() => setOpen(!open)}
-        className="flex w-full items-center justify-between gap-4 py-6 text-left"
-      >
-        <span className="font-display text-lg font-semibold text-white sm:text-xl">
-          {q}
-        </span>
-        <ChevronDown
-          size={20}
-          className={`flex-shrink-0 transition-transform duration-300 ${open ? "rotate-180" : ""}`}
-          style={{ color: "#D4AF37" }}
-        />
-      </button>
-      <div
-        className={`overflow-hidden transition-all duration-300 ${
-          open ? "max-h-96 pb-6" : "max-h-0"
-        }`}
-      >
-        <p className="text-body leading-relaxed text-white/70">{a}</p>
-      </div>
-    </div>
+    <button
+      onClick={scrollToTop}
+      className={`fixed bottom-8 right-8 z-50 flex h-12 w-12 items-center justify-center rounded-full transition-all duration-300 hover:scale-110 ${
+        isVisible ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-10 pointer-events-none'
+      }`}
+      style={{ backgroundColor: "#D4AF37", color: "#0A0A0A" }}
+      aria-label="Back to top"
+    >
+      <ArrowUp size={20} />
+    </button>
   );
 }
 
@@ -68,25 +77,6 @@ export default function CovenantPage() {
     window.addEventListener('scroll', handleScroll);
     return () => window.removeEventListener('scroll', handleScroll);
   }, []);
-
-  const faqs = [
-    {
-      q: "What is a Covenant Member?",
-      a: "A Covenant Member is a financial partner who believes in free, faith-forward entertainment for every family. Covenant Members provide the foundation that keeps Haapu TV free for everyone.",
-    },
-    {
-      q: "What do Covenant Members get?",
-      a: "Covenant Members get exclusive early access to new releases, a vote in shaping what gets made next, behind-the-scenes content, and the satisfaction of knowing they're making a difference.",
-    },
-    {
-      q: "How much does it cost to become a Covenant Member?",
-      a: "Covenant Members contribute at whatever level feels right for them. Every contribution, no matter the size, helps keep Haapu TV free for the community.",
-    },
-    {
-      q: "How is Haapu TV different from other streaming platforms?",
-      a: "Haapu TV is community-powered. Covenant Members decide which films and shows are made and distributed. Your voice shapes the screen. Plus, it's always free to watch.",
-    },
-  ];
 
   return (
     <div className="bg-black">
@@ -162,7 +152,7 @@ export default function CovenantPage() {
               className="text-xs font-medium uppercase tracking-widest"
               style={{ color: "#D4AF37" }}
             >
-              Join the Amazing
+              JOIN THE AMAZING MOVEMENT
             </span>
           </div>
 
@@ -172,8 +162,7 @@ export default function CovenantPage() {
           </h1>
 
           <p className="mx-auto mt-6 max-w-2xl text-lg leading-relaxed text-white/80 sm:text-xl">
-            Join a community of believers shaping the future of faith-forward entertainment.
-            Your support keeps Haapu TV free for every family.
+            Help us build a library of shows that bring families together.
           </p>
 
           <Link
@@ -184,18 +173,76 @@ export default function CovenantPage() {
             style={{ backgroundColor: "#D4AF37", color: "#0A0A0A" }}
           >
             <Heart size={20} fill="currentColor" />
-            Join Now
+            Join Us Now
           </Link>
         </motion.div>
-
-        <div className="absolute bottom-8 left-1/2 z-10 -translate-x-1/2 animate-bounce">
-          <div className="h-10 w-6 rounded-full border-2 border-white/30 flex items-start justify-center p-1">
-            <div className="h-2 w-1 rounded-full bg-white/50" />
-          </div>
-        </div>
       </section>
 
-      {/* ── SECTION 2: FEATURED MOVIE ──────────────────────────── */}
+      {/* ── SECTION 2: YOUR STORIES, YOUR TERMS ────────────────── */}
+      <section className="relative overflow-hidden px-6 py-24 sm:px-12 sm:py-32">
+        <div className="absolute inset-0 z-0">
+          <div
+            className="absolute inset-0"
+            style={{
+              backgroundImage: "url('/images/african-rhapsody.jpg')",
+              backgroundSize: "cover",
+              backgroundPosition: "center",
+              backgroundRepeat: "no-repeat",
+            }}
+          />
+          <div className="absolute inset-0 bg-gradient-to-b from-black/70 via-black/60 to-black/80" />
+        </div>
+
+        <motion.div
+          initial={{ opacity: 0, y: 30 }}
+          whileInView={{ opacity: 1, y: 0 }}
+          viewport={{ once: true }}
+          transition={{ duration: 0.6 }}
+          className="relative z-10 mx-auto max-w-4xl text-center"
+        >
+          <div
+            className="mb-6 inline-flex items-center gap-2 rounded-full border px-4 py-1.5"
+            style={{
+              borderColor: "rgba(212,175,55,0.3)",
+              backgroundColor: "rgba(212,175,55,0.08)",
+            }}
+          >
+            <span
+              className="text-xs font-medium uppercase tracking-widest"
+              style={{ color: "#D4AF37" }}
+            >
+              Your Stories, Your Terms
+            </span>
+          </div>
+
+          <h2 className="font-display text-4xl font-bold text-white sm:text-5xl lg:text-6xl">
+            YOUR STORIES, <br />
+            <span style={{ color: "#D4AF37" }}>YOUR TERMS</span>
+          </h2>
+
+          <p className="mx-auto mt-6 max-w-2xl text-lg leading-relaxed text-white/80 sm:text-xl">
+            Take charge of the stories that shape us. Watch, celebrate, and support 
+            authentic voices on your terms.
+          </p>
+
+          <p className="mt-4 text-base text-white/60">
+            Watch. Vote. Support. Share the Power.
+          </p>
+
+          <Link
+            href="https://haapu.tv/give"
+            target="_blank"
+            rel="noopener noreferrer"
+            className="mt-10 inline-flex items-center gap-3 rounded-lg px-10 py-4 text-lg font-bold transition-all duration-300 hover:opacity-90 hover:scale-105"
+            style={{ backgroundColor: "#D4AF37", color: "#0A0A0A" }}
+          >
+            <Heart size={20} fill="currentColor" />
+            JOIN US NOW
+          </Link>
+        </motion.div>
+      </section>
+
+      {/* ── SECTION 3: AFRICAN RHAPSODY VIDEO ──────────────────── */}
       <FeaturedMovie
         title="African Rhapsody"
         description="Experience the rhythm of faith and culture in this powerful cinematic journey. African Rhapsody celebrates the beauty of worship, community, and the unbreakable spirit of a people united in faith."
@@ -207,9 +254,10 @@ export default function CovenantPage() {
         duration="1h 45min"
         genre="Drama • Music"
         slug="african-rhapsody"
+        showLabel={false}
       />
 
-      {/* ── SECTION 3: MISSION STATEMENT ───────────────────────── */}
+      {/* ── SECTION 4: YOUR GIVING MAKES A DIFFERENCE ──────────── */}
       <section className="relative overflow-hidden px-6 py-24 sm:px-12 sm:py-32" style={{ backgroundColor: "#1a1410" }}>
         <div className="mx-auto max-w-4xl text-center">
           <motion.div
@@ -234,26 +282,33 @@ export default function CovenantPage() {
             </div>
 
             <h2 className="font-display text-4xl font-bold text-white sm:text-5xl lg:text-6xl">
-              YOUR GIVING <br />
-              <span style={{ color: "#D4AF37" }}>MAKES A DIFFERENCE</span>
+              Your Giving <br />
+              <span style={{ color: "#D4AF37" }}>Makes a Difference</span>
             </h2>
+
+            <h3 className="mt-4 text-xl font-semibold text-white/80">
+              Help Us Bring You Shows You'll Love
+            </h3>
 
             <div className="mt-8 space-y-6 text-center">
               <p className="text-lg leading-relaxed text-white/70 sm:text-xl">
-                Covenant Members are the heartbeat of Haapu TV. Your generous support 
-                ensures that faith-forward, family-friendly entertainment remains 
-                free for everyone, everywhere.
+                As a Covenant Member, your generous support directly empowers our mission to curate an exceptional library of programming that reflects our shared values.
               </p>
 
               <p className="text-lg leading-relaxed text-white/60 sm:text-xl">
-                When you become a Covenant Member, you're not just giving — you're 
-                shaping the stories that inspire, uplift, and unite families around 
-                the world.
+                With your generous gift as a Covenant Member, you directly help us curate a growing library of shows designed with you in mind. Your support enables us to discover and develop content that aligns with our shared values and vision.
+              </p>
+
+              <p className="text-lg leading-relaxed text-white/60 sm:text-xl">
+                We're committed to launching new titles regularly, bringing fresh perspectives and meaningful stories to our community. This ongoing expansion is only possible thanks to the generosity of dedicated Covenant Members like you.
+              </p>
+
+              <p className="text-lg leading-relaxed text-white/60 sm:text-xl">
+                Your partnership makes a difference. Together, we're building a collection of content that inspires, entertains, and strengthens our community.
               </p>
 
               <p className="text-lg leading-relaxed text-white/50 sm:text-xl">
-                Every contribution, no matter the size, helps keep Haapu TV free 
-                and empowers us to create more life-changing content.
+                Join us in this journey. Your support today helps shape the programming of tomorrow.
               </p>
             </div>
 
@@ -271,42 +326,74 @@ export default function CovenantPage() {
         </div>
       </section>
 
-      {/* ── SECTION 4: FAQ ──────────────────────────────────────── */}
+      {/* ── SECTION 5: COVENANT MEMBERSHIP INFORMATION ─────────── */}
       <section className="px-6 py-24 sm:px-12 sm:py-32">
-        <div className="mx-auto max-w-3xl">
+        <div className="mx-auto max-w-4xl">
           <motion.div
             initial={{ opacity: 0, y: 30 }}
             whileInView={{ opacity: 1, y: 0 }}
             viewport={{ once: true }}
             transition={{ duration: 0.6 }}
           >
-            <div className="mb-12 text-left">
-              <div
-                className="mb-4 inline-flex items-center gap-2 rounded-full border px-4 py-1.5"
-                style={{
-                  borderColor: "rgba(212,175,55,0.3)",
-                  backgroundColor: "rgba(212,175,55,0.08)",
-                }}
+            {/* Centered Button */}
+            <div className="text-center mb-12">
+              <Link
+                href="https://haapu.tv/give"
+                target="_blank"
+                rel="noopener noreferrer"
+                className="inline-flex items-center gap-2 rounded-lg px-8 py-3 text-sm font-bold transition-all duration-300 hover:opacity-90 hover:scale-105"
+                style={{ backgroundColor: "#D4AF37", color: "#0A0A0A" }}
               >
-                <span
-                  className="text-xs font-medium uppercase tracking-widest"
-                  style={{ color: "#D4AF37" }}
-                >
-                  Got Questions?
-                </span>
-              </div>
-              <h2 className="font-display text-4xl font-bold text-white sm:text-5xl">
-                Frequently Asked Questions
-              </h2>
-              <p className="mt-4 text-lg text-white/40">
-                Everything you need to know about becoming a Covenant Member
-              </p>
+                <Heart size={16} fill="currentColor" />
+                Join the Covenant
+              </Link>
             </div>
 
-            <div className="rounded-2xl border border-white/10 bg-white/5 px-6 sm:px-8">
-              {faqs.map((faq) => (
-                <FAQItem key={faq.q} q={faq.q} a={faq.a} />
-              ))}
+            <h2 className="text-center font-display text-3xl font-bold text-white sm:text-4xl lg:text-5xl mb-8">
+              How is the money from my Covenant Membership used?
+            </h2>
+
+            <div className="space-y-6 text-left">
+              <div>
+                <h3 className="text-xl font-semibold text-white">1. Free Content for All</h3>
+                <p className="mt-2 text-base leading-relaxed text-white/60">
+                  We use these funds to make our content freely available worldwide, ensuring families everywhere can access quality entertainment.
+                </p>
+              </div>
+
+              <div>
+                <h3 className="text-xl font-semibold text-white">2. Expanding Our Library</h3>
+                <p className="mt-2 text-base leading-relaxed text-white/60">
+                  Your support helps us license great content from like-minded filmmakers and producers, growing our collection of family-friendly shows and movies.
+                </p>
+              </div>
+
+              <div>
+                <h3 className="text-xl font-semibold text-white">3. Reaching New Audiences</h3>
+                <p className="mt-2 text-base leading-relaxed text-white/60">
+                  We invest in outreach efforts to introduce more families to our wholesome content, spreading positive values far and wide.
+                </p>
+              </div>
+
+              <div>
+                <h3 className="text-xl font-semibold text-white">4. Supporting Haapu Filmmakers</h3>
+                <p className="mt-2 text-base leading-relaxed text-white/60">
+                  Your membership helps us nurture and promote talented creators who share our vision for family-friendly entertainment.
+                </p>
+              </div>
+
+              <div>
+                <h3 className="text-xl font-semibold text-white">5. Building a Legacy</h3>
+                <p className="mt-2 text-base leading-relaxed text-white/60">
+                  Every contribution goes towards our goal of creating a comprehensive library of wholesome entertainment that will bring families together for generations to come.
+                </p>
+              </div>
+
+              <div className="mt-8 pt-6 border-t border-white/10">
+                <p className="text-base leading-relaxed text-white/50 text-center">
+                  In essence, your Covenant Membership is an investment in a brighter, more connected future for families around the world. Thank you for being part of our mission!
+                </p>
+              </div>
             </div>
           </motion.div>
         </div>
@@ -355,6 +442,9 @@ export default function CovenantPage() {
           </div>
         </div>
       </footer>
+
+      {/* ── BACK TO TOP BUTTON ──────────────────────────────────── */}
+      <BackToTopButton />
     </div>
   );
 }
