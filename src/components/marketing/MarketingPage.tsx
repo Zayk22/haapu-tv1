@@ -302,83 +302,86 @@ export default function MarketingPage() {
       </section>
 
       {/* ── SECTION 4: STREAM ANYTIME, ANYWHERE ────────────────── */}
-      <section className="relative overflow-hidden px-6 py-32 sm:px-12 sm:py-40">
-        <div className="w-full">
-          <div className="flex flex-col lg:flex-row items-center gap-8 lg:gap-16">
-            
-            {/* Left - Image/Artwork - Extends beyond container */}
-            <div className="w-full lg:w-[70%] flex-shrink-0 lg:pl-0">
-              <motion.div
-                initial={{ opacity: 0, x: -30 }}
-                whileInView={{ opacity: 1, x: 0 }}
-                viewport={{ once: true }}
-                transition={{ duration: 0.6 }}
-                className="w-full"
-              >
-                <div className="relative w-full">
-                  <img
-                    src="/images/marketing/covenant-bg.jpg"
-                    alt="Stream Anytime, Anywhere"
-                    className="w-full h-auto object-contain"
-                  />
-                </div>
-              </motion.div>
+<section className="relative overflow-hidden px-6 py-32 sm:px-12 sm:py-40">
+  <div className="w-full">
+    <div className="flex flex-col lg:flex-row items-start gap-6 lg:gap-10">
+      
+      {/* Left - Image/Artwork - UNCHANGED */}
+      <div className="w-full lg:w-[65%] flex-shrink-0 lg:pl-0">
+        <motion.div
+          initial={{ opacity: 0, x: -30 }}
+          whileInView={{ opacity: 1, x: 0 }}
+          viewport={{ once: true }}
+          transition={{ duration: 0.6 }}
+          className="w-full"
+        >
+          <div className="relative w-full">
+            <img
+              src="/images/marketing/covenant-bg.jpg"
+              alt="Stream Anytime, Anywhere"
+              className="w-full h-auto object-contain"
+            />
+          </div>
+        </motion.div>
+      </div>
+
+      {/* Right - Text Content */}
+      <div className="w-full lg:w-[35%] flex-shrink-0 lg:pr-4 flex items-start pt-8 lg:pt-12">
+        <motion.div
+          initial={{ opacity: 0, x: 30 }}
+          whileInView={{ opacity: 1, x: 0 }}
+          viewport={{ once: true }}
+          transition={{ duration: 0.6 }}
+          className="w-full mx-auto lg:mx-0"
+        >
+          {/* Badge - More spacing below */}
+          <div
+            className="mb-8 inline-flex items-center gap-2 rounded-full border px-4 py-1.5"
+            style={{
+              borderColor: "rgba(212,175,55,0.3)",
+              backgroundColor: "rgba(212,175,55,0.08)",
+            }}
+          >
+            <span
+              className="text-xs font-medium uppercase tracking-widest"
+              style={{ color: "#D4AF37" }}
+            >
+              Stream Anytime, Anywhere
+            </span>
+          </div>
+
+          {/* Heading - Slightly smaller on desktop, more spacing below */}
+          <h2 className="font-display text-4xl font-bold text-white sm:text-5xl lg:text-5xl leading-tight mb-6">
+            STREAM ANYTIME, <br />
+            <span style={{ color: "#D4AF37" }}>ANYWHERE!</span>
+          </h2>
+
+          {/* Paragraph - No width restriction, more spacing below */}
+          <p className="text-base leading-relaxed text-white/80 sm:text-lg mb-10">
+            Watch on your phone, tablet, laptop, or TV. Haapu TV works on every 
+            device so your favourite content is always within reach.
+          </p>
+
+          {/* Device Icons - Gold hover */}
+          <div className="flex gap-10 text-white/60">
+            <div className="flex flex-col items-center gap-2 transition-all duration-300 hover:text-[#D4AF37] cursor-pointer">
+              <Smartphone size={36} className="transition-colors duration-300" />
+              <span className="text-sm">Phone</span>
             </div>
-
-            {/* Right - Text Content */}
-            <div className="w-full lg:w-[30%] flex-shrink-0 lg:pr-8">
-              <motion.div
-                initial={{ opacity: 0, x: 30 }}
-                whileInView={{ opacity: 1, x: 0 }}
-                viewport={{ once: true }}
-                transition={{ duration: 0.6 }}
-                className="w-full max-w-lg mx-auto lg:mx-0"
-              >
-                <div
-                  className="mb-6 inline-flex items-center gap-2 rounded-full border px-4 py-1.5"
-                  style={{
-                    borderColor: "rgba(212,175,55,0.3)",
-                    backgroundColor: "rgba(212,175,55,0.08)",
-                  }}
-                >
-                  <span
-                    className="text-xs font-medium uppercase tracking-widest"
-                    style={{ color: "#D4AF37" }}
-                  >
-                    Stream Anytime, Anywhere
-                  </span>
-                </div>
-
-                <h2 className="font-display text-4xl font-bold text-white sm:text-5xl lg:text-6xl">
-                  STREAM ANYTIME, <br />
-                  <span style={{ color: "#D4AF37" }}>ANYWHERE!</span>
-                </h2>
-
-                <p className="mt-6 text-lg leading-relaxed text-white/80 sm:text-xl">
-                  Watch on your phone, tablet, laptop, or TV. Haapu TV works on every 
-                  device so your favourite content is always within reach.
-                </p>
-
-                <div className="mt-8 flex gap-8 text-white/60">
-                  <div className="flex flex-col items-center gap-2">
-                    <Smartphone size={32} />
-                    <span className="text-sm">Phone</span>
-                  </div>
-                  <div className="flex flex-col items-center gap-2">
-                    <Laptop size={32} />
-                    <span className="text-sm">Laptop</span>
-                  </div>
-                  <div className="flex flex-col items-center gap-2">
-                    <Tv size={32} />
-                    <span className="text-sm">TV</span>
-                  </div>
-                </div>
-              </motion.div>
+            <div className="flex flex-col items-center gap-2 transition-all duration-300 hover:text-[#D4AF37] cursor-pointer">
+              <Laptop size={36} className="transition-colors duration-300" />
+              <span className="text-sm">Laptop</span>
+            </div>
+            <div className="flex flex-col items-center gap-2 transition-all duration-300 hover:text-[#D4AF37] cursor-pointer">
+              <Tv size={36} className="transition-colors duration-300" />
+              <span className="text-sm">TV</span>
             </div>
           </div>
-        </div>
-      </section>
-
+        </motion.div>
+      </div>
+    </div>
+  </div>
+</section>
       {/* ── FAQ ──────────────────────────────────────────────────── */}
       <section className="px-6 py-24 sm:px-12 sm:py-32">
         <div className="mx-auto max-w-3xl">
