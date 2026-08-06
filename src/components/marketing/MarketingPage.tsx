@@ -177,9 +177,9 @@ export default function MarketingPage() {
         </motion.div>
       </section>
 
-      {/* ── SECTION 2: JOIN THE MOVEMENT ───────────────────────── */}
-<section className="relative overflow-hidden px-6 py-0 sm:px-0">
-  <div className="w-full">
+     {/* ── SECTION 2: JOIN THE MOVEMENT ───────────────────────── */}
+<section className="relative overflow-hidden w-full py-0">
+  <div className="relative w-screen left-1/2 right-1/2 -ml-[50vw] -mr-[50vw]">
     <div className="relative w-full min-h-[80vh] lg:min-h-[90vh]">
       
       {/* Image - Full width, no cropping */}
@@ -187,7 +187,7 @@ export default function MarketingPage() {
         <img
           src="/images/marketing/hero-background.jpg"
           alt="Join the Movement"
-          className="w-full h-full object-contain object-center"
+          className="w-full h-full object-cover object-center"
         />
         {/* Subtle overlay for text readability - only at the bottom */}
         <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/30 to-transparent" />
