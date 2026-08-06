@@ -304,7 +304,7 @@ export default function MarketingPage() {
       {/* ── SECTION 4: STREAM ANYTIME, ANYWHERE ────────────────── */}
 <section className="relative overflow-hidden px-6 py-32 sm:px-12 sm:py-40">
   <div className="w-full">
-    <div className="flex flex-col lg:flex-row items-start gap-6 lg:gap-10">
+    <div className="flex flex-col lg:flex-row items-center gap-6 lg:gap-10">
       
       {/* Left - Image/Artwork - UNCHANGED */}
       <div className="w-full lg:w-[65%] flex-shrink-0 lg:pl-0">
@@ -325,8 +325,8 @@ export default function MarketingPage() {
         </motion.div>
       </div>
 
-      {/* Right - Text Content */}
-      <div className="w-full lg:w-[35%] flex-shrink-0 lg:pr-4 flex items-start pt-8 lg:pt-12">
+      {/* Right - Text Content - Vertically centered with image */}
+      <div className="w-full lg:w-[35%] flex-shrink-0 lg:pr-4 flex items-center">
         <motion.div
           initial={{ opacity: 0, x: 30 }}
           whileInView={{ opacity: 1, x: 0 }}
@@ -334,9 +334,9 @@ export default function MarketingPage() {
           transition={{ duration: 0.6 }}
           className="w-full mx-auto lg:mx-0"
         >
-          {/* Badge - More spacing below */}
+          {/* Badge */}
           <div
-            className="mb-8 inline-flex items-center gap-2 rounded-full border px-4 py-1.5"
+            className="mb-5 inline-flex items-center gap-2 rounded-full border px-4 py-1.5"
             style={{
               borderColor: "rgba(212,175,55,0.3)",
               backgroundColor: "rgba(212,175,55,0.08)",
@@ -350,20 +350,20 @@ export default function MarketingPage() {
             </span>
           </div>
 
-          {/* Heading - Slightly smaller on desktop, more spacing below */}
-          <h2 className="font-display text-4xl font-bold text-white sm:text-5xl lg:text-5xl leading-tight mb-6">
+          {/* Heading - Slightly smaller on desktop */}
+          <h2 className="font-display text-4xl font-bold text-white sm:text-5xl lg:text-5xl leading-tight">
             STREAM ANYTIME, <br />
             <span style={{ color: "#D4AF37" }}>ANYWHERE!</span>
           </h2>
 
-          {/* Paragraph - No width restriction, more spacing below */}
-          <p className="text-base leading-relaxed text-white/80 sm:text-lg mb-10">
+          {/* Paragraph - No width restriction */}
+          <p className="mt-4 text-base leading-relaxed text-white/80 sm:text-lg">
             Watch on your phone, tablet, laptop, or TV. Haapu TV works on every 
             device so your favourite content is always within reach.
           </p>
 
-          {/* Device Icons - Gold hover */}
-          <div className="flex gap-10 text-white/60">
+          {/* Device Icons - Gold hover, closer to paragraph */}
+          <div className="mt-6 flex gap-10 text-white/60">
             <div className="flex flex-col items-center gap-2 transition-all duration-300 hover:text-[#D4AF37] cursor-pointer">
               <Smartphone size={36} className="transition-colors duration-300" />
               <span className="text-sm">Phone</span>
