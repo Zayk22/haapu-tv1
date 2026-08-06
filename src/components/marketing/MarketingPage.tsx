@@ -304,18 +304,18 @@ export default function MarketingPage() {
       {/* ── SECTION 4: STREAM ANYTIME, ANYWHERE ────────────────── */}
       <section className="relative overflow-hidden px-6 py-24 sm:px-12 sm:py-32">
         <div className="mx-auto max-w-7xl">
-          <div className="grid grid-cols-1 gap-12 lg:grid-cols-2 lg:gap-16 items-center">
+          <div className="grid grid-cols-1 gap-8 lg:grid-cols-5 lg:gap-12 items-center">
             
-            {/* Left - Image/Artwork */}
+            {/* Left - Image/Artwork - Takes up 3/5 of the space */}
             <motion.div
               initial={{ opacity: 0, x: -30 }}
               whileInView={{ opacity: 1, x: 0 }}
               viewport={{ once: true }}
               transition={{ duration: 0.6 }}
-              className="order-2 lg:order-1"
+              className="lg:col-span-3 order-2 lg:order-1"
             >
               <div className="relative overflow-hidden rounded-2xl shadow-2xl">
-                <div className="relative aspect-[4/3] w-full">
+                <div className="relative aspect-video w-full">
                   <img
                     src="/images/marketing/covenant-bg.jpg"
                     alt="Stream Anytime, Anywhere"
@@ -325,13 +325,13 @@ export default function MarketingPage() {
               </div>
             </motion.div>
 
-            {/* Right - Text Content */}
+            {/* Right - Text Content - Takes up 2/5 of the space */}
             <motion.div
               initial={{ opacity: 0, x: 30 }}
               whileInView={{ opacity: 1, x: 0 }}
               viewport={{ once: true }}
               transition={{ duration: 0.6 }}
-              className="order-1 lg:order-2"
+              className="lg:col-span-2 order-1 lg:order-2"
             >
               <div
                 className="mb-6 inline-flex items-center gap-2 rounded-full border px-4 py-1.5"
