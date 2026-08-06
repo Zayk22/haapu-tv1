@@ -2,7 +2,6 @@
 
 import { useState, useEffect } from "react";
 import Link from "next/link";
-import Image from "next/image";
 import { motion } from "framer-motion";
 import { Play, ChevronDown, Heart, Smartphone, Laptop, Tv } from "lucide-react";
 
@@ -180,7 +179,7 @@ export default function MarketingPage() {
       </section>
 
       {/* ── SECTION 2: JOIN THE MOVEMENT ───────────────────────── */}
-      <section className="relative overflow-hidden px-6 py-24 sm:px-12 sm:py-32">
+      <section className="relative overflow-hidden px-6 py-32 sm:px-12 sm:py-40">
         <div className="absolute inset-0 z-0">
           <div className="relative h-full w-full">
             <img
@@ -230,7 +229,7 @@ export default function MarketingPage() {
             style={{ backgroundColor: "#D4AF37", color: "#0A0A0A" }}
           >
             <Heart size={20} fill="currentColor" />
-            Covenant Member
+            COVENANT MEMBER
           </Link>
         </motion.div>
       </section>
