@@ -3,7 +3,7 @@
 import { useState, useEffect } from "react";
 import Link from "next/link";
 import { motion } from "framer-motion";
-import { Play, ChevronDown, Heart, Smartphone, Laptop, Tv } from "lucide-react";
+import { Play, ChevronDown, Heart, Smartphone, Laptop, Tv, ArrowUp } from "lucide-react";
 
 const FAQS = [
   {
@@ -71,6 +71,44 @@ function SocialIcon({
     >
       {children}
     </a>
+  );
+}
+
+// ── BACK TO TOP BUTTON ──────────────────────────────────────────────
+function BackToTopButton() {
+  const [isVisible, setIsVisible] = useState(false);
+
+  useEffect(() => {
+    const toggleVisibility = () => {
+      if (window.scrollY > 500) {
+        setIsVisible(true);
+      } else {
+        setIsVisible(false);
+      }
+    };
+
+    window.addEventListener('scroll', toggleVisibility);
+    return () => window.removeEventListener('scroll', toggleVisibility);
+  }, []);
+
+  const scrollToTop = () => {
+    window.scrollTo({
+      top: 0,
+      behavior: 'smooth',
+    });
+  };
+
+  return (
+    <button
+      onClick={scrollToTop}
+      className={`fixed bottom-8 right-8 z-50 flex h-12 w-12 items-center justify-center rounded-full transition-all duration-300 hover:scale-110 ${
+        isVisible ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-10 pointer-events-none'
+      }`}
+      style={{ backgroundColor: "#D4AF37", color: "#0A0A0A" }}
+      aria-label="Back to top"
+    >
+      <ArrowUp size={20} />
+    </button>
   );
 }
 
@@ -177,71 +215,68 @@ export default function MarketingPage() {
         </motion.div>
       </section>
 
-     {/* ── SECTION 2: JOIN THE MOVEMENT ───────────────────────── */}
-<section className="relative overflow-hidden w-full py-0">
-  <div className="relative w-screen left-1/2 right-1/2 -ml-[50vw] -mr-[50vw]">
-    <div className="relative w-full min-h-[80vh] lg:min-h-[90vh]">
-      
-      {/* Image - Full width, no cropping */}
-      <div className="absolute inset-0 w-full h-full">
-        <img
-          src="/images/marketing/hero-background.jpg"
-          alt="Join the Movement"
-          className="w-full h-full object-cover object-center"
-        />
-        {/* Subtle overlay for text readability - only at the bottom */}
-        <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/30 to-transparent" />
-      </div>
-
-      {/* Content - Bottom-left aligned */}
-      <div className="relative z-10 flex items-end h-full min-h-[80vh] lg:min-h-[90vh]">
-        <div className="w-full max-w-4xl px-6 pb-16 sm:px-12 sm:pb-20 lg:pb-24">
-          <motion.div
-            initial={{ opacity: 0, y: 30 }}
-            whileInView={{ opacity: 1, y: 0 }}
-            viewport={{ once: true }}
-            transition={{ duration: 0.6 }}
-            className="text-left"
-          >
-            <div
-              className="mb-4 inline-flex items-center gap-2 rounded-full border px-4 py-1.5"
-              style={{
-                borderColor: "rgba(212,175,55,0.3)",
-                backgroundColor: "rgba(212,175,55,0.08)",
-              }}
-            >
-              <span
-                className="text-xs font-medium uppercase tracking-widest"
-                style={{ color: "#D4AF37" }}
-              >
-                Join the Movement
-              </span>
+      {/* ── SECTION 2: JOIN THE MOVEMENT ───────────────────────── */}
+      <section className="relative overflow-hidden w-full py-0">
+        <div className="relative w-screen left-1/2 right-1/2 -ml-[50vw] -mr-[50vw]">
+          <div className="relative w-full min-h-[80vh] lg:min-h-[90vh]">
+            
+            <div className="absolute inset-0 w-full h-full">
+              <img
+                src="/images/marketing/hero-background.jpg"
+                alt="Join the Movement"
+                className="w-full h-full object-cover object-center"
+              />
+              <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/30 to-transparent" />
             </div>
 
-            <h2 className="font-display text-4xl font-bold text-white sm:text-5xl lg:text-6xl leading-tight max-w-3xl">
-              JOIN THE <span style={{ color: "#D4AF37" }}>MOVEMENT</span>
-            </h2>
+            <div className="relative z-10 flex items-end h-full min-h-[80vh] lg:min-h-[90vh]">
+              <div className="w-full max-w-4xl px-6 pb-16 sm:px-12 sm:pb-20 lg:pb-24">
+                <motion.div
+                  initial={{ opacity: 0, y: 30 }}
+                  whileInView={{ opacity: 1, y: 0 }}
+                  viewport={{ once: true }}
+                  transition={{ duration: 0.6 }}
+                  className="text-left"
+                >
+                  <div
+                    className="mb-4 inline-flex items-center gap-2 rounded-full border px-4 py-1.5"
+                    style={{
+                      borderColor: "rgba(212,175,55,0.3)",
+                      backgroundColor: "rgba(212,175,55,0.08)",
+                    }}
+                  >
+                    <span
+                      className="text-xs font-medium uppercase tracking-widest"
+                      style={{ color: "#D4AF37" }}
+                    >
+                      Join the Movement
+                    </span>
+                  </div>
 
-            <p className="mt-4 max-w-2xl text-base leading-relaxed text-white/80 sm:text-lg">
-              Step into a world where your voice shapes the screen. Discover shows 
-              and movies powered by you, for your family. Start now. Your support 
-              makes the difference.
-            </p>
+                  <h2 className="font-display text-4xl font-bold text-white sm:text-5xl lg:text-6xl leading-tight max-w-3xl">
+                    JOIN THE <span style={{ color: "#D4AF37" }}>MOVEMENT</span>
+                  </h2>
 
-            <Link
-              href="/covenant"
-              className="mt-8 inline-flex items-center gap-3 rounded-lg px-8 py-4 text-base font-bold transition-all duration-300 hover:opacity-90 hover:scale-105"
-              style={{ backgroundColor: "#D4AF37", color: "#0A0A0A" }}
-            >
-              <Heart size={20} fill="currentColor" />
-              COVENANT MEMBER
-            </Link>
-          </motion.div>
+                  <p className="mt-4 max-w-2xl text-base leading-relaxed text-white/80 sm:text-lg">
+                    Step into a world where your voice shapes the screen. Discover shows 
+                    and movies powered by you, for your family. Start now. Your support 
+                    makes the difference.
+                  </p>
+
+                  <Link
+                    href="/covenant"
+                    className="mt-8 inline-flex items-center gap-3 rounded-lg px-8 py-4 text-base font-bold transition-all duration-300 hover:opacity-90 hover:scale-105"
+                    style={{ backgroundColor: "#D4AF37", color: "#0A0A0A" }}
+                  >
+                    <Heart size={20} fill="currentColor" />
+                    COVENANT MEMBER
+                  </Link>
+                </motion.div>
+              </div>
+            </div>
+          </div>
         </div>
-      </div>
-    </div>
-  </div>
-</section>
+      </section>
 
       {/* ── SECTION 3: STREAM AMAZING CONTENT FOR FREE ────────── */}
       <section className="relative overflow-hidden px-6 py-24 sm:px-12 sm:py-32">
@@ -289,8 +324,8 @@ export default function MarketingPage() {
             Brought to you by our incredible Covenant Members.
           </p>
 
-          <p className="mt-3 text-base text-white/60">
-            Not a member yet! Start now and Join us in this journey.
+          <p className="mt-2 text-base text-white/60">
+            Not a member yet? Start now and join us in this journey.
           </p>
 
           <div className="mt-10 flex flex-col items-center gap-4 sm:flex-row sm:justify-center sm:gap-5">
@@ -299,99 +334,98 @@ export default function MarketingPage() {
               className="w-full rounded-lg px-8 py-4 text-center text-base font-bold transition-all duration-300 hover:opacity-90 hover:scale-105 sm:w-auto sm:px-10 sm:py-4 sm:text-lg"
               style={{ backgroundColor: "#D4AF37", color: "#0A0A0A" }}
             >
-              Covenant Member
+              COVENANT MEMBER
             </Link>
             <Link
               href="/sign-up"
               className="w-full rounded-lg border-2 border-white/30 px-8 py-4 text-center text-base font-semibold text-white transition-all duration-300 hover:border-white/60 hover:text-white sm:w-auto sm:px-10 sm:py-4 sm:text-lg"
             >
-              Sign Up For Free
+              SIGN UP FOR FREE
             </Link>
           </div>
+
+          <p className="mt-8 text-sm text-white/40">
+            <span className="text-white/50">ALADE WURA</span> · FAITHWIRE
+          </p>
         </motion.div>
       </section>
 
       {/* ── SECTION 4: STREAM ANYTIME, ANYWHERE ────────────────── */}
-<section className="relative overflow-hidden px-6 py-32 sm:px-12 sm:py-40">
-  <div className="w-full">
-    <div className="flex flex-col lg:flex-row items-center gap-6 lg:gap-10">
-      
-      {/* Left - Image/Artwork - UNCHANGED */}
-      <div className="w-full lg:w-[65%] flex-shrink-0 lg:pl-0">
-        <motion.div
-          initial={{ opacity: 0, x: -30 }}
-          whileInView={{ opacity: 1, x: 0 }}
-          viewport={{ once: true }}
-          transition={{ duration: 0.6 }}
-          className="w-full"
-        >
-          <div className="relative w-full">
-            <img
-              src="/images/marketing/covenant-bg.jpg"
-              alt="Stream Anytime, Anywhere"
-              className="w-full h-auto object-contain"
-            />
-          </div>
-        </motion.div>
-      </div>
-
-      {/* Right - Text Content - Vertically centered with image */}
-      <div className="w-full lg:w-[35%] flex-shrink-0 lg:pr-4 flex items-center">
-        <motion.div
-          initial={{ opacity: 0, x: 30 }}
-          whileInView={{ opacity: 1, x: 0 }}
-          viewport={{ once: true }}
-          transition={{ duration: 0.6 }}
-          className="w-full mx-auto lg:mx-0"
-        >
-          {/* Badge */}
-          <div
-            className="mb-5 inline-flex items-center gap-2 rounded-full border px-4 py-1.5"
-            style={{
-              borderColor: "rgba(212,175,55,0.3)",
-              backgroundColor: "rgba(212,175,55,0.08)",
-            }}
-          >
-            <span
-              className="text-xs font-medium uppercase tracking-widest"
-              style={{ color: "#D4AF37" }}
-            >
-              Stream Anytime, Anywhere
-            </span>
-          </div>
-
-          {/* Heading - Slightly smaller on desktop */}
-          <h2 className="font-display text-4xl font-bold text-white sm:text-5xl lg:text-5xl leading-tight">
-            STREAM ANYTIME, <br />
-            <span style={{ color: "#D4AF37" }}>ANYWHERE!</span>
-          </h2>
-
-          {/* Paragraph - No width restriction */}
-          <p className="mt-4 text-base leading-relaxed text-white/80 sm:text-lg">
-            Watch on your phone, tablet, laptop, or TV. Haapu TV works on every 
-            device so your favourite content is always within reach.
-          </p>
-
-          {/* Device Icons - Gold hover, closer to paragraph */}
-          <div className="mt-6 flex gap-10 text-white/60">
-            <div className="flex flex-col items-center gap-2 transition-all duration-300 hover:text-[#D4AF37] cursor-pointer">
-              <Smartphone size={36} className="transition-colors duration-300" />
-              <span className="text-sm">Phone</span>
+      <section className="relative overflow-hidden px-6 py-32 sm:px-12 sm:py-40">
+        <div className="w-full">
+          <div className="flex flex-col lg:flex-row items-center gap-6 lg:gap-10">
+            
+            <div className="w-full lg:w-[65%] flex-shrink-0 lg:pl-0">
+              <motion.div
+                initial={{ opacity: 0, x: -30 }}
+                whileInView={{ opacity: 1, x: 0 }}
+                viewport={{ once: true }}
+                transition={{ duration: 0.6 }}
+                className="w-full"
+              >
+                <div className="relative w-full">
+                  <img
+                    src="/images/marketing/covenant-bg.jpg"
+                    alt="Stream Anytime, Anywhere"
+                    className="w-full h-auto object-contain"
+                  />
+                </div>
+              </motion.div>
             </div>
-            <div className="flex flex-col items-center gap-2 transition-all duration-300 hover:text-[#D4AF37] cursor-pointer">
-              <Laptop size={36} className="transition-colors duration-300" />
-              <span className="text-sm">Laptop</span>
-            </div>
-            <div className="flex flex-col items-center gap-2 transition-all duration-300 hover:text-[#D4AF37] cursor-pointer">
-              <Tv size={36} className="transition-colors duration-300" />
-              <span className="text-sm">TV</span>
+
+            <div className="w-full lg:w-[35%] flex-shrink-0 lg:pr-4 flex items-center">
+              <motion.div
+                initial={{ opacity: 0, x: 30 }}
+                whileInView={{ opacity: 1, x: 0 }}
+                viewport={{ once: true }}
+                transition={{ duration: 0.6 }}
+                className="w-full mx-auto lg:mx-0"
+              >
+                <div
+                  className="mb-5 inline-flex items-center gap-2 rounded-full border px-4 py-1.5"
+                  style={{
+                    borderColor: "rgba(212,175,55,0.3)",
+                    backgroundColor: "rgba(212,175,55,0.08)",
+                  }}
+                >
+                  <span
+                    className="text-xs font-medium uppercase tracking-widest"
+                    style={{ color: "#D4AF37" }}
+                  >
+                    Stream Anytime, Anywhere
+                  </span>
+                </div>
+
+                <h2 className="font-display text-4xl font-bold text-white sm:text-5xl lg:text-5xl leading-tight">
+                  STREAM ANYTIME, <br />
+                  <span style={{ color: "#D4AF37" }}>ANYWHERE!</span>
+                </h2>
+
+                <p className="mt-4 text-base leading-relaxed text-white/80 sm:text-lg">
+                  Watch on your phone, tablet, laptop, or TV. Haapu TV works on every 
+                  device so your favourite content is always within reach.
+                </p>
+
+                <div className="mt-6 flex gap-10 text-white/60">
+                  <div className="flex flex-col items-center gap-2 transition-all duration-300 hover:text-[#D4AF37] cursor-pointer">
+                    <Smartphone size={36} className="transition-colors duration-300" />
+                    <span className="text-sm">Phone</span>
+                  </div>
+                  <div className="flex flex-col items-center gap-2 transition-all duration-300 hover:text-[#D4AF37] cursor-pointer">
+                    <Laptop size={36} className="transition-colors duration-300" />
+                    <span className="text-sm">Laptop</span>
+                  </div>
+                  <div className="flex flex-col items-center gap-2 transition-all duration-300 hover:text-[#D4AF37] cursor-pointer">
+                    <Tv size={36} className="transition-colors duration-300" />
+                    <span className="text-sm">TV</span>
+                  </div>
+                </div>
+              </motion.div>
             </div>
           </div>
-        </motion.div>
-      </div>
-    </div>
-  </div>
-</section>
+        </div>
+      </section>
+
       {/* ── FAQ ──────────────────────────────────────────────────── */}
       <section className="px-6 py-24 sm:px-12 sm:py-32">
         <div className="mx-auto max-w-3xl">
@@ -488,6 +522,9 @@ export default function MarketingPage() {
           </div>
         </div>
       </footer>
+
+      {/* ── BACK TO TOP BUTTON ──────────────────────────────────── */}
+      <BackToTopButton />
     </div>
   );
 }
