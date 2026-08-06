@@ -135,7 +135,7 @@ export default function FeaturedMovie({
                   onClick={() => setIsPlaying(true)}
                 >
                   <img
-                    src={posterUrl || backdropUrl}
+                    src={posterUrl}
                     alt={`${title} poster`}
                     className="h-full w-full object-cover"
                     onError={(e) => {

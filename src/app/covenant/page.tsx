@@ -200,7 +200,7 @@ export default function CovenantPage() {
         title="African Rhapsody"
         description="Experience the rhythm of faith and culture in this powerful cinematic journey. African Rhapsody celebrates the beauty of worship, community, and the unbreakable spirit of a people united in faith."
         videoId="4kvvngejl9"
-        posterUrl="/images/marketing/african-rhapsody.jpg"
+        posterUrl="/images/african-rhapsody.jpg"
         backdropUrl="/images/marketing/hero-background.jpg"
         year={2024}
         rating={8.7}
