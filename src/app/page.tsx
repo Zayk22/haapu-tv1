@@ -78,7 +78,6 @@ export default async function Home() {
 
   return (
     <main>
-      {/* Welcome animation – only shows once per session */}
       <WelcomeAnimation firstName={firstName} />
       <Hero movies={featuredMovies.map(toMovie)} />
       <div className="relative z-20 -mt-16">

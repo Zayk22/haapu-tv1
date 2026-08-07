@@ -3,7 +3,7 @@
 import { useState, useEffect, useCallback, useRef } from "react";
 import Link from "next/link";
 import { usePathname, useRouter } from "next/navigation";
-import { Search, Bookmark, ChevronDown, Settings, LogOut, User, Shield } from "lucide-react";
+import { Search, Bookmark, ChevronDown, LogOut, User, Shield } from "lucide-react";
 import { useAuth, useUser, useClerk } from "@clerk/nextjs";
 import { SignedIn, SignedOut } from "@clerk/nextjs";
 import SearchOverlay from "@/components/layout/SearchOverlay";
@@ -15,7 +15,6 @@ const navLinks = [
 
 export default function Header() {
   const pathname = usePathname();
-  const router = useRouter();
   const { signOut } = useClerk();
   const { userId, sessionClaims } = useAuth();
   const { user } = useUser();
@@ -53,6 +52,7 @@ export default function Header() {
     return () => window.removeEventListener("keydown", handleKeyDown);
   }, [handleKeyDown]);
 
+  // Hide on admin pages (they have their own minimal layout)
   if (pathname?.startsWith("/admin")) return null;
 
   const isActive = (href: string) => {
@@ -68,7 +68,9 @@ export default function Header() {
     <>
       <header
         className={`fixed top-0 z-50 w-full transition-all duration-500 ${
-          isScrolled ? "bg-matte-black/95 backdrop-blur-md shadow-elevated" : "bg-gradient-to-b from-matte-black/90 to-transparent"
+          isScrolled
+            ? "bg-matte-black/95 backdrop-blur-md shadow-elevated"
+            : "bg-gradient-to-b from-matte-black/90 to-transparent"
         }`}
       >
         <div className="mx-auto flex max-w-screen-2xl items-center justify-between px-4 py-3 lg:px-12 lg:py-4">
@@ -125,7 +127,10 @@ export default function Header() {
                   aria-label="Account menu"
                 >
                   {/* Avatar */}
-                  <div className="relative h-8 w-8 overflow-hidden rounded flex-shrink-0" style={{ backgroundColor: "#E50914" }}>
+                  <div
+                    className="relative h-8 w-8 overflow-hidden rounded flex-shrink-0"
+                    style={{ backgroundColor: "#E50914" }}
+                  >
                     {avatarUrl ? (
                       <img src={avatarUrl} alt={displayName} className="h-full w-full object-cover" />
                     ) : (
@@ -145,7 +150,10 @@ export default function Header() {
                   <div className="absolute right-0 top-full mt-2 w-60 overflow-hidden rounded-lg border border-matte-800 bg-matte-900/98 shadow-2xl backdrop-blur-md z-50">
                     {/* User info header */}
                     <div className="flex items-center gap-3 border-b border-matte-800 px-4 py-3">
-                      <div className="h-10 w-10 overflow-hidden rounded flex-shrink-0" style={{ backgroundColor: "#E50914" }}>
+                      <div
+                        className="h-10 w-10 overflow-hidden rounded flex-shrink-0"
+                        style={{ backgroundColor: "#E50914" }}
+                      >
                         {avatarUrl ? (
                           <img src={avatarUrl} alt={displayName} className="h-full w-full object-cover" />
                         ) : (
@@ -156,7 +164,9 @@ export default function Header() {
                       </div>
                       <div className="min-w-0">
                         <p className="truncate font-semibold text-white text-sm">{displayName}</p>
-                        <p className="truncate text-xs text-matte-500">{user?.primaryEmailAddress?.emailAddress}</p>
+                        <p className="truncate text-xs text-matte-500">
+                          {user?.primaryEmailAddress?.emailAddress}
+                        </p>
                       </div>
                     </div>
 
@@ -194,7 +204,10 @@ export default function Header() {
                     {/* Sign out */}
                     <div className="border-t border-matte-800 py-2">
                       <button
-                        onClick={() => { setAccountOpen(false); signOut({ redirectUrl: "/" }); }}
+                        onClick={() => {
+                          setAccountOpen(false);
+                          signOut({ redirectUrl: "/" });
+                        }}
                         className="flex w-full items-center gap-3 px-4 py-2.5 text-sm text-matte-300 transition-colors hover:bg-matte-800 hover:text-red-400"
                       >
                         <LogOut size={15} />

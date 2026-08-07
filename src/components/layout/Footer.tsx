@@ -1,118 +1,56 @@
+"use client";
+
 import Link from "next/link";
-import { Facebook, Twitter, Instagram, Music } from "lucide-react";
-
-// ============================================
-// FOOTER LINK DATA — Centralized for easy editing
-// ============================================
-
-const footerLinks = [
-  {
-    title: "Browse",
-    links: [
-      { label: "Movies", href: "/movies" },
-      { label: "TV Shows", href: "/tv-shows" },
-      { label: "Kids", href: "/kids" },
-      { label: "New & Popular", href: "/" }, // ← Changed to homepage
-    ],
-  },
-  {
-    title: "Help",
-    links: [
-      { label: "FAQ", href: "/faq" },
-      { label: "Contact Us", href: "/contact" },
-      { label: "Supported Devices", href: "/devices" },
-      { label: "Streaming Quality", href: "/quality" },
-    ],
-  },
-  {
-    title: "Legal",
-    links: [
-      { label: "Privacy Policy", href: "/privacy" },
-      { label: "Terms of Service", href: "/terms" },
-      { label: "Cookie Preferences", href: "/cookies" },
-      { label: "Corporate Information", href: "/corporate" },
-    ],
-  },
-];
-
-const socialLinks = [
-  { icon: Facebook, label: "Facebook", href: "https://www.facebook.com/share/1B4zj1guvm/?mibextid=wwXIfr" },
-  { icon: Twitter, label: "Twitter (X)", href: "https://x.com/haaputv?s=11" },
-  { icon: Instagram, label: "Instagram", href: "https://www.instagram.com/haaputv?igsh=YWV1aGE2anU3Mnhh" },
-  { icon: Music, label: "TikTok", href: "https://www.tiktok.com/@haaputv?_r=1&_t=ZS-97kjUYj6jSh" },
-];
-
-// ============================================
-// COMPONENT
-// ============================================
 
 export default function Footer() {
-  const currentYear = new Date().getFullYear();
-
   return (
-    <footer className="border-t border-matte-800 bg-matte-black">
-      <div className="mx-auto max-w-screen-2xl px-6 py-16 lg:px-12">
-        {/* ========== TOP SECTION: Brand + Links ========== */}
-        <div className="grid grid-cols-2 gap-10 md:grid-cols-4 lg:grid-cols-5">
-          {/* Brand Column */}
-          <div className="col-span-2 lg:col-span-2">
-            <Link href="/" className="inline-block">
-              <span className="font-display text-heading-2 font-bold tracking-tight text-white">
-                Haapu TV
-              </span>
-            </Link>
-            <p className="mt-3 max-w-xs text-body text-matte-500">
-              Premium streaming for movie lovers. Discover award-winning films,
-              exclusive originals, and timeless classics.
-            </p>
-
-            {/* Social Links */}
-            <div className="mt-6 flex gap-4">
-              {socialLinks.map((social) => (
-                <a
-                  key={social.label}
-                  href={social.href}
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  aria-label={social.label}
-                  className="flex h-9 w-9 items-center justify-center rounded-full bg-matte-900 text-matte-500 transition-all duration-300 hover:bg-matte-800 hover:text-white"
-                >
-                  <social.icon size={16} strokeWidth={1.5} />
-                </a>
-              ))}
-            </div>
+    <footer className="border-t border-white/10 bg-matte-black px-6 py-8 sm:px-12 sm:py-10">
+      <div className="mx-auto max-w-screen-xl">
+        <div className="flex flex-col items-center gap-6 sm:flex-row sm:justify-between">
+          <img src="/logo.png" alt="Haapu TV" className="h-10 w-auto object-contain sm:h-12" />
+          <div className="flex flex-wrap items-center justify-center gap-4 text-sm text-white/40 sm:gap-6">
+            <Link href="/privacy" className="hover:text-white transition-colors">Privacy</Link>
+            <Link href="/terms" className="hover:text-white transition-colors">Terms</Link>
+            <Link href="/faq" className="hover:text-white transition-colors">FAQ</Link>
+            <Link href="/cookie-preferences" className="hover:text-white transition-colors">Cookies</Link>
+            <Link href="/corporate" className="hover:text-white transition-colors">Corporate</Link>
           </div>
-
-          {/* Link Columns */}
-          {footerLinks.map((column) => (
-            <div key={column.title}>
-              <h3 className="text-caption font-semibold uppercase tracking-wider text-matte-400">
-                {column.title}
-              </h3>
-              <ul className="mt-4 space-y-3">
-                {column.links.map((link) => (
-                  <li key={link.label}>
-                    <Link
-                      href={link.href}
-                      className="text-caption text-matte-500 transition-colors duration-300 hover:text-white"
-                    >
-                      {link.label}
-                    </Link>
-                  </li>
-                ))}
-              </ul>
-            </div>
-          ))}
+          <div className="flex items-center gap-4">
+            {/* Social icons */}
+            <a
+              href="https://www.facebook.com/haaputv"
+              target="_blank"
+              rel="noopener noreferrer"
+              className="text-white/40 hover:text-white transition-colors"
+            >
+              <svg className="h-5 w-5" fill="currentColor" viewBox="0 0 24 24">
+                <path d="M22 12c0-5.523-4.477-10-10-10S2 6.477 2 12c0 4.991 3.657 9.128 8.438 9.878v-6.987h-2.54V12h2.54V9.797c0-2.506 1.492-3.89 3.777-3.89 1.094 0 2.238.195 2.238.195v2.46h-1.26c-1.243 0-1.63.771-1.63 1.562V12h2.773l-.443 2.89h-2.33v6.988C18.343 21.128 22 16.991 22 12z" />
+              </svg>
+            </a>
+            <a
+              href="https://www.twitter.com/haaputv"
+              target="_blank"
+              rel="noopener noreferrer"
+              className="text-white/40 hover:text-white transition-colors"
+            >
+              <svg className="h-5 w-5" fill="currentColor" viewBox="0 0 24 24">
+                <path d="M18.244 2.25h3.308l-7.227 8.26 8.502 11.24H16.17l-5.214-6.817L4.99 21.75H1.68l7.73-8.835L1.254 2.25H8.08l4.713 6.231zm-1.161 17.52h1.833L7.084 4.126H5.117z" />
+              </svg>
+            </a>
+            <a
+              href="https://www.instagram.com/haaputv"
+              target="_blank"
+              rel="noopener noreferrer"
+              className="text-white/40 hover:text-white transition-colors"
+            >
+              <svg className="h-5 w-5" fill="currentColor" viewBox="0 0 24 24">
+                <path d="M12 2.163c3.204 0 3.584.012 4.85.07 3.252.148 4.771 1.691 4.919 4.919.058 1.265.069 1.645.069 4.849 0 3.205-.012 3.584-.069 4.849-.149 3.225-1.664 4.771-4.919 4.919-1.266.058-1.644.07-4.85.07-3.204 0-3.584-.012-4.849-.07-3.26-.149-4.771-1.699-4.919-4.92-.058-1.265-.07-1.644-.07-4.849 0-3.204.013-3.583.07-4.849.149-3.227 1.664-4.771 4.919-4.919 1.266-.057 1.645-.069 4.849-.069zM12 0C8.741 0 8.333.014 7.053.072 2.695.272.273 2.69.073 7.052.014 8.333 0 8.741 0 12c0 3.259.014 3.668.072 4.948.2 4.358 2.618 6.78 6.98 6.98C8.333 23.986 8.741 24 12 24c3.259 0 3.668-.014 4.948-.072 4.354-.2 6.782-2.618 6.979-6.98.059-1.28.073-1.689.073-4.948 0-3.259-.014-3.667-.072-4.947-.196-4.354-2.617-6.78-6.979-6.98C15.668.014 15.259 0 12 0zm0 5.838a6.162 6.162 0 100 12.324 6.162 6.162 0 000-12.324zM12 16a4 4 0 110-8 4 4 0 010 8zm6.406-11.845a1.44 1.44 0 100 2.881 1.44 1.44 0 000-2.881z" />
+              </svg>
+            </a>
+          </div>
         </div>
-
-        {/* ========== DIVIDER ========== */}
-        <div className="mt-12 border-t border-matte-800/50 pt-8">
-          <div className="flex flex-col items-center justify-between gap-4 text-small text-matte-600 sm:flex-row">
-            <p>&copy; {currentYear} Haapu TV. All rights reserved.</p>
-            <p>
-              Designed with precision. Built for cinema lovers.
-            </p>
-          </div>
+        <div className="mt-6 border-t border-white/10 pt-6 text-center text-sm text-white/30">
+          © {new Date().getFullYear()} Haapu TV. All Rights Reserved.
         </div>
       </div>
     </footer>

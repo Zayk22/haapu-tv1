@@ -25,6 +25,7 @@ export default function LayoutWrapper({ children }: { children: React.ReactNode 
   // so authenticated users never flash a missing navbar.
   const isMarketingPage = mounted && isLoaded && !userId && pathname === "/";
 
+  // Video player and admin pages render their own minimal layout
   if (isWatchPage || isAdminPage || isMarketingPage) {
     return <>{children}</>;
   }
