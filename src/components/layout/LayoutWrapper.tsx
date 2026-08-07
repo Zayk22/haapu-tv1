@@ -8,11 +8,7 @@ import Header from "@/components/layout/Header";
 import Footer from "@/components/layout/Footer";
 import MobileBottomNav from "@/components/layout/MobileBottomNav";
 
-export default function LayoutWrapper({
-  children,
-}: {
-  children: React.ReactNode;
-}) {
+export default function LayoutWrapper({ children }: { children: React.ReactNode }) {
   const pathname = usePathname();
   const { userId, isLoaded } = useAuth();
   const [mounted, setMounted] = useState(false);
@@ -21,15 +17,13 @@ export default function LayoutWrapper({
     setMounted(true);
   }, []);
 
-  if (!mounted) return <>{children}</>;
+  const isWatchPage = pathname?.startsWith("/watch");
+  const isAdminPage = pathname?.startsWith("/admin");
 
-  const isWatchPage  = pathname?.startsWith("/watch");
-  const isAdminPage  = pathname?.startsWith("/admin");
-
-  // Marketing page — unauthenticated users on "/".
-  // MarketingPage renders its own complete layout (header nav, footer, social links).
-  // Don't wrap with the shared chrome to avoid duplicate footer.
-  const isMarketingPage = pathname === "/" && isLoaded && !userId;
+  // Only strip shared layout on the homepage AFTER Clerk has confirmed
+  // the user is NOT logged in. While loading, always show the full layout
+  // so authenticated users never flash a missing navbar.
+  const isMarketingPage = mounted && isLoaded && !userId && pathname === "/";
 
   if (isWatchPage || isAdminPage || isMarketingPage) {
     return <>{children}</>;

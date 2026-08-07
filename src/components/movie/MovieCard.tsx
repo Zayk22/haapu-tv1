@@ -38,7 +38,7 @@ export default function MovieCard({ movie, index = 0, slug }: MovieCardProps) {
         delay: Math.min(index * 0.06, 0.25),
         ease: "easeOut",
       }}
-      whileHover={{ scale: 1.03, transition: { duration: 0.2, ease: "easeOut" } }}
+      whileHover={{ scale: 1.05, transition: { duration: 0.2, ease: "easeOut" } }}
       whileTap={{ scale: 0.97, transition: { duration: 0.1 } }}
       onMouseEnter={() => setIsHovered(true)}
       onMouseLeave={() => setIsHovered(false)}
@@ -47,7 +47,7 @@ export default function MovieCard({ movie, index = 0, slug }: MovieCardProps) {
       {/* Glow layer */}
       <div className="pointer-events-none absolute -inset-1 -z-10 rounded-xl bg-crimson/20 opacity-0 blur-md transition-opacity duration-300 group-hover:opacity-100" />
 
-      {/* Poster — ✅ PORTRAIT 2:3 */}
+      {/* Poster — PORTRAIT 2:3 */}
       <div className="relative aspect-[2/3] overflow-hidden rounded-lg bg-matte-800">
         {!imageLoaded && (
           <div className="absolute inset-0 z-10 animate-pulse bg-matte-800" />
@@ -97,24 +97,10 @@ export default function MovieCard({ movie, index = 0, slug }: MovieCardProps) {
         </motion.div>
       </div>
 
-      {/* Below-card label — always visible on mobile */}
-      <div className="mt-2 px-0.5">
-        <h3 className="text-small font-medium text-matte-300 line-clamp-1 transition-colors duration-200 group-hover:text-white">
-          {movie.title}
-        </h3>
-        {(showYear || showRating) && (
-          <div className="mt-0.5 flex items-center gap-1.5 text-[10px] text-matte-600">
-            {showYear && <span>{movie.year}</span>}
-            {showYear && showRating && <span>•</span>}
-            {showRating && (
-              <span className="flex items-center gap-1">
-                <Star size={8} className="text-gold" fill="currentColor" />
-                {movie.rating}
-              </span>
-            )}
-          </div>
-        )}
-      </div>
+      {/* Mobile-only title — hidden on desktop where hover overlay shows it */}
+      <p className="mt-1.5 truncate text-xs text-matte-500 sm:hidden px-0.5">
+        {movie.title}
+      </p>
     </motion.div>
   );
 }

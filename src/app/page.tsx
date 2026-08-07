@@ -4,6 +4,7 @@ import Hero from "@/components/home/Hero";
 import MovieRow from "@/components/home/MovieRow";
 import ContinueWatchingRow from "@/components/home/ContinueWatchingRow";
 import MarketingPage from "@/components/marketing/MarketingPage";
+import WelcomeAnimation from "@/components/home/WelcomeAnimation";
 
 export const dynamic = "force-dynamic";
 export const revalidate = 0;
@@ -52,11 +53,10 @@ export default async function Home() {
     return <MarketingPage />;
   }
 
-  // Get user info for welcome message
+  // Logged in → show streaming dashboard
   const user = await currentUser();
   const firstName = user?.firstName || user?.username || "Friend";
 
-  // Logged in → show streaming dashboard
   const [settingsResult, featuredMovies] = await Promise.all([
     sql`SELECT value FROM site_settings WHERE key = 'homepage_sections'`,
     sql`SELECT * FROM movies WHERE is_featured = true ORDER BY COALESCE(hero_order, 999) ASC`,
@@ -78,26 +78,8 @@ export default async function Home() {
 
   return (
     <main>
-      {/* Welcome banner — only shown on first section above hero */}
-      <div className="relative z-30 flex items-center justify-center py-4 px-4">
-        <p
-          className="text-center text-lg sm:text-xl text-white/70"
-          style={{
-            fontFamily: "'Playfair Display', Georgia, serif",
-            fontStyle: "italic",
-            letterSpacing: "0.02em",
-          }}
-        >
-          Welcome back,{" "}
-          <span
-            className="font-bold"
-            style={{ color: "#D4AF37" }}
-          >
-            {firstName}
-          </span>{" "}
-          ✦
-        </p>
-      </div>
+      {/* Welcome animation – only shows once per session */}
+      <WelcomeAnimation firstName={firstName} />
       <Hero movies={featuredMovies.map(toMovie)} />
       <div className="relative z-20 -mt-16">
         <ContinueWatchingRow />
