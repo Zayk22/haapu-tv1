@@ -103,16 +103,18 @@ export default function FeaturedMovie({
               {description}
             </p>
 
-            {/* CTA Buttons */}
+            {/* CTA Buttons - Watch Now only shows when showLabel is true */}
             <div className="mt-6 flex flex-wrap gap-3">
-              <Link
-                href={`/movie/${slug || title.toLowerCase().replace(/\s+/g, '-')}`}
-                className="inline-flex items-center gap-2 rounded-lg px-6 py-3 text-sm font-semibold text-white transition-all duration-300 hover:opacity-90 hover:scale-105"
-                style={{ backgroundColor: "#E50914" }}
-              >
-                <Play size={16} fill="currentColor" />
-                Watch Now
-              </Link>
+              {showLabel && (
+                <Link
+                  href={`/movie/${slug || title.toLowerCase().replace(/\s+/g, '-')}`}
+                  className="inline-flex items-center gap-2 rounded-lg px-6 py-3 text-sm font-semibold text-white transition-all duration-300 hover:opacity-90 hover:scale-105"
+                  style={{ backgroundColor: "#E50914" }}
+                >
+                  <Play size={16} fill="currentColor" />
+                  Watch Now
+                </Link>
+              )}
               <Link
                 href="/covenant"
                 className="inline-flex items-center gap-2 rounded-lg border border-white/20 px-6 py-3 text-sm font-semibold text-white/80 transition-all duration-300 hover:border-white/40 hover:text-white"
