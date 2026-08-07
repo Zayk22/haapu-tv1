@@ -1,4 +1,4 @@
-import { auth } from "@clerk/nextjs/server";
+import { auth, currentUser } from "@clerk/nextjs/server";
 import { sql } from "@/lib/db";
 import Hero from "@/components/home/Hero";
 import MovieRow from "@/components/home/MovieRow";
@@ -52,6 +52,10 @@ export default async function Home() {
     return <MarketingPage />;
   }
 
+  // Get user info for welcome message
+  const user = await currentUser();
+  const firstName = user?.firstName || user?.username || "Friend";
+
   // Logged in → show streaming dashboard
   const [settingsResult, featuredMovies] = await Promise.all([
     sql`SELECT value FROM site_settings WHERE key = 'homepage_sections'`,
@@ -74,6 +78,26 @@ export default async function Home() {
 
   return (
     <main>
+      {/* Welcome banner — only shown on first section above hero */}
+      <div className="relative z-30 flex items-center justify-center py-4 px-4">
+        <p
+          className="text-center text-lg sm:text-xl text-white/70"
+          style={{
+            fontFamily: "'Playfair Display', Georgia, serif",
+            fontStyle: "italic",
+            letterSpacing: "0.02em",
+          }}
+        >
+          Welcome back,{" "}
+          <span
+            className="font-bold"
+            style={{ color: "#D4AF37" }}
+          >
+            {firstName}
+          </span>{" "}
+          ✦
+        </p>
+      </div>
       <Hero movies={featuredMovies.map(toMovie)} />
       <div className="relative z-20 -mt-16">
         <ContinueWatchingRow />
