@@ -146,7 +146,7 @@ export default function MarketingPage() {
             <Link href="/covenant" className="text-sm font-medium text-white/80 hover:text-white transition-colors">
               Covenant Member
             </Link>
-            <Link href="/watch" className="text-sm font-medium text-white/80 hover:text-white transition-colors">
+            <Link href="/sign-up" className="text-sm font-medium text-white/80 hover:text-white transition-colors">
               Watch
             </Link>
             <Link href="/faq" className="text-sm font-medium text-white/80 hover:text-white transition-colors">
@@ -206,7 +206,7 @@ export default function MarketingPage() {
                   Covenant Member
                 </Link>
                 <Link
-                  href="/watch"
+                  href="/sign-up"
                   className="px-3 py-2.5 text-sm font-medium text-white/80 hover:text-white hover:bg-white/5 rounded-lg transition-colors"
                   onClick={() => setIsMobileMenuOpen(false)}
                 >
