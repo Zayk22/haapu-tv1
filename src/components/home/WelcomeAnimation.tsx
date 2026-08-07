@@ -2,23 +2,31 @@
 
 import { useState, useEffect } from "react";
 import { motion, AnimatePresence } from "framer-motion";
+import { useAuth } from "@clerk/nextjs";
 
 interface WelcomeAnimationProps {
   firstName: string;
 }
 
 export default function WelcomeAnimation({ firstName }: WelcomeAnimationProps) {
+  const { sessionId } = useAuth();
   const [visible, setVisible] = useState(false);
 
   useEffect(() => {
-    const key = "haapu_welcome_shown";
-    if (!sessionStorage.getItem(key)) {
+    if (!sessionId) return;
+
+    const key = `haapu_welcome_${sessionId}`;
+    const hasShown = sessionStorage.getItem(key);
+
+    if (!hasShown) {
       sessionStorage.setItem(key, "true");
       setVisible(true);
-      const timer = setTimeout(() => setVisible(false), 2800);
+
+      // Auto-dismiss after 2.5 seconds
+      const timer = setTimeout(() => setVisible(false), 2500);
       return () => clearTimeout(timer);
     }
-  }, []);
+  }, [sessionId]);
 
   return (
     <AnimatePresence>
@@ -28,9 +36,9 @@ export default function WelcomeAnimation({ firstName }: WelcomeAnimationProps) {
           animate={{ opacity: 1 }}
           exit={{ opacity: 0 }}
           transition={{ duration: 0.6 }}
-          className="fixed inset-0 z-[9999] flex flex-col items-center justify-center bg-matte-black"
+          className="fixed inset-0 z-[9999] flex flex-col items-center justify-center bg-black"
         >
-          {/* Subtle gold accent bar */}
+          {/* Accent bar */}
           <motion.div
             initial={{ scaleX: 0 }}
             animate={{ scaleX: 1 }}
