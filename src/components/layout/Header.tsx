@@ -75,30 +75,30 @@ export default function Header() {
             : "bg-gradient-to-b from-matte-black/90 to-transparent"
         }`}
       >
-        <div className="mx-auto flex max-w-screen-2xl items-center justify-between px-4 py-3 lg:px-12 lg:py-4">
+        <div className="relative mx-auto flex max-w-screen-2xl items-center justify-between px-4 py-3 lg:px-12 lg:py-4">
 
-          {/* LEFT — logo + nav */}
-          <div className="flex items-center gap-12 lg:gap-16">
-            <Link href="/" className="flex-shrink-0">
-              <img src="/logo.png" alt="Haapu TV" className="h-12 w-auto object-contain" />
-            </Link>
-            <nav className="hidden items-center gap-8 lg:flex">
-              {navLinks.map((link) => (
-                <Link
-                  key={link.href}
-                  href={link.href}
-                  className={`relative text-base font-medium tracking-wide transition-colors duration-300 ${
-                    isActive(link.href) ? "text-white" : "text-matte-400 hover:text-white"
-                  }`}
-                >
-                  {link.label}
-                  {isActive(link.href) && (
-                    <span className="absolute -bottom-1 left-0 right-0 h-[2.5px] rounded-full bg-gold" />
-                  )}
-                </Link>
-              ))}
-            </nav>
-          </div>
+          {/* LEFT — logo */}
+          <Link href="/" className="flex-shrink-0">
+            <img src="/logo.png" alt="Haapu TV" className="h-12 w-auto object-contain" />
+          </Link>
+
+          {/* CENTER — navigation (absolutely centered on viewport) */}
+          <nav className="absolute left-1/2 hidden -translate-x-1/2 items-center gap-8 lg:flex">
+            {navLinks.map((link) => (
+              <Link
+                key={link.href}
+                href={link.href}
+                className={`relative text-base font-medium tracking-wide transition-colors duration-300 ${
+                  isActive(link.href) ? "text-white" : "text-matte-400 hover:text-white"
+                }`}
+              >
+                {link.label}
+                {isActive(link.href) && (
+                  <span className="absolute -bottom-1 left-0 right-0 h-[2.5px] rounded-full bg-gold" />
+                )}
+              </Link>
+            ))}
+          </nav>
 
           {/* RIGHT — icons + account */}
           <div className="flex items-center gap-4">
