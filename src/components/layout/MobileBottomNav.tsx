@@ -21,46 +21,58 @@ export default function MobileBottomNav() {
   };
 
   return (
-    <div className="fixed bottom-0 left-0 right-0 z-40 border-t border-matte-800 bg-matte-black/95 backdrop-blur-md lg:hidden">
-      <div className="flex items-center justify-around py-2">
+    <div className="fixed bottom-0 left-0 right-0 z-40 border-t border-matte-800/60 bg-matte-black/95 backdrop-blur-lg lg:hidden safe-bottom">
+      <div className="flex items-center justify-around py-1.5">
         <Link
           href="/"
-          className={`flex flex-col items-center gap-0.5 px-3 py-1 text-xs transition-colors ${
+          className={`relative flex flex-col items-center gap-0.5 px-3 py-1 text-xs transition-colors ${
             isActive("/") ? "text-white" : "text-matte-500 hover:text-white"
           }`}
         >
-          <Home size={20} strokeWidth={1.5} />
-          <span className="text-[10px]">Home</span>
+          <Home size={22} strokeWidth={1.5} className={isActive("/") ? "text-gold" : ""} />
+          <span className="text-[10px] font-medium tracking-wide">Home</span>
+          {isActive("/") && (
+            <span className="absolute -top-1 left-1/2 h-1 w-1 -translate-x-1/2 rounded-full bg-gold" />
+          )}
         </Link>
 
         <Link
           href="/movies"
-          className={`flex flex-col items-center gap-0.5 px-3 py-1 text-xs transition-colors ${
+          className={`relative flex flex-col items-center gap-0.5 px-3 py-1 text-xs transition-colors ${
             isActive("/movies") ? "text-white" : "text-matte-500 hover:text-white"
           }`}
         >
-          <Film size={20} strokeWidth={1.5} />
-          <span className="text-[10px]">Movies</span>
+          <Film size={22} strokeWidth={1.5} className={isActive("/movies") ? "text-gold" : ""} />
+          <span className="text-[10px] font-medium tracking-wide">Movies</span>
+          {isActive("/movies") && (
+            <span className="absolute -top-1 left-1/2 h-1 w-1 -translate-x-1/2 rounded-full bg-gold" />
+          )}
         </Link>
 
         <Link
           href="/watchlist"
-          className={`flex flex-col items-center gap-0.5 px-3 py-1 text-xs transition-colors ${
+          className={`relative flex flex-col items-center gap-0.5 px-3 py-1 text-xs transition-colors ${
             isActive("/watchlist") ? "text-white" : "text-matte-500 hover:text-white"
           }`}
         >
-          <Bookmark size={20} strokeWidth={1.5} />
-          <span className="text-[10px]">My List</span>
+          <Bookmark size={22} strokeWidth={1.5} className={isActive("/watchlist") ? "text-gold" : ""} />
+          <span className="text-[10px] font-medium tracking-wide">My List</span>
+          {isActive("/watchlist") && (
+            <span className="absolute -top-1 left-1/2 h-1 w-1 -translate-x-1/2 rounded-full bg-gold" />
+          )}
         </Link>
 
         <Link
           href="/account"
-          className={`flex flex-col items-center gap-0.5 px-3 py-1 text-xs transition-colors ${
+          className={`relative flex flex-col items-center gap-0.5 px-3 py-1 text-xs transition-colors ${
             isActive("/account") ? "text-white" : "text-matte-500 hover:text-white"
           }`}
         >
-          <User size={20} strokeWidth={1.5} />
-          <span className="text-[10px]">Account</span>
+          <User size={22} strokeWidth={1.5} className={isActive("/account") ? "text-gold" : ""} />
+          <span className="text-[10px] font-medium tracking-wide">Account</span>
+          {isActive("/account") && (
+            <span className="absolute -top-1 left-1/2 h-1 w-1 -translate-x-1/2 rounded-full bg-gold" />
+          )}
         </Link>
       </div>
     </div>
