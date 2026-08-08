@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useEffect } from "react";
+import { useState } from "react";
 import Link from "next/link";
 import { motion, AnimatePresence } from "framer-motion";
 import { ChevronDown, Plus } from "lucide-react";
@@ -239,136 +239,18 @@ function FAQItem({ q, a, isOpen, onClick }: { q: string; a: React.ReactNode; isO
 }
 
 export default function FAQPage() {
-  const [scrolled, setScrolled] = useState(false);
-  const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
   const [openIndex, setOpenIndex] = useState<number | null>(null);
-
-  useEffect(() => {
-    const handleScroll = () => {
-      setScrolled(window.scrollY > 50);
-    };
-    window.addEventListener('scroll', handleScroll);
-    return () => window.removeEventListener('scroll', handleScroll);
-  }, []);
 
   const toggleFAQ = (index: number) => {
     setOpenIndex(openIndex === index ? null : index);
   };
 
-  // Split FAQs into two columns for desktop
   const leftColumnFAQs = FAQS.slice(0, 4);
   const rightColumnFAQs = FAQS.slice(4);
 
   return (
     <div className="bg-black min-h-screen">
-
-      {/* ── NAVBAR ──────────────────────────────────────────────── */}
-      <header 
-        className={`fixed top-0 left-0 right-0 z-50 transition-all duration-300 ${
-          scrolled ? 'bg-black/95 backdrop-blur-sm' : 'bg-gradient-to-b from-black/60 to-transparent'
-        }`}
-      >
-        <div className="mx-auto flex max-w-screen-xl items-center justify-between px-4 py-3 sm:px-6 sm:py-4">
-          <Link href="/">
-            <img src="/logo.png" alt="Haapu TV" className="h-8 w-auto object-contain sm:h-10 md:h-12" />
-          </Link>
-          
-          {/* Desktop Navigation - Hidden on mobile */}
-          <div className="hidden md:flex items-center gap-6 lg:gap-8">
-            <Link href="/" className="text-sm font-medium text-white/80 hover:text-white transition-colors">
-              Home
-            </Link>
-            <Link href="/covenant" className="text-sm font-medium text-white/80 hover:text-white transition-colors">
-              Covenant Member
-            </Link>
-            <Link href="/watch" className="text-sm font-medium text-white/80 hover:text-white transition-colors">
-              Watch
-            </Link>
-            <Link href="/faq" className="text-sm font-medium text-white transition-colors" style={{ color: "#D4AF37" }}>
-              FAQs
-            </Link>
-            <Link href="/sign-up" className="text-sm font-medium text-white/80 hover:text-white transition-colors">
-              Sign Up
-            </Link>
-          </div>
-
-          {/* Right side - Watch TV button + Mobile Menu Toggle */}
-          <div className="flex items-center gap-3">
-            <Link
-              href="/sign-up"
-              className="rounded-lg px-4 py-2 text-xs font-bold text-white transition-all hover:opacity-90 hover:scale-105 sm:px-5 sm:py-2.5 sm:text-sm"
-              style={{ backgroundColor: "#E50914" }}
-            >
-              Watch TV
-            </Link>
-            
-            {/* Mobile Hamburger Menu */}
-            <button
-              onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)}
-              className="md:hidden flex flex-col gap-1.5 p-1 text-white transition-colors hover:text-[#D4AF37]"
-              aria-label="Toggle menu"
-            >
-              <span className={`block h-0.5 w-6 bg-current transition-all duration-300 ${isMobileMenuOpen ? 'rotate-45 translate-y-2' : ''}`} />
-              <span className={`block h-0.5 w-6 bg-current transition-all duration-300 ${isMobileMenuOpen ? 'opacity-0' : ''}`} />
-              <span className={`block h-0.5 w-6 bg-current transition-all duration-300 ${isMobileMenuOpen ? '-rotate-45 -translate-y-2' : ''}`} />
-            </button>
-          </div>
-        </div>
-
-        {/* Mobile Menu Dropdown */}
-        <AnimatePresence>
-          {isMobileMenuOpen && (
-            <motion.div
-              initial={{ opacity: 0, y: -20 }}
-              animate={{ opacity: 1, y: 0 }}
-              exit={{ opacity: 0, y: -20 }}
-              transition={{ duration: 0.2 }}
-              className="md:hidden bg-black/95 backdrop-blur-sm border-b border-white/10"
-            >
-              <div className="flex flex-col space-y-1 px-4 py-4">
-                <Link
-                  href="/"
-                  className="px-3 py-2.5 text-sm font-medium text-white/80 hover:text-white hover:bg-white/5 rounded-lg transition-colors"
-                  onClick={() => setIsMobileMenuOpen(false)}
-                >
-                  Home
-                </Link>
-                <Link
-                  href="/covenant"
-                  className="px-3 py-2.5 text-sm font-medium text-white/80 hover:text-white hover:bg-white/5 rounded-lg transition-colors"
-                  onClick={() => setIsMobileMenuOpen(false)}
-                >
-                  Covenant Member
-                </Link>
-                <Link
-                  href="/watch"
-                  className="px-3 py-2.5 text-sm font-medium text-white/80 hover:text-white hover:bg-white/5 rounded-lg transition-colors"
-                  onClick={() => setIsMobileMenuOpen(false)}
-                >
-                  Watch
-                </Link>
-                <Link
-                  href="/faq"
-                  className="px-3 py-2.5 text-sm font-medium text-white hover:bg-white/5 rounded-lg transition-colors"
-                  style={{ color: "#D4AF37" }}
-                  onClick={() => setIsMobileMenuOpen(false)}
-                >
-                  FAQs
-                </Link>
-                <Link
-                  href="/sign-up"
-                  className="px-3 py-2.5 text-sm font-medium text-white/80 hover:text-white hover:bg-white/5 rounded-lg transition-colors"
-                  onClick={() => setIsMobileMenuOpen(false)}
-                >
-                  Sign Up
-                </Link>
-              </div>
-            </motion.div>
-          )}
-        </AnimatePresence>
-      </header>
-
-      {/* ── HERO SECTION ────────────────────────────────────────── */}
+      {/* Hero Section */}
       <section className="relative overflow-hidden px-6 pt-32 pb-16 sm:px-12 sm:pt-40 sm:pb-24">
         <div className="absolute inset-0 z-0">
           <div
@@ -396,7 +278,7 @@ export default function FAQPage() {
         </motion.div>
       </section>
 
-      {/* ── FAQ ACCORDION ────────────────────────────────────────── */}
+      {/* FAQ Accordion */}
       <section className="px-6 pb-16 sm:px-12 sm:pb-24">
         <div className="mx-auto max-w-7xl">
           <motion.div
@@ -435,7 +317,7 @@ export default function FAQPage() {
         </div>
       </section>
 
-      {/* ── CONTACT CTA ──────────────────────────────────────────── */}
+      {/* Contact CTA */}
       <section className="px-6 pb-24 sm:px-12 sm:pb-32">
         <motion.div
           initial={{ opacity: 0, y: 30 }}
@@ -467,8 +349,6 @@ export default function FAQPage() {
           </Link>
         </motion.div>
       </section>
-
-      {/* ── FOOTER REMOVED – global footer is provided by LayoutWrapper ── */}
     </div>
   );
 }
