@@ -77,6 +77,18 @@ export default async function Home() {
   return (
     <>
       <WelcomeAnimation firstName={firstName} />
+
+      {/* Welcome banner – static, shown after animation fades */}
+      <div className="relative z-30 flex items-center justify-center py-4 px-4">
+        <p className="text-center text-lg sm:text-xl text-white/70">
+          Welcome back,{" "}
+          <span className="font-bold" style={{ color: "#D4AF37" }}>
+            {firstName}
+          </span>{" "}
+          ✦
+        </p>
+      </div>
+
       <main className="relative z-10">
         <Hero movies={featuredMovies.map(toMovie)} />
         <div className="relative z-20 -mt-10 sm:-mt-16">
