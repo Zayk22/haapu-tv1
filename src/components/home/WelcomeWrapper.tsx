@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useLayoutEffect } from "react";
+import { useState, useEffect } from "react";
 import WelcomeAnimation from "./WelcomeAnimation";
 
 interface WelcomeWrapperProps {
@@ -9,27 +9,33 @@ interface WelcomeWrapperProps {
 }
 
 export default function WelcomeWrapper({ firstName, children }: WelcomeWrapperProps) {
-  const [showAnimation, setShowAnimation] = useState(true);
+  const [isMounted, setIsMounted] = useState(false);
   const [showContent, setShowContent] = useState(false);
+  const [showAnimation, setShowAnimation] = useState(false);
 
-  useLayoutEffect(() => {
+  useEffect(() => {
+    setIsMounted(true);
     const key = "haapu_welcome_shown";
 
     if (sessionStorage.getItem(key)) {
-      // Already shown – skip animation, show content immediately
-      setShowAnimation(false);
+      // Already shown – skip animation
       setShowContent(true);
       return;
     }
 
-    // First visit – show animation, set flag
+    // First visit – show animation
     sessionStorage.setItem(key, "true");
-    // content will be shown when onComplete fires
+    setShowAnimation(true);
   }, []);
 
   const handleComplete = () => {
     setShowContent(true);
   };
+
+  if (!isMounted) {
+    // Server render – show a black placeholder to avoid flash of empty content
+    return <div className="fixed inset-0 bg-matte-black" />;
+  }
 
   return (
     <>
