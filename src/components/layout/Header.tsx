@@ -11,6 +11,8 @@ import SearchOverlay from "@/components/layout/SearchOverlay";
 const navLinks = [
   { label: "Home", href: "/" },
   { label: "Movies", href: "/movies" },
+  { label: "TV Shows", href: "/tv-shows" },
+  { label: "Kids", href: "/kids" },
 ];
 
 export default function Header() {
