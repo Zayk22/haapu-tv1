@@ -71,3 +71,4 @@ html { scroll-behavior: smooth; }
    SAFE AREA — for devices with home indicator
    ============================================ */
 .safe-area-pb { padding-bottom: env(safe-area-inset-bottom, 0px); }
+.safe-bottom { padding-bottom: env(safe-area-inset-bottom, 0px); }

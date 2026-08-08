@@ -48,12 +48,10 @@ async function getMoviesBySource(source: string) {
 export default async function Home() {
   const { userId } = await auth();
 
-  // Not logged in → show marketing page
   if (!userId) {
     return <MarketingPage />;
   }
 
-  // Logged in → show streaming dashboard
   const user = await currentUser();
   const firstName = user?.firstName || user?.username || "Friend";
 
@@ -77,22 +75,26 @@ export default async function Home() {
   );
 
   return (
-    <main>
+    <>
       <WelcomeAnimation firstName={firstName} />
-      <Hero movies={featuredMovies.map(toMovie)} />
-      <div className="relative z-20 -mt-16">
-        <ContinueWatchingRow />
-        {sectionMovies.map(({ section, movies }) =>
-          movies.length === 0 ? null : (
-            <MovieRow
-              key={section.id}
-              title={section.title}
-              movies={movies}
-              viewAllLink="/movies"
-            />
-          )
-        )}
-      </div>
-    </main>
+      <main className="relative z-10">
+        <Hero movies={featuredMovies.map(toMovie)} />
+        <div className="relative z-20 -mt-10 sm:-mt-16">
+          <ContinueWatchingRow />
+          {sectionMovies.map(({ section, movies }) =>
+            movies.length === 0 ? null : (
+              <MovieRow
+                key={section.id}
+                title={section.title}
+                movies={movies}
+                viewAllLink="/movies"
+              />
+            )
+          )}
+          {/* Extra bottom spacing for mobile nav */}
+          <div className="h-4 lg:h-0" />
+        </div>
+      </main>
+    </>
   );
 }

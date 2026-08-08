@@ -26,17 +26,14 @@ export default function Hero({ movies }: HeroProps) {
   }, [validMovies.length]);
 
   const goTo = useCallback((index: number) => setCurrentIndex(index), []);
-
   const goNext = useCallback(() => {
     setCurrentIndex((prev) => (prev + 1) % validMovies.length);
   }, [validMovies.length]);
-
   const goPrev = useCallback(() => {
     setCurrentIndex((prev) => (prev - 1 + validMovies.length) % validMovies.length);
   }, [validMovies.length]);
 
-  // Native touch listeners — the only reliable way to get swipe
-  // when Framer Motion AnimatePresence is in the tree
+  // Swipe support
   useEffect(() => {
     const el = sectionRef.current;
     if (!el) return;
@@ -71,17 +68,8 @@ export default function Hero({ movies }: HeroProps) {
   return (
     <section ref={sectionRef} className="bg-matte-black">
 
-      {/* ═══════════════════════════════════════════════════
-          MOBILE LAYOUT
-          Image in a 16:9 container — landscape backdrop
-          images fill it with ZERO cropping. Portrait-only
-          images (SINACH, Body Praise) show their top portion
-          where faces are. Content sits cleanly below.
-          Arrows live inside the image. Swipe also works.
-      ══════════════════════════════════════════════════ */}
+      {/* MOBILE LAYOUT */}
       <div className="sm:hidden">
-
-        {/* Image — aspect-video = exactly 16:9 = no crop for landscape images */}
         <div className="relative w-full aspect-video overflow-hidden">
           <AnimatePresence mode="wait">
             <motion.img
@@ -96,11 +84,10 @@ export default function Hero({ movies }: HeroProps) {
             />
           </AnimatePresence>
 
-          {/* Fade to dark at bottom — connects image to content section */}
-          <div className="absolute inset-0 bg-gradient-to-b from-transparent via-black/20 to-matte-black" />
-          <div className="absolute inset-0 bg-gradient-to-r from-black/30 to-transparent" />
+          {/* Lighter gradient to keep image visible */}
+          <div className="absolute inset-0 bg-gradient-to-b from-transparent via-black/10 to-matte-black/90" />
+          <div className="absolute inset-0 bg-gradient-to-r from-black/20 to-transparent" />
 
-          {/* Arrows inside image — above gradient, can't overlap content */}
           {validMovies.length > 1 && (
             <>
               <button
@@ -121,7 +108,6 @@ export default function Hero({ movies }: HeroProps) {
           )}
         </div>
 
-        {/* Content — below image, always readable, never overlaps */}
         <AnimatePresence mode="wait">
           <motion.div
             key={currentIndex}
@@ -134,19 +120,16 @@ export default function Hero({ movies }: HeroProps) {
             <span className="text-[10px] font-semibold uppercase tracking-widest text-gold-soft">
               Featured
             </span>
-
             <h1 className="mt-1 font-display text-2xl leading-tight text-white">
               {movie.title}
             </h1>
-
             <p className="mt-1.5 text-caption text-matte-400 line-clamp-2 leading-relaxed">
               {movie.description}
             </p>
-
             <div className="mt-2 flex flex-wrap items-center gap-2 text-small text-matte-500">
               {movie.rating > 0 && (
                 <span className="flex items-center gap-1">
-                  <Star size={11} className="text-gold-DEFAULT" fill="currentColor" />
+                  <Star size={11} className="text-gold" fill="currentColor" />
                   <span className="text-white font-medium">{movie.rating}</span>
                 </span>
               )}
@@ -163,11 +146,10 @@ export default function Hero({ movies }: HeroProps) {
               )}
             </div>
 
-            {/* ✅ FIXED: Side by side — Watch Now takes most space, My List is compact */}
             <div className="mt-4 flex flex-row items-center gap-2.5">
               <button
                 onClick={() => { if (movie.slug) router.push(`/movie/${movie.slug}`); }}
-                className="flex flex-1 items-center justify-center gap-2 rounded-lg bg-crimson-DEFAULT py-3 text-body font-semibold text-white active:scale-[0.98] transition-transform"
+                className="flex flex-1 items-center justify-center gap-2 rounded-lg bg-crimson py-3 text-body font-semibold text-white active:scale-[0.98] transition-transform"
               >
                 <Play size={18} fill="currentColor" />
                 Watch Now
@@ -175,7 +157,6 @@ export default function Hero({ movies }: HeroProps) {
               <WatchlistButton movie={movie} />
             </div>
 
-            {/* Dots — below buttons, inside section, never overlaps Continue Watching */}
             {validMovies.length > 1 && (
               <div className="mt-4 flex items-center justify-center gap-2">
                 {validMovies.map((_, index) => (
@@ -184,7 +165,7 @@ export default function Hero({ movies }: HeroProps) {
                     onClick={() => goTo(index)}
                     className={`h-1.5 rounded-full transition-all duration-300 ${
                       index === currentIndex
-                        ? "w-6 bg-crimson-DEFAULT"
+                        ? "w-6 bg-crimson"
                         : "w-1.5 bg-matte-700 hover:bg-matte-500"
                     }`}
                     aria-label={`Go to slide ${index + 1}`}
@@ -196,9 +177,7 @@ export default function Hero({ movies }: HeroProps) {
         </AnimatePresence>
       </div>
 
-      {/* ═══════════════════════════════════════════════════
-          DESKTOP LAYOUT — full cinematic hero, unchanged
-      ══════════════════════════════════════════════════ */}
+      {/* DESKTOP LAYOUT */}
       <div className="relative hidden min-h-screen items-center overflow-hidden sm:flex">
         <AnimatePresence mode="wait">
           <motion.div
@@ -220,8 +199,8 @@ export default function Hero({ movies }: HeroProps) {
         </AnimatePresence>
 
         <div className="absolute inset-0 z-0 pointer-events-none">
-          <div className="absolute left-1/3 top-1/4 h-96 w-96 rounded-full bg-gold-DEFAULT opacity-[0.03] blur-[120px]" />
-          <div className="absolute right-1/4 bottom-1/3 h-64 w-64 rounded-full bg-crimson-DEFAULT opacity-[0.04] blur-[100px]" />
+          <div className="absolute left-1/3 top-1/4 h-96 w-96 rounded-full bg-gold opacity-[0.03] blur-[120px]" />
+          <div className="absolute right-1/4 bottom-1/3 h-64 w-64 rounded-full bg-crimson opacity-[0.04] blur-[100px]" />
         </div>
 
         <AnimatePresence mode="wait">
@@ -234,22 +213,19 @@ export default function Hero({ movies }: HeroProps) {
             transition={{ duration: 0.5 }}
           >
             <div className="max-w-2xl">
-              <span className="inline-block rounded-full border border-gold-DEFAULT/30 bg-gold-DEFAULT/10 px-4 py-1.5 text-small font-medium uppercase tracking-wider text-gold-soft">
+              <span className="inline-block rounded-full border border-gold/30 bg-gold/10 px-4 py-1.5 text-small font-medium uppercase tracking-wider text-gold-soft">
                 Featured
               </span>
-
               <h1 className="mt-6 font-display text-display lg:text-hero leading-none text-white">
                 {movie.title}
               </h1>
-
               <p className="mt-6 max-w-lg text-body-lg leading-relaxed text-matte-300 line-clamp-3">
                 {movie.description}
               </p>
-
               <div className="mt-6 flex flex-wrap items-center gap-6 text-caption text-matte-500">
                 {movie.rating > 0 && (
                   <div className="flex items-center gap-1.5">
-                    <Star size={14} className="text-gold-DEFAULT" fill="currentColor" />
+                    <Star size={14} className="text-gold" fill="currentColor" />
                     <span className="font-medium text-white">{movie.rating}</span>
                   </div>
                 )}
@@ -265,11 +241,10 @@ export default function Hero({ movies }: HeroProps) {
                   </span>
                 )}
               </div>
-
               <div className="mt-8 flex flex-wrap items-center gap-4">
                 <button
                   onClick={() => { if (movie.slug) router.push(`/movie/${movie.slug}`); }}
-                  className="flex items-center gap-2.5 rounded-lg bg-crimson-DEFAULT px-8 py-3.5 text-body font-semibold text-white shadow-glow-lg transition-colors hover:bg-crimson-dark"
+                  className="flex items-center gap-2.5 rounded-lg bg-crimson px-8 py-3.5 text-body font-semibold text-white shadow-glow-lg transition-colors hover:bg-crimson-dark"
                 >
                   <Play size={18} fill="currentColor" />
                   Watch Now
@@ -280,7 +255,6 @@ export default function Hero({ movies }: HeroProps) {
           </motion.div>
         </AnimatePresence>
 
-        {/* Desktop arrows */}
         {validMovies.length > 1 && (
           <>
             <button
@@ -300,7 +274,6 @@ export default function Hero({ movies }: HeroProps) {
           </>
         )}
 
-        {/* Desktop dots */}
         {validMovies.length > 1 && (
           <div className="absolute bottom-10 left-0 right-0 z-20 flex justify-center gap-2">
             {validMovies.map((_, index) => (
@@ -309,7 +282,7 @@ export default function Hero({ movies }: HeroProps) {
                 onClick={() => goTo(index)}
                 className={`h-2 rounded-full transition-all duration-300 ${
                   index === currentIndex
-                    ? "w-8 bg-crimson-DEFAULT"
+                    ? "w-8 bg-crimson"
                     : "w-2 bg-matte-600 hover:bg-matte-500"
                 }`}
                 aria-label={`Go to slide ${index + 1}`}

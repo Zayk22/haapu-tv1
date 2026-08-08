@@ -5,14 +5,15 @@ import Link from "next/link";
 import { motion } from "framer-motion";
 import { ChevronLeft, ChevronRight } from "lucide-react";
 import MovieCard from "@/components/movie/MovieCard";
-import type { MovieRowProps } from "@/types/movie";
+import type { Movie } from "@/types/movie";
 
-export default function MovieRow({
-  title,
-  movies,
-  isLoading = false,
-  viewAllLink,
-}: MovieRowProps) {
+interface MovieRowProps {
+  title: string;
+  movies: Movie[];
+  viewAllLink?: string;
+}
+
+export default function MovieRow({ title, movies, viewAllLink }: MovieRowProps) {
   const scrollContainerRef = useRef<HTMLDivElement>(null);
   const [canScrollLeft, setCanScrollLeft] = useState(false);
   const [canScrollRight, setCanScrollRight] = useState(true);
@@ -45,27 +46,11 @@ export default function MovieRow({
     });
   };
 
-  if (isLoading) {
-    return (
-      <section className="py-6 sm:py-8">
-        <div className="mx-auto max-w-screen-2xl px-4 sm:px-6 lg:px-12">
-          <div className="mb-4 h-8 w-48 animate-pulse rounded bg-matte-800" />
-          <div className="flex gap-3 overflow-hidden">
-            {Array.from({ length: 6 }).map((_, i) => (
-              <div key={i} className="w-[130px] sm:w-[160px] lg:w-[190px] flex-shrink-0 aspect-[2/3] animate-pulse rounded-lg bg-matte-800" />
-            ))}
-          </div>
-        </div>
-      </section>
-    );
-  }
-
   if (!movies || movies.length === 0) return null;
 
   return (
     <motion.section
       className="py-6 sm:py-8"
-      // Row entrance — fires once when section scrolls into view
       initial={{ opacity: 0 }}
       whileInView={{ opacity: 1 }}
       viewport={{ once: true, margin: "-60px" }}
@@ -75,7 +60,6 @@ export default function MovieRow({
     >
       <div className="mx-auto max-w-screen-2xl px-4 sm:px-6 lg:px-12">
 
-        {/* Row header — slides in from left when row enters viewport */}
         <motion.div
           className="mb-3 sm:mb-4 flex items-center justify-between"
           initial={{ opacity: 0, x: -16 }}
@@ -101,7 +85,7 @@ export default function MovieRow({
           {canScrollLeft && (
             <button
               onClick={() => scroll("left")}
-              className={`absolute -left-3 top-0 z-20 hidden sm:flex h-full w-12 items-center justify-center transition-opacity duration-300 ${
+              className={`absolute -left-3 top-0 z-20 hidden sm:flex h-full w-12 items-center justify-center transition-opacity duration-200 ${
                 isHovering ? "opacity-100" : "opacity-0"
               }`}
               aria-label="Scroll left"
@@ -133,7 +117,7 @@ export default function MovieRow({
           {canScrollRight && (
             <button
               onClick={() => scroll("right")}
-              className={`absolute -right-3 top-0 z-20 hidden sm:flex h-full w-12 items-center justify-center transition-opacity duration-300 ${
+              className={`absolute -right-3 top-0 z-20 hidden sm:flex h-full w-12 items-center justify-center transition-opacity duration-200 ${
                 isHovering ? "opacity-100" : "opacity-0"
               }`}
               aria-label="Scroll right"

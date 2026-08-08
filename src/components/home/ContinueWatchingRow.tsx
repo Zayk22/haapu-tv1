@@ -68,7 +68,7 @@ export default function ContinueWatchingRow() {
                 <MovieCard movie={movie} index={index} slug={movie.slug} />
                 <div className="absolute bottom-[2.25rem] sm:bottom-[2.5rem] left-0 right-0 h-1 bg-matte-700 overflow-hidden rounded-b">
                   <div
-                    className="h-full bg-crimson transition-all duration-300"
+                    className="h-full bg-gold transition-all duration-300"
                     style={{ width: `${progressPct}%` }}
                   />
                 </div>
