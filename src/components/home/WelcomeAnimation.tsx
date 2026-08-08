@@ -10,20 +10,27 @@ interface WelcomeAnimationProps {
 
 export default function WelcomeAnimation({ firstName }: WelcomeAnimationProps) {
   const { sessionId } = useAuth();
-  const [visible, setVisible] = useState(false);
+  const [visible, setVisible] = useState(true); // Start visible to block content
 
   useEffect(() => {
-    if (!sessionId) return;
+    if (!sessionId) {
+      // If no session, hide immediately (should not happen in auth)
+      setVisible(false);
+      return;
+    }
 
     const key = `haapu_welcome_${sessionId}`;
     const hasShown = sessionStorage.getItem(key);
 
-    if (!hasShown) {
+    if (hasShown) {
+      // Already shown this session → hide immediately (no flash)
+      setVisible(false);
+    } else {
+      // First time → show animation, store flag, auto-dismiss
       sessionStorage.setItem(key, "true");
-      setVisible(true);
-
-      // Auto-dismiss after 2.5 seconds
-      const timer = setTimeout(() => setVisible(false), 2500);
+      const timer = setTimeout(() => {
+        setVisible(false);
+      }, 2800);
       return () => clearTimeout(timer);
     }
   }, [sessionId]);
