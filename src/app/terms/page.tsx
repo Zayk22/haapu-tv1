@@ -7,9 +7,8 @@ export const metadata = {
 
 export default function TermsPage() {
   return (
-    <main className="min-h-screen bg-matte-black pb-20 pt-28 px-4">
-      <div className="mx-auto max-w-3xl">
-
+    <>
+      <div className="mx-auto max-w-3xl px-4 pt-28 pb-20">
         <Link
           href="/"
           className="mb-8 inline-flex items-center gap-2 text-caption text-matte-500 transition-colors hover:text-white"
@@ -19,7 +18,7 @@ export default function TermsPage() {
         </Link>
 
         <div className="mb-10">
-          <span className="mb-3 inline-block rounded-full border border-gold-DEFAULT/30 bg-gold-DEFAULT/10 px-3 py-1 text-small font-medium uppercase tracking-widest text-gold-soft">
+          <span className="mb-3 inline-block rounded-full border border-gold/30 bg-gold/10 px-3 py-1 text-small font-medium uppercase tracking-widest text-gold-soft">
             Legal
           </span>
           <h1 className="font-display text-4xl font-bold text-white sm:text-5xl">
@@ -31,7 +30,6 @@ export default function TermsPage() {
         </div>
 
         <div className="space-y-8 text-matte-300">
-
           <section>
             <h2 className="font-display text-2xl font-semibold text-white mb-3">
               1. Acceptance of Terms
@@ -81,7 +79,7 @@ export default function TermsPage() {
               You are responsible for maintaining the confidentiality of your
               account credentials and for all activities that occur under your
               account. Notify us immediately at{" "}
-              <a href="mailto:hello@haapu.tv" className="text-crimson-DEFAULT hover:underline">
+              <a href="mailto:hello@haapu.tv" className="text-crimson hover:underline">
                 hello@haapu.tv
               </a>{" "}
               if you suspect any unauthorised use of your account.
@@ -127,10 +125,10 @@ export default function TermsPage() {
             </h2>
             <p className="text-body leading-relaxed">
               For questions about these Terms, contact us at{" "}
-              <a href="mailto:hello@haapu.tv" className="text-crimson-DEFAULT hover:underline">
+              <a href="mailto:hello@haapu.tv" className="text-crimson hover:underline">
                 hello@haapu.tv
               </a>
-              . © {new Date().getFullYear()} Haapu TV. All Rights Reserved.
+              .
             </p>
           </section>
         </div>
@@ -144,6 +142,6 @@ export default function TermsPage() {
           </Link>
         </div>
       </div>
-    </main>
+    </>
   );
 }

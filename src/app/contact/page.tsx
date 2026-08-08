@@ -56,8 +56,8 @@ export default function ContactPage() {
   };
 
   return (
-    <main className="min-h-screen bg-matte-black pb-20 pt-28 px-4">
-      <div className="mx-auto max-w-3xl">
+    <>
+      <div className="mx-auto max-w-3xl px-4 pt-28 pb-20">
         <Link
           href="/"
           className="mb-8 inline-flex items-center gap-2 text-caption text-matte-500 transition-colors hover:text-white"
@@ -134,7 +134,7 @@ export default function ContactPage() {
                 required
                 value={formData.name}
                 onChange={handleChange}
-                className="w-full rounded-lg border border-matte-700 bg-matte-800 px-4 py-2.5 text-sm text-white placeholder:text-matte-500 focus:border-crimson-DEFAULT focus:outline-none"
+                className="w-full rounded-lg border border-matte-700 bg-matte-800 px-4 py-2.5 text-sm text-white placeholder:text-matte-500 focus:border-crimson focus:outline-none"
                 placeholder="John Doe"
               />
             </div>
@@ -147,7 +147,7 @@ export default function ContactPage() {
                 required
                 value={formData.email}
                 onChange={handleChange}
-                className="w-full rounded-lg border border-matte-700 bg-matte-800 px-4 py-2.5 text-sm text-white placeholder:text-matte-500 focus:border-crimson-DEFAULT focus:outline-none"
+                className="w-full rounded-lg border border-matte-700 bg-matte-800 px-4 py-2.5 text-sm text-white placeholder:text-matte-500 focus:border-crimson focus:outline-none"
                 placeholder="you@example.com"
               />
             </div>
@@ -159,7 +159,7 @@ export default function ContactPage() {
                 name="subject"
                 value={formData.subject}
                 onChange={handleChange}
-                className="w-full rounded-lg border border-matte-700 bg-matte-800 px-4 py-2.5 text-sm text-white placeholder:text-matte-500 focus:border-crimson-DEFAULT focus:outline-none"
+                className="w-full rounded-lg border border-matte-700 bg-matte-800 px-4 py-2.5 text-sm text-white placeholder:text-matte-500 focus:border-crimson focus:outline-none"
                 placeholder="How can we help?"
               />
             </div>
@@ -172,7 +172,7 @@ export default function ContactPage() {
                 rows={5}
                 value={formData.message}
                 onChange={handleChange}
-                className="w-full rounded-lg border border-matte-700 bg-matte-800 px-4 py-2.5 text-sm text-white placeholder:text-matte-500 focus:border-crimson-DEFAULT focus:outline-none"
+                className="w-full rounded-lg border border-matte-700 bg-matte-800 px-4 py-2.5 text-sm text-white placeholder:text-matte-500 focus:border-crimson focus:outline-none"
                 placeholder="Tell us what's on your mind..."
               />
             </div>
@@ -188,18 +188,7 @@ export default function ContactPage() {
             </button>
           </form>
         </div>
-
-        {/* Footer links */}
-        <div className="mt-12 border-t border-matte-800 pt-8 flex flex-wrap items-center justify-between gap-4">
-          <p className="text-small text-matte-600">
-            © {new Date().getFullYear()} Haapu TV. All Rights Reserved.
-          </p>
-          <div className="flex gap-6 text-small text-matte-500">
-            <Link href="/privacy" className="hover:text-white transition-colors">Privacy Policy</Link>
-            <Link href="/terms" className="hover:text-white transition-colors">Terms of Use</Link>
-          </div>
-        </div>
       </div>
-    </main>
+    </>
   );
 }

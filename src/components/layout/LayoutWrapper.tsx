@@ -10,9 +10,8 @@ import MobileBottomNav from "@/components/layout/MobileBottomNav";
 import MarketingHeader from "@/components/marketing/MarketingHeader";
 import MarketingFooter from "@/components/marketing/MarketingFooter";
 
-// Public marketing routes that should use marketing header/footer
+// Public marketing routes (EXCLUDING "/" because it's handled separately below)
 const PUBLIC_ROUTES = [
-  "/",
   "/faq",
   "/covenant",
   "/contact",
@@ -20,42 +19,93 @@ const PUBLIC_ROUTES = [
   "/terms",
   "/cookie-preferences",
   "/corporate",
+  "/quality",
   "/sign-in",
   "/sign-up",
 ];
 
 export default function LayoutWrapper({ children }: { children: React.ReactNode }) {
   const pathname = usePathname();
-  const { userId, isLoaded, sessionId } = useAuth();
+  const { userId, isLoaded } = useAuth();
   const [mounted, setMounted] = useState(false);
 
   useEffect(() => {
     setMounted(true);
   }, []);
 
-  // Helper to check if current path is a public marketing route
-  const isPublicRoute = (path: string) => {
-    return PUBLIC_ROUTES.some((route) => {
-      if (route === "/") return path === "/";
-      return path?.startsWith(route);
-    });
-  };
-
-  // Watch pages (video player) and admin have their own minimal layout
   const isWatchPage = pathname?.startsWith("/watch");
   const isAdminPage = pathname?.startsWith("/admin");
 
-  // Special: root "/" when NOT logged in → MarketingPage renders its own header/footer
-  const isMarketingRoot = pathname === "/" && isLoaded && !userId;
-
-  // For public routes (except the marketing root), we render marketing header/footer
-  const shouldUseMarketingLayout = !isWatchPage && !isAdminPage && !isMarketingRoot && isPublicRoute(pathname);
-
-  if (isWatchPage || isAdminPage || isMarketingRoot) {
+  // 1. Video player and admin pages → no layout at all (they own their own)
+  if (isWatchPage || isAdminPage) {
     return <>{children}</>;
   }
 
-  if (shouldUseMarketingLayout) {
+  // 2. Root "/" → decide between MarketingPage (logged out) and authenticated app (logged in)
+  if (pathname === "/") {
+    // Not yet loaded → render children without layout (avoid flash)
+    if (!isLoaded) return <>{children}</>;
+
+    if (!userId) {
+      // Logged out → MarketingPage renders its own header/footer, so we return children ONLY
+      return <>{children}</>;
+    }
+
+    // Logged in → authenticated layout with Header, Footer, MobileBottomNav
+    return (
+      <>
+        <Header />
+        <div className="pb-16 lg:pb-0">
+          <AnimatePresence mode="wait">
+            <motion.main
+              key={pathname}
+              initial={{ opacity: 0, y: 8 }}
+              animate={{ opacity: 1, y: 0 }}
+              exit={{ opacity: 0, y: -8 }}
+              transition={{ duration: 0.25, ease: "easeInOut" }}
+            >
+              {children}
+            </motion.main>
+          </AnimatePresence>
+        </div>
+        <Footer />
+        <MobileBottomNav />
+      </>
+    );
+  }
+
+  // 3. Public marketing routes → shell depends on authentication status
+  if (PUBLIC_ROUTES.some((route) => pathname?.startsWith(route))) {
+    // Not yet loaded → render children without layout (avoid flash)
+    if (!isLoaded) {
+      return <>{children}</>;
+    }
+
+    // Logged in → authenticated shell
+    if (userId) {
+      return (
+        <>
+          <Header />
+          <div className="pb-16 lg:pb-0">
+            <AnimatePresence mode="wait">
+              <motion.main
+                key={pathname}
+                initial={{ opacity: 0, y: 8 }}
+                animate={{ opacity: 1, y: 0 }}
+                exit={{ opacity: 0, y: -8 }}
+                transition={{ duration: 0.25, ease: "easeInOut" }}
+              >
+                {children}
+              </motion.main>
+            </AnimatePresence>
+          </div>
+          <Footer />
+          <MobileBottomNav />
+        </>
+      );
+    }
+
+    // Logged out → marketing shell
     return (
       <>
         <MarketingHeader />
@@ -77,7 +127,7 @@ export default function LayoutWrapper({ children }: { children: React.ReactNode 
     );
   }
 
-  // Authenticated layout (for all other routes, e.g., /, /movies, /watchlist, /account)
+  // 4. All other routes (e.g., /movies, /watchlist, /account) → authenticated layout
   return (
     <>
       <Header />

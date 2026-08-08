@@ -7,9 +7,8 @@ export const metadata = {
 
 export default function PrivacyPage() {
   return (
-    <main className="min-h-screen bg-matte-black pb-20 pt-28 px-4">
-      <div className="mx-auto max-w-3xl">
-
+    <>
+      <div className="mx-auto max-w-3xl px-4 pt-28 pb-20">
         <Link
           href="/"
           className="mb-8 inline-flex items-center gap-2 text-caption text-matte-500 transition-colors hover:text-white"
@@ -19,7 +18,7 @@ export default function PrivacyPage() {
         </Link>
 
         <div className="mb-10">
-          <span className="mb-3 inline-block rounded-full border border-gold-DEFAULT/30 bg-gold-DEFAULT/10 px-3 py-1 text-small font-medium uppercase tracking-widest text-gold-soft">
+          <span className="mb-3 inline-block rounded-full border border-gold/30 bg-gold/10 px-3 py-1 text-small font-medium uppercase tracking-widest text-gold-soft">
             Legal
           </span>
           <h1 className="font-display text-4xl font-bold text-white sm:text-5xl">
@@ -31,7 +30,6 @@ export default function PrivacyPage() {
         </div>
 
         <div className="prose prose-invert max-w-none space-y-8 text-matte-300">
-
           <section>
             <h2 className="font-display text-2xl font-semibold text-white mb-3">
               1. Who We Are
@@ -41,7 +39,7 @@ export default function PrivacyPage() {
               platform dedicated to providing free, family-friendly entertainment.
               This Privacy Policy explains how we collect, use, and protect your
               personal information when you use our service at{" "}
-              <a href="https://haapu.tv" className="text-crimson-DEFAULT hover:underline">
+              <a href="https://haapu.tv" className="text-crimson hover:underline">
                 haapu.tv
               </a>
               .
@@ -106,7 +104,7 @@ export default function PrivacyPage() {
               You have the right to access, correct, or delete your personal
               information. To exercise these rights or for any privacy-related
               questions, contact us at{" "}
-              <a href="mailto:hello@haapu.tv" className="text-crimson-DEFAULT hover:underline">
+              <a href="mailto:hello@haapu.tv" className="text-crimson hover:underline">
                 hello@haapu.tv
               </a>
               .
@@ -120,10 +118,10 @@ export default function PrivacyPage() {
             <p className="text-body leading-relaxed">
               If you have questions about this Privacy Policy, please contact us
               at{" "}
-              <a href="mailto:hello@haapu.tv" className="text-crimson-DEFAULT hover:underline">
+              <a href="mailto:hello@haapu.tv" className="text-crimson hover:underline">
                 hello@haapu.tv
               </a>
-              . © {new Date().getFullYear()} Haapu TV. All Rights Reserved.
+              .
             </p>
           </section>
         </div>
@@ -137,6 +135,6 @@ export default function PrivacyPage() {
           </Link>
         </div>
       </div>
-    </main>
+    </>
   );
 }
