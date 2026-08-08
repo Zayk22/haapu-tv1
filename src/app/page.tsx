@@ -4,7 +4,7 @@ import Hero from "@/components/home/Hero";
 import MovieRow from "@/components/home/MovieRow";
 import ContinueWatchingRow from "@/components/home/ContinueWatchingRow";
 import MarketingPage from "@/components/marketing/MarketingPage";
-import WelcomeAnimation from "@/components/home/WelcomeAnimation";
+import WelcomeWrapper from "@/components/home/WelcomeWrapper";
 
 export const dynamic = "force-dynamic";
 export const revalidate = 0;
@@ -75,20 +75,7 @@ export default async function Home() {
   );
 
   return (
-    <>
-      <WelcomeAnimation firstName={firstName} />
-
-      {/* Welcome banner – static, shown after animation fades */}
-      <div className="relative z-30 flex items-center justify-center py-4 px-4">
-        <p className="text-center text-lg sm:text-xl text-white/70">
-          Welcome back,{" "}
-          <span className="font-bold" style={{ color: "#D4AF37" }}>
-            {firstName}
-          </span>{" "}
-          ✦
-        </p>
-      </div>
-
+    <WelcomeWrapper firstName={firstName}>
       <main className="relative z-10">
         <Hero movies={featuredMovies.map(toMovie)} />
         <div className="relative z-20 -mt-10 sm:-mt-16">
@@ -103,10 +90,9 @@ export default async function Home() {
               />
             )
           )}
-          {/* Extra bottom spacing for mobile nav */}
           <div className="h-4 lg:h-0" />
         </div>
       </main>
-    </>
+    </WelcomeWrapper>
   );
 }

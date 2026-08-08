@@ -5,21 +5,13 @@ import { motion, AnimatePresence } from "framer-motion";
 
 interface WelcomeAnimationProps {
   firstName: string;
+  onComplete: () => void;
 }
 
-export default function WelcomeAnimation({ firstName }: WelcomeAnimationProps) {
+export default function WelcomeAnimation({ firstName, onComplete }: WelcomeAnimationProps) {
   const [visible, setVisible] = useState(true);
 
   useEffect(() => {
-    const key = "haapu_welcome_shown";
-
-    if (sessionStorage.getItem(key)) {
-      setVisible(false);
-      return;
-    }
-
-    sessionStorage.setItem(key, "true");
-
     const timeout = setTimeout(() => {
       setVisible(false);
     }, 2800);
@@ -27,8 +19,12 @@ export default function WelcomeAnimation({ firstName }: WelcomeAnimationProps) {
     return () => clearTimeout(timeout);
   }, []);
 
+  const handleDismiss = () => {
+    setVisible(false);
+  };
+
   return (
-    <AnimatePresence>
+    <AnimatePresence onExitComplete={onComplete}>
       {visible && (
         <motion.div
           initial={{ opacity: 1 }}
@@ -36,7 +32,7 @@ export default function WelcomeAnimation({ firstName }: WelcomeAnimationProps) {
           exit={{ opacity: 0 }}
           transition={{ duration: 0.6 }}
           className="fixed inset-0 z-[9999] flex flex-col items-center justify-center bg-matte-black"
-          onClick={() => setVisible(false)}
+          onClick={handleDismiss}
         >
           <motion.div
             initial={{ scaleX: 0 }}
