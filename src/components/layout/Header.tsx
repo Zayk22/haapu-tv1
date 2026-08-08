@@ -78,7 +78,7 @@ export default function Header() {
         <div className="mx-auto flex max-w-screen-2xl items-center justify-between px-4 py-3 lg:px-12 lg:py-4">
 
           {/* LEFT — logo + nav */}
-          <div className="flex items-center gap-8 lg:gap-12">
+          <div className="flex items-center gap-12 lg:gap-16">
             <Link href="/" className="flex-shrink-0">
               <img src="/logo.png" alt="Haapu TV" className="h-12 w-auto object-contain" />
             </Link>
