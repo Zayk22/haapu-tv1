@@ -81,3 +81,73 @@ export function FooterSkeleton() {
     </div>
   );
 }
+
+// --- New skeletons for content-heavy pages ---
+
+export function MovieGridSkeleton({ title }: { title: string }) {
+  return (
+    <div className="min-h-screen bg-matte-black">
+      <div className="pt-24 pb-6 px-4 sm:px-6 lg:px-12 mx-auto max-w-screen-2xl">
+        <div className="h-10 w-48 animate-pulse rounded bg-matte-800" />
+      </div>
+      <div className="px-4 sm:px-6 lg:px-12 pb-20 mx-auto max-w-screen-2xl">
+        <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 xl:grid-cols-6 gap-3 sm:gap-4 lg:gap-5">
+          {Array.from({ length: 12 }).map((_, i) => (
+            <div key={i} className="aspect-[2/3] animate-pulse rounded-lg bg-matte-800" />
+          ))}
+        </div>
+      </div>
+    </div>
+  );
+}
+
+export function AccountSkeleton() {
+  return (
+    <div className="min-h-screen bg-matte-black pt-24 pb-20">
+      <div className="mx-auto max-w-4xl px-4 sm:px-6 lg:px-8">
+        <div className="mb-8 h-10 w-48 animate-pulse rounded bg-matte-800" />
+        <div className="rounded-xl border border-matte-800 bg-matte-900 p-6">
+          <div className="flex items-center gap-4">
+            <div className="h-16 w-16 animate-pulse rounded-full bg-matte-800" />
+            <div className="flex-1">
+              <div className="h-6 w-48 animate-pulse rounded bg-matte-800" />
+              <div className="mt-2 h-4 w-64 animate-pulse rounded bg-matte-800" />
+            </div>
+          </div>
+          <div className="mt-6 space-y-4">
+            <div className="h-12 animate-pulse rounded bg-matte-800" />
+            <div className="h-12 animate-pulse rounded bg-matte-800" />
+            <div className="h-12 animate-pulse rounded bg-matte-800" />
+          </div>
+        </div>
+      </div>
+    </div>
+  );
+}
+
+export function MovieDetailSkeleton() {
+  return (
+    <div className="min-h-screen bg-matte-black pt-24">
+      <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
+        <div className="flex flex-col gap-8 lg:flex-row">
+          <div className="lg:w-1/3">
+            <div className="aspect-[2/3] w-full animate-pulse rounded-lg bg-matte-800" />
+          </div>
+          <div className="lg:w-2/3 space-y-4">
+            <div className="h-10 w-3/4 animate-pulse rounded bg-matte-800" />
+            <div className="flex gap-4">
+              <div className="h-6 w-20 animate-pulse rounded bg-matte-800" />
+              <div className="h-6 w-20 animate-pulse rounded bg-matte-800" />
+              <div className="h-6 w-20 animate-pulse rounded bg-matte-800" />
+            </div>
+            <div className="h-24 w-full animate-pulse rounded bg-matte-800" />
+            <div className="flex gap-4">
+              <div className="h-12 w-32 animate-pulse rounded bg-matte-800" />
+              <div className="h-12 w-32 animate-pulse rounded bg-matte-800" />
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  );
+}
