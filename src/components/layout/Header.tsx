@@ -147,9 +147,9 @@ export default function Header() {
                   />
                 </button>
 
-                {/* Dropdown */}
+                {/* Dropdown — FIXED: fully opaque background */}
                 {accountOpen && (
-                  <div className="absolute right-0 top-full mt-2 w-64 overflow-hidden rounded-xl border border-matte-800 bg-matte-900/98 shadow-2xl backdrop-blur-md z-50">
+                  <div className="absolute right-0 top-full mt-2 w-64 overflow-hidden rounded-xl border border-matte-800 bg-matte-900 shadow-2xl z-50">
                     {/* User info header */}
                     <div className="flex items-center gap-3 border-b border-matte-800 px-4 py-3">
                       <div
